@@ -1,71 +1,1061 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Services | Paride Misuraca</title>
-  <link rel="stylesheet" href="css/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services | Paride Misuraca</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Styles specific to services page */
+        .services-header {
+            padding: 180px 0 80px;
+            background-color: var(--secondary-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .services-header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('images/services.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .services-header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60%;
+            height: 100%;
+            background: var(--gradient);
+            clip-path: polygon(90% 0, 100% 0, 100% 100%, 20% 100%);
+            z-index: 1;
+            opacity: 0.2;
+        }
+
+        .services-header-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+        }
+
+        .services-title {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .services-subtitle {
+            font-size: 1.2rem;
+            line-height: 1.7;
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        /* Services Navigation */
+        .services-nav {
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 15px 0;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 900;
+}
+
+.services-nav.sticky {
+    top: 0;
+}
+
+.services-nav.with-header {
+    top: 80px; /* Altezza dell'header */
+}
+
+        .services-nav-container {
+            display: flex;
+            justify-content: space-between;
+            overflow-x: auto;
+            padding-bottom: 5px;
+            scrollbar-width: none; /* Firefox */
+        }
+
+        .services-nav-container::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Edge */
+        }
+
+        .service-nav-item {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 8px 15px;
+            white-space: nowrap;
+            transition: var(--transition);
+            border-radius: 4px;
+        }
+
+        .service-nav-item:hover, .service-nav-item.active {
+            background: var(--gradient);
+            color: var(--light-color);
+        }
+
+        /* Service Section Common */
+        .service-section {
+            padding: 100px 0;
+            position: relative;
+        }
+
+        .service-section:nth-child(odd) {
+            background-color: var(--primary-color);
+        }
+
+        .service-section:nth-child(even) {
+            background-color: var(--secondary-color);
+        }
+
+        .service-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: flex-start;
+        }
+
+        .service-image {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            margin-top: 25px;
+        }
+
+        .service-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: var(--transition);
+        }
+
+        .service-image:hover img {
+            transform: scale(1.05);
+        }
+
+        .service-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient);
+            opacity: 0.2;
+            transition: var(--transition);
+        }
+
+        .service-image:hover::after {
+            opacity: 0.1;
+        }
+
+        .service-content {
+            max-width: 100%;
+        }
+
+        .service-headline {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .service-headline::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--gradient);
+        }
+
+        .service-description {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: 30px;
+            color: var(--text-light);
+        }
+
+        .service-features {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .service-feature {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .service-feature i {
+            color: var(--accent-color);
+            margin-right: 15px;
+            margin-top: 5px;
+            font-size: 1rem;
+        }
+
+        .service-feature-text {
+            flex: 1;
+        }
+
+        .service-feature-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 1.05rem;
+        }
+
+        .service-feature-description {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .service-cta {
+            margin-top: 40px;
+        }
+
+        /* Process Section */
+        .process-section {
+            padding: 100px 0;
+            background-color: var(--primary-color);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .process-title {
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .process-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--gradient);
+        }
+
+        .process-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .process-steps::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gradient);
+            z-index: 1;
+        }
+
+        .process-step {
+            position: relative;
+            z-index: 2;
+            flex: 1;
+            padding: 0 15px;
+            max-width: 180px;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--light-color);
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .step-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .step-description {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            padding: 100px 0;
+            background-color: var(--primary-color);
+        }
+
+        .faq-title {
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+            text-align: center;
+            position: relative;
+        }
+
+        .faq-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--gradient);
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background-color: rgba(255, 255, 255, 0.02);
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .faq-question h3 {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--light-color);
+        }
+
+        .faq-question i {
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: var(--transition);
+            padding: 0 30px;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .faq-item.active .faq-question {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 1000px;
+            padding: 20px 30px;
+        }
+
+        /* Alternate Layout */
+        .service-section:nth-child(even) .service-container {
+            direction: rtl;
+        }
+
+        .service-section:nth-child(even) .service-content,
+        .service-section:nth-child(even) .service-image {
+            direction: ltr;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .services-title {
+                font-size: 3rem;
+            }
+
+            .service-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .service-section:nth-child(even) .service-container {
+                direction: ltr;
+            }
+
+            .service-headline {
+                font-size: 2.2rem;
+            }
+
+            .process-steps {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .process-steps::before {
+                display: none;
+            }
+
+            .process-step {
+                margin-bottom: 50px;
+                max-width: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .services-title {
+                font-size: 2.5rem;
+            }
+
+            .services-nav-container {
+                justify-content: flex-start;
+            }
+
+            .service-headline {
+                font-size: 2rem;
+            }
+
+            .services-nav {
+                top: 60px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .services-title {
+                font-size: 2rem;
+            }
+
+            .services-header {
+                padding: 150px 0 60px;
+            }
+
+            .service-section {
+                padding: 60px 0;
+            }
+
+            .service-headline {
+                font-size: 1.8rem;
+            }
+
+            .process-title, .faq-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- Off-canvas Navigation -->
-  <nav id="sideNav" class="side-nav">
-    <button id="closeNav" class="nav-toggle">&times;</button>
-    <ul>
-      <li><a href="index.html">Home</a></li>
-      <li><a href="about.html">About</a></li>
-      <li><a href="portfolio.html">Portfolio</a></li>
-      <li><a href="services.html">Services</a></li>
-      <li><a href="contact.html">Contact</a></li>
-    </ul>
-  </nav>
-
-  <!-- Header -->
-  <header class="header">
-    <div class="container">
-      <button id="openNav" class="nav-toggle">&#9776;</button>
-      <h1 class="logo">Paride Misuraca</h1>
-      <p class="tagline">Innovative Web Developer, Digital Strategist & AI Visionary</p>
-    </div>
-  </header>
-
-  <!-- Services Section -->
-  <section class="services">
-    <div class="container">
-      <h2>What I Do</h2>
-      <p>Delivering futuristic solutions with a touch of art and technology.</p>
-      <div class="services-grid">
-        <div class="service">
-          <h3>Next-Gen Web Development</h3>
-          <p>Crafting visually stunning and robust web experiences that defy expectations.</p>
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <a href="index.html" class="logo">Paride Misuraca</a>
+            <nav>
+                <button class="menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="nav-links">
+                    <a href="index.html#about" class="nav-link">About Me</a>
+                    <a href="index.html#services" class="nav-link">Services</a>
+                    <a href="index.html#contact" class="nav-link">Contact</a>
+                    <a href="booknow.html" class="btn">Book Now</a>
+                </div>
+            </nav>
         </div>
-        <div class="service">
-          <h3>Digital Strategy & Marketing</h3>
-          <p>Empowering brands with data-driven insights and groundbreaking marketing strategies.</p>
-        </div>
-        <div class="service">
-          <h3>AI & Interactive Solutions</h3>
-          <p>Integrating artificial intelligence to create adaptive, intelligent interfaces.</p>
-        </div>
-        <div class="service">
-          <h3>UX/UI Design Excellence</h3>
-          <p>Designing fluid and responsive user experiences that captivate and engage.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+    </header>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container">
-      <p>&copy; 2050 Paride Misuraca. All rights reserved.</p>
-      <div class="social">
-        <a href="#" target="_blank">LinkedIn</a>
-        <a href="#" target="_blank">GitHub</a>
-        <a href="#" target="_blank">Twitter</a>
-      </div>
-    </div>
-  </footer>
+    <!-- Services Header -->
+    <section class="services-header">
+        <div class="services-header-bg"></div>
+        <div class="container services-header-content">
+            <h1 class="services-title">Expert Digital Solutions</h1>
+            <p class="services-subtitle">Leverage my expertise across multiple domains to transform your business in the digital landscape. I specialize in building seamless digital experiences that merge technical excellence with strategic thinking to help you achieve tangible results and sustainable growth.</p>
+        </div>
+    </section>
 
-  <script src="js/script.js"></script>
+    <!-- Services Navigation -->
+    <nav class="services-nav">
+        <div class="container services-nav-container">
+            <a href="#web-development" class="service-nav-item active">Web Development</a>
+            <a href="#ecommerce" class="service-nav-item">E-commerce</a>
+            <a href="#copywriting" class="service-nav-item">Copywriting & AI Content</a>
+            <a href="#network" class="service-nav-item">Network Infrastructure</a>
+            <a href="#it-consultancy" class="service-nav-item">IT Consultancy</a>
+            <a href="#digital-strategy" class="service-nav-item">Digital Strategy</a>
+        </div>
+    </nav>
+
+    <!-- Web Development Section -->
+    <section class="service-section" id="web-development">
+        <div class="container service-container">
+            <div class="service-image">
+                <img src="images/webdev.jpg" alt="Web Development">
+            </div>
+            <div class="service-content">
+                <h2 class="service-headline">Web Development</h2>
+                <p class="service-description">Beyond standard websites, I engineer digital platforms that serve as powerful business tools. My development approach combines cutting-edge technologies with user experience design principles to create web solutions that not only captivate visitors but also convert them into loyal customers and brand advocates.</p>
+                
+                <ul class="service-features">
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">Custom Website Development</h4>
+                            <p class="service-feature-description">Bespoke websites built from the ground up to perfectly match your brand identity and business needs, with clean code and best practices.</p>
+                        </div>
+                    </li>
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">Responsive Design</h4>
+                            <p class="service-feature-description">Mobile-first approach ensuring your website looks and functions perfectly on all devices – from smartphones to desktop computers.</p>
+                        </div>
+                    </li>
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">Performance Optimization</h4>
+                            <p class="service-feature-description">Websites optimized for speed and performance, with attention to loading times, resource management, and efficient code structure.</p>
+                        </div>
+                    </li>
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">SEO Integration</h4>
+                            <p class="service-feature-description">Built-in search engine optimization to improve your visibility online, including semantic HTML, optimized meta tags, and structured data.</p>
+                        </div>
+                    </li>
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">Content Management Systems</h4>
+                            <p class="service-feature-description">Implementation of user-friendly CMS solutions that empower you to manage and update your website content without technical knowledge.</p>
+                        </div>
+                    </li>
+                </ul>
+                
+                <div class="service-cta">
+                    <a href="booknow.html" class="btn">Discuss Your Web Project</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- E-commerce Section -->
+    <section class="service-section" id="ecommerce">
+        <div class="container service-container">
+            <div class="service-image">
+                <img src="images/ecommerce.jpg" alt="E-commerce Management">
+            </div>
+            <div class="service-content">
+                <h2 class="service-headline">E-commerce Management</h2>
+                <p class="service-description">I build e-commerce ecosystems that transform browsing into buying. By focusing on user journey optimization, secure payment infrastructure, and intuitive product showcasing, I create online stores that not only attract customers but optimize every step of the purchasing process to maximize conversions and encourage repeat business.</p>
+                
+                <ul class="service-features">
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">E-commerce Platform Development</h4>
+                            <p class="service-feature-description">Custom online stores built with leading platforms like WooCommerce, Shopify, or Magento, tailored to your product range and business model.</p>
+                        </div>
+                    </li>
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">Payment Gateway Integration</h4>
+                            <p class="service-feature-description">Secure payment processing with multiple payment options to provide flexibility and convenience for your customers.</p>
+                        </div>
+                    </li>
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">Inventory Management</h4>
+                            <p class="service-feature-description">Efficient inventory systems that track stock levels in real-time, with automated notifications for low-stock items.</p>
+                        </div>
+                    </li>
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">Order Fulfillment Optimization</h4>
+                            <p class="service-feature-description">Streamlined processes for order management, shipping integration, and customer communication to ensure smooth operations.</p>
+                        </div>
+                    </li>
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">Analytics & Performance Tracking</h4>
+                            <p class="service-feature-description">Comprehensive analytics setup to monitor sales, customer behavior, and marketing effectiveness for data-driven decision making.</p>
+                        </div>
+                    </li>
+                </ul>
+                
+                <div class="service-cta">
+                    <a href="booknow.html" class="btn">Launch Your Online Store</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Copywriting Section -->
+    <section class="service-section" id="copywriting">
+        <div class="container service-container">
+            <div class="service-image">
+                <img src="images/copywriting.jpg" alt="Copywriting & AI Content">
+            </div>
+            <div class="service-content">
+                <h2 class="service-headline">Copywriting & AI Content</h2>
+                <p class="service-description">Words drive action in the digital world. I craft strategic content that resonates with your target audience and drives meaningful engagement. By leveraging the power of advanced AI tools alongside human creativity, I deliver consistent, high-impact messaging across all your digital touchpoints, from website copy to marketing materials.</p>
+                
+                <ul class="service-features">
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">Website Copy</h4>
+                            <p class="service-feature-description">Engaging, SEO-optimized text for your website that clearly communicates your value proposition and encourages action.</p>
+                        </div>
+                    </li>
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">Product Descriptions</h4>
+                            <p class="service-feature-description">Compelling product descriptions that highlight benefits and features, designed to increase conversions and reduce returns.</p>
+                        </div>
+                    </li>
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">Blog & Article Creation</h4>
+                            <p class="service-feature-description">Regular, high-quality content that establishes your authority in your industry and improves your search engine ranking.</p>
+                        </div>
+                    </li>
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">AI Content Optimization</h4>
+                            <p class="service-feature-description">Strategic use of AI tools to generate and refine content, maximizing productivity while maintaining authenticity.</p>
+                        </div>
+                    </li>
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">Content Strategy</h4>
+                            <p class="service-feature-description">Comprehensive content planning that aligns with your business goals and resonates with your target audience.</p>
+                        </div>
+                    </li>
+                </ul>
+                
+                <div class="service-cta">
+                    <a href="booknow.html" class="btn">Elevate Your Content</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Network Infrastructure Section -->
+    <section class="service-section" id="network">
+        <div class="container service-container">
+            <div class="service-image">
+                <img src="images/network.jpg" alt="Network Infrastructure">
+            </div>
+            <div class="service-content">
+                <h2 class="service-headline">Network Infrastructure</h2>
+                <p class="service-description">The foundation of digital success lies in robust network architecture. As a certified Cisco systems engineer, I design and implement enterprise-grade networking solutions that provide the security, reliability and performance your business demands. My approach ensures seamless connectivity, mitigates security risks, and creates infrastructure that grows with your organization.</p>
+                
+                <ul class="service-features">
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">Network Design & Architecture</h4>
+                            <p class="service-feature-description">Custom network solutions designed to meet your specific business requirements, with scalability built in from the start.</p>
+                        </div>
+                    </li>
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">Network Security Implementation</h4>
+                            <p class="service-feature-description">Robust security measures including firewalls, VPNs, and intrusion detection systems to protect your critical data and systems.</p>
+                        </div>
+                    </li>
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">Wireless Networking</h4>
+                            <p class="service-feature-description">High-performance WiFi solutions that provide reliable connectivity throughout your premises with appropriate security controls.</p>
+                        </div>
+                    </li>
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">Network Monitoring & Maintenance</h4>
+                            <p class="service-feature-description">Proactive monitoring and maintenance services to ensure optimal performance and minimize downtime.</p>
+                        </div>
+                    </li>
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">Cloud Integration</h4>
+                            <p class="service-feature-description">Seamless integration between on-premises infrastructure and cloud services for hybrid networking environments.</p>
+                        </div>
+                    </li>
+                </ul>
+                
+                <div class="service-cta">
+                    <a href="booknow.html" class="btn">Build Your Network</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- IT Consultancy Section -->
+    <section class="service-section" id="it-consultancy">
+        <div class="container service-container">
+            <div class="service-image">
+                <img src="images/itconsultancy.jpg" alt="IT Consultancy">
+            </div>
+            <div class="service-content">
+                <h2 class="service-headline">IT Consultancy</h2>
+                <p class="service-description">Navigate the complex technology landscape with confidence. My consultancy services provide clear, vendor-neutral guidance to help you make technology decisions that align with your business goals. I translate technical concepts into business value, identifying opportunities for innovation and efficiency while mitigating risks in your digital transformation journey.</p>
+                
+                <ul class="service-features">
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">Technology Assessment</h4>
+                            <p class="service-feature-description">Comprehensive evaluation of your current IT infrastructure to identify strengths, weaknesses, and opportunities for improvement.</p>
+                        </div>
+                    </li>
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">IT Strategy Development</h4>
+                            <p class="service-feature-description">Creation of tailored IT roadmaps that support your business objectives and provide a clear path for technology investments.</p>
+                        </div>
+                    </li>
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">Software & Hardware Selection</h4>
+                            <p class="service-feature-description">Vendor-neutral guidance on choosing the right technology solutions for your specific needs and budget constraints.</p>
+                        </div>
+                    </li>
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">IT Process Optimization</h4>
+                            <p class="service-feature-description">Refinement of IT processes and workflows to increase efficiency, reduce costs, and improve service delivery.</p>
+                        </div>
+                    </li>
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">Digital Transformation Guidance</h4>
+                            <p class="service-feature-description">Strategic advice on leveraging technology to transform business models, enhance customer experiences, and drive innovation.</p>
+                        </div>
+                    </li>
+                </ul>
+                
+                <div class="service-cta">
+                    <a href="booknow.html" class="btn">Get Expert IT Advice</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Digital Strategy Section -->
+    <section class="service-section" id="digital-strategy">
+        <div class="container service-container">
+            <div class="service-image">
+                <img src="images/digitalstrategy.jpg" alt="Digital Strategy">
+            </div>
+            <div class="service-content">
+                <h2 class="service-headline">Digital Strategy</h2>
+                <p class="service-description">Turn digital possibility into business reality. I help you craft a holistic digital roadmap that integrates all aspects of your online presence into a powerful, coherent ecosystem. By aligning technology decisions with business objectives, I ensure every digital investment contributes to meaningful outcomes and creates sustainable competitive advantage.</p>
+                
+                <ul class="service-features">
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">Digital Ecosystem Planning</h4>
+                            <p class="service-feature-description">Holistic mapping of your digital presence to ensure all channels and platforms work together effectively toward common goals.</p>
+                        </div>
+                    </li>
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">SEO & Content Strategy</h4>
+                            <p class="service-feature-description">Data-driven approaches to improve your search visibility and create content that resonates with your target audience.</p>
+                        </div>
+                    </li>
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">Customer Journey Mapping</h4>
+                            <p class="service-feature-description">Analysis and optimization of the entire customer experience across all digital touchpoints to improve conversion rates.</p>
+                        </div>
+                    </li>
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">Digital Marketing Integration</h4>
+                            <p class="service-feature-description">Coordination of various digital marketing channels to create consistent messaging and maximize return on investment.</p>
+                        </div>
+                    </li>
+                    <li class="service-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="service-feature-text">
+                            <h4 class="service-feature-title">Analytics & Performance Tracking</h4>
+                            <p class="service-feature-description">Implementation of comprehensive measurement frameworks to track KPIs and continuously improve digital performance.</p>
+                        </div>
+                    </li>
+                </ul>
+                
+                <div class="service-cta">
+                    <a href="booknow.html" class="btn">Develop Your Strategy</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- My Process Section -->
+    <section class="process-section">
+        <div class="container">
+            <h2 class="process-title">My Approach</h2>
+            <div class="process-steps">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Discovery</h3>
+                    <p class="step-description">I begin by understanding your business, goals, challenges, and target audience to develop a tailored solution.</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">Strategy</h3>
+                    <p class="step-description">Based on insights gathered, I create a detailed plan outlining the approach, timeline, and expected outcomes.</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Development</h3>
+                    <p class="step-description">I execute the plan with precision, keeping you informed and involved throughout the process.</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <h3 class="step-title">Delivery</h3>
+                    <p class="step-description">Once everything is perfected, I deliver the final solution and provide training if needed.</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">5</div>
+                    <h3 class="step-title">Support</h3>
+                    <p class="step-description">Our relationship continues with ongoing support, maintenance, and optimization as your business evolves.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta" id="cta">
+        <div class="cta-bg" style="background-image: url('images/book\\ bg.jpg')"></div>
+        <div class="container">
+            <h2 class="cta-title">Ready to Transform Your Digital Presence?</h2>
+            <p class="cta-description">Book a free consultation to discuss your project requirements and explore how my services can help your business thrive in the digital landscape.</p>
+            <a href="booknow.html" class="btn">Book Your Free Consultation</a>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+        <div class="container">
+            <h2 class="faq-title">Frequently Asked Questions</h2>
+            <div class="faq-container">
+                <div class="faq-item active">
+                    <div class="faq-question">
+                        <h3>What makes your approach different from other service providers?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>I combine technical expertise with a strategic business mindset. Unlike many service providers who focus solely on implementing requested features, I take the time to understand your business objectives and target audience to ensure that every solution I deliver is aligned with your long-term goals. My comprehensive skill set across web development, network infrastructure, and digital strategy allows me to see the bigger picture and create integrated solutions that work together harmoniously.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>How long does it typically take to complete a project?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Project timelines vary depending on scope and complexity. A simple website might take 3-4 weeks, while a comprehensive e-commerce platform could take 2-3 months. During our initial consultation, we'll discuss your requirements in detail and establish a realistic timeline that accounts for planning, development, testing, and refinement. I pride myself on transparent communication and will keep you informed about progress throughout the project lifecycle.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Do you offer ongoing maintenance and support after project completion?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes, I offer various maintenance and support packages to ensure your digital assets continue to perform optimally after launch. These can include regular updates, security monitoring, performance optimization, content updates, and technical support. I believe in building long-term relationships with clients, and ongoing support is a crucial part of ensuring your continued success in the digital realm.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>How do you handle revisions and changes during the project?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>I follow an iterative approach that includes regular check-ins and feedback sessions. Minor revisions are a natural part of the process and are included in the project scope. For significant changes that alter the project direction or add substantial new features, we'll discuss the impact on timeline and budget before proceeding. My goal is to ensure you're completely satisfied with the final product, and I maintain flexibility throughout the process to accommodate evolving requirements.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>What information do you need from me to get started?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>To begin, I'll need a clear understanding of your business objectives, target audience, competitive landscape, and any existing brand guidelines. For specific projects, additional information might be required such as content for websites, product details for e-commerce, or technical specifications for network infrastructure. During our initial consultation, I'll guide you through the information-gathering process and provide a detailed list of requirements to ensure a smooth project start.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <span class="footer-logo">Paride Misuraca</span>
+                    <p class="footer-description">I develop cutting-edge web solutions that combine design, functionality, and strategy to help businesses achieve their digital goals.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="footer-title">Quick Links</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="index.html#home">Home</a></li>
+                        <li class="footer-link"><a href="index.html#about">About Me</a></li>
+                        <li class="footer-link"><a href="index.html#services">Services</a></li>
+                        <li class="footer-link"><a href="index.html#portfolio">Portfolio</a></li>
+                        <li class="footer-link"><a href="index.html#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="footer-title">Services</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#web-development">Web Development</a></li>
+                        <li class="footer-link"><a href="#ecommerce">E-commerce</a></li>
+                        <li class="footer-link"><a href="#network">Network Infrastructure</a></li>
+                        <li class="footer-link"><a href="#it-consultancy">IT Consultancy</a></li>
+                        <li class="footer-link"><a href="#digital-strategy">Digital Strategy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="footer-title">Contact</h3>
+                    <div class="contact-info">
+                        <i class="fas fa-envelope"></i>
+                        <p>info@paridemisuraca.com</p>
+                    </div>
+                    <div class="contact-info">
+                        <i class="fas fa-phone"></i>
+                        <p>+61 048 101 4421 AUSTRALIA</p>
+                        <p>+39 351 995 2155 ITALY</p>
+                    </div>
+                    <div class="contact-info">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <p>WORLDWIDE</p>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Paride Misuraca. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        window.addEventListener('scroll', () => {
+    const scrollPosition = window.scrollY + 150;
+    
+    document.querySelectorAll('.service-section').forEach(section => {
+        if (section.offsetTop <= scrollPosition && 
+            section.offsetTop + section.offsetHeight > scrollPosition) {
+            document.querySelectorAll('.service-nav-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('href') === '#' + section.getAttribute('id')) {
+                    item.classList.add('active');
+                }
+            });
+        }
+    });
+});
+
+const faqItems = document.querySelectorAll('.faq-item');
+
+faqItems.forEach(item => {
+    const question = item.querySelector('.faq-question');
+    
+    question.addEventListener('click', () => {
+        faqItems.forEach(otherItem => {
+            if (otherItem !== item) {
+                otherItem.classList.remove('active');
+            }
+        });
+        
+        item.classList.toggle('active');
+    });
+});
+
+document.querySelectorAll('.service-nav-item').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        
+        const targetId = this.getAttribute('href');
+        const targetElement = document.querySelector(targetId);
+        
+        if (targetElement) {
+            const offsetTop = targetElement.offsetTop - 120;
+            
+            window.scrollTo({
+                top: offsetTop,
+                behavior: 'smooth'
+            });
+            
+            document.querySelectorAll('.service-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            this.classList.add('active');
+        }
+    });
+});
+    </script>
 </body>
 </html>

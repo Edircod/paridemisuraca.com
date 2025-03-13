@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You | Paride Misuraca</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+          --primary-color: #000000;
+          --secondary-color: #0a0e14;
+          --accent-color: #0077b6;
+          --accent-light: #0096c7;
+          --accent-dark: #023e8a;
+          --light-color: #f8f9fa;
+          --gray-color: #343a40;
+          --dark-color: #000000;
+          --text-color: #e9ecef;
+          --text-light: #adb5bd;
+          --transition: all 0.3s ease;
+          --gradient: linear-gradient(135deg, #023e8a, #0077b6, #0096c7);
+        }
+        
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        
+        body {
+          font-family: 'Outfit', sans-serif;
+          color: var(--text-color);
+          background-color: var(--primary-color);
+          overflow-x: hidden;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+          font-family: 'Space Grotesk', sans-serif;
+          font-weight: 600;
+          color: var(--light-color);
+        }
+        
+        .container {
+          width: 100%;
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 20px;
+        }
+        
+        /* Header */
+        header {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          padding: 25px 0;
+          z-index: 1000;
+          transition: var(--transition);
+          background-color: var(--secondary-color);
+          box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header-content {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        
+        .logo {
+          font-family: 'Space Grotesk', sans-serif;
+          font-size: 1.8rem;
+          font-weight: 700;
+          color: var(--light-color);
+          text-decoration: none;
+          transition: var(--transition);
+        }
+        
+        .nav-links {
+          display: flex;
+          align-items: center;
+          gap: 40px;
+        }
+        
+        .nav-link {
+          color: var(--light-color);
+          text-decoration: none;
+          font-weight: 500;
+          position: relative;
+          transition: var(--transition);
+        }
+        
+        .nav-link::after {
+          content: '';
+          position: absolute;
+          bottom: -5px;
+          left: 0;
+          width: 0;
+          height: 2px;
+          background: var(--gradient);
+          transition: var(--transition);
+        }
+        
+        .nav-link:hover::after {
+          width: 100%;
+        }
+        
+        .btn {
+          display: inline-block;
+          padding: 12px 24px;
+          background: var(--gradient);
+          color: var(--light-color);
+          text-decoration: none;
+          border-radius: 5px;
+          font-weight: 500;
+          transition: var(--transition);
+          border: none;
+          cursor: pointer;
+          box-shadow: 0 4px 10px rgba(0, 119, 182, 0.3);
+        }
+        
+        .btn:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 10px 20px rgba(0, 119, 182, 0.4);
+        }
+        
+        .menu-btn {
+          display: none;
+          background: none;
+          border: none;
+          cursor: pointer;
+          font-size: 1.5rem;
+          color: var(--light-color);
+          transition: var(--transition);
+        }
+
+        /* Thank You Section */
+        .thank-you-section {
+            padding: 180px 0 120px;
+            background-color: var(--primary-color);
+            position: relative;
+            overflow: hidden;
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .thank-you-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('images/book\\ bg.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.15;
+            z-index: 0;
+        }
+
+        .thank-you-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient);
+            opacity: 0.1;
+            z-index: 1;
+        }
+
+        .thank-you-container {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .thank-you-icon {
+            font-size: 5rem;
+            color: var(--accent-light);
+            margin-bottom: 30px;
+            display: inline-block;
+            animation: pulseIcon 2s infinite;
+        }
+
+        @keyframes pulseIcon {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .thank-you-title {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: var(--gradient);
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        .thank-you-description {
+            font-size: 1.2rem;
+            line-height: 1.7;
+            margin-bottom: 30px;
+            color: var(--text-light);
+        }
+
+        .steps-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .step-card {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 30px;
+            flex: 1;
+            min-width: 200px;
+            max-width: 250px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: var(--transition);
+        }
+
+        .step-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-color: var(--accent-color);
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .step-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .step-description {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--accent-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--accent-color);
+        }
+        
+        /* Footer */
+        footer {
+          background-color: var(--primary-color);
+          color: var(--light-color);
+          padding: 80px 0 30px;
+          border-top: 1px solid rgba(0, 119, 182, 0.1);
+        }
+        
+        .footer-content {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 40px;
+          margin-bottom: 60px;
+        }
+        
+        .footer-logo {
+          font-family: 'Space Grotesk', sans-serif;
+          font-size: 2rem;
+          font-weight: 700;
+          margin-bottom: 20px;
+          display: block;
+        }
+        
+        .footer-description {
+          margin-bottom: 20px;
+          line-height: 1.6;
+          color: var(--text-light);
+        }
+        
+        .social-links {
+          display: flex;
+          gap: 15px;
+        }
+        
+        .social-link {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          background-color: rgba(255, 255, 255, 0.05);
+          color: var(--light-color);
+          border-radius: 50%;
+          transition: var(--transition);
+        }
+        
+        .social-link:hover {
+          background: var(--gradient);
+          transform: translateY(-5px);
+        }
+        
+        .footer-title {
+          font-size: 1.2rem;
+          margin-bottom: 25px;
+          position: relative;
+          color: var(--light-color);
+        }
+        
+        .footer-title::after {
+          content: '';
+          position: absolute;
+          bottom: -10px;
+          left: 0;
+          width: 40px;
+          height: 2px;
+          background: var(--gradient);
+        }
+        
+        .footer-links {
+          list-style: none;
+        }
+        
+        .footer-link {
+          margin-bottom: 15px;
+        }
+        
+        .footer-link a {
+          color: var(--text-light);
+          text-decoration: none;
+          transition: var(--transition);
+        }
+        
+        .footer-link a:hover {
+          color: var(--accent-light);
+        }
+        
+        .contact-info {
+          display: flex;
+          align-items: flex-start;
+          margin-bottom: 15px;
+          color: var(--text-light);
+        }
+        
+        .contact-info i {
+          margin-right: 15px;
+          margin-top: 5px;
+          color: var(--accent-color);
+        }
+        
+        .copyright {
+          text-align: center;
+          padding-top: 30px;
+          border-top: 1px solid rgba(255, 255, 255, 0.05);
+          color: rgba(255, 255, 255, 0.3);
+          font-size: 0.9rem;
+        }
+
+        /* Code animation */
+        .code-animation {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+          z-index: 1;
+          opacity: 0.05;
+        }
+
+        .code-line {
+          position: absolute;
+          width: 1px;
+          top: -50%;
+          background: var(--gradient);
+          animation: code-rain linear infinite;
+        }
+
+        @keyframes code-rain {
+          0% {
+              top: -50%;
+          }
+          100% {
+              top: 100%;
+          }
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .thank-you-title {
+                font-size: 3rem;
+            }
+            
+            .steps-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .step-card {
+                max-width: 100%;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 70%;
+                height: 100vh;
+                background-color: var(--secondary-color);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transition: var(--transition);
+                z-index: 999;
+            }
+
+            .nav-links.active {
+                right: 0;
+            }
+
+            .menu-btn {
+                display: block;
+                z-index: 1000;
+            }
+
+            .thank-you-title {
+                font-size: 2.5rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .thank-you-title {
+                font-size: 2rem;
+            }
+            
+            .thank-you-description {
+                font-size: 1rem;
+            }
+            
+            .thank-you-section {
+                padding: 150px 0 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <a href="index.html" class="logo">Paride Misuraca</a>
+            <nav>
+                <button class="menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="nav-links">
+                    <a href="index.html#about" class="nav-link">About Me</a>
+                    <a href="index.html#contact" class="nav-link">Contact</a>
+                    <a href="book-now.html" class="btn">Book Now</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Thank You Section -->
+    <section class="thank-you-section">
+        <div class="thank-you-bg"></div>
+        <div class="code-animation" id="codeAnimation"></div>
+        <div class="container thank-you-container">
+            <i class="fas fa-check-circle thank-you-icon"></i>
+            <h1 class="thank-you-title">Thank You!</h1>
+            <p class="thank-you-description">Your consultation request has been successfully received. I look forward to discussing how we can transform your digital vision into reality.</p>
+            
+            <div class="steps-container">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Confirmation</h3>
+                    <p class="step-description">You'll receive a confirmation email shortly with your booking details.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">Follow-up</h3>
+                    <p class="step-description">I'll personally contact you within 24 hours to confirm a time for our consultation.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Consultation</h3>
+                    <p class="step-description">We'll discuss your project requirements and explore the best solutions for your needs.</p>
+                </div>
+            </div>
+            
+            <p class="thank-you-description">While you wait, feel free to explore my services or check out my portfolio to get inspired.</p>
+            
+            <div class="action-buttons">
+                <a href="index.html" class="btn">Return to Homepage</a>
+                <a href="index.html#services" class="btn btn-secondary">Explore Services</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <span class="footer-logo">Paride Misuraca</span>
+                    <p class="footer-description">I develop cutting-edge web solutions that combine design, functionality, and strategy to help businesses achieve their digital goals.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="footer-title">Quick Links</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="index.html#home">Home</a></li>
+                        <li class="footer-link"><a href="index.html#about">About Me</a></li>
+                        <li class="footer-link"><a href="index.html#services">Services</a></li>
+                        <li class="footer-link"><a href="index.html#portfolio">Portfolio</a></li>
+                        <li class="footer-link"><a href="index.html#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="footer-title">Services</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Web Development</a></li>
+                        <li class="footer-link"><a href="#">E-commerce</a></li>
+                        <li class="footer-link"><a href="#">Network Infrastructure</a></li>
+                        <li class="footer-link"><a href="#">IT Consultancy</a></li>
+                        <li class="footer-link"><a href="#">Digital Strategy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="footer-title">Contact</h3>
+                    <div class="contact-info">
+                        <i class="fas fa-envelope"></i>
+                        <p>info@paridemisuraca.com</p>
+                    </div>
+                    <div class="contact-info">
+                        <i class="fas fa-phone"></i>
+                        <p>+61 048 101 4421 AUSTRALIA</p>
+                        <p>+39 351 995 2155 ITALY</p>
+                    </div>
+                    <div class="contact-info">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <p>WORLDWIDE</p>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Paride Misuraca. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu
+        const menuBtn = document.querySelector('.menu-btn');
+        const navLinks = document.querySelector('.nav-links');
+
+        menuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            
+            if (navLinks.classList.contains('active')) {
+                menuBtn.innerHTML = '<i class="fas fa-times"></i>';
+            } else {
+                menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+            }
+        });
+
+        // Generate code animation in the background
+        function createCodeAnimation() {
+            const codeAnimation = document.getElementById('codeAnimation');
+            if (!codeAnimation) return;
+            
+            const lines = 40; // Number of lines to create
+            
+            for (let i = 0; i < lines; i++) {
+                const line = document.createElement('div');
+                line.classList.add('code-line');
+                
+                // Randomize properties
+                const duration = Math.random() * 3 + 2; // 2-5 seconds
+                const delay = Math.random() * 5; // 0-5 seconds delay
+                const posX = Math.random() * 100; // Random horizontal position
+                const height = Math.random() * 30 + 10; // 10-40% height
+                
+                // Apply properties
+                line.style.left = `${posX}%`;
+                line.style.height = `${height}%`;
+                line.style.animation = `code-rain ${duration}s ${delay}s linear infinite`;
+                line.style.opacity = Math.random() * 0.5 + 0.1; // 0.1-0.6 opacity
+                
+                codeAnimation.appendChild(line);
+            }
+        }
+
+        // Page load animations
+        window.addEventListener('load', () => {
+            // Add page loaded class to body
+            document.body.classList.add('loaded');
+            
+            // Add code animation lines
+            createCodeAnimation();
+        });
+    </script>
+</body>
+</html>

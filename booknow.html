@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book a Consultation | Paride Misuraca</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+          --primary-color: #000000;
+          --secondary-color: #0a0e14;
+          --accent-color: #0077b6;
+          --accent-light: #0096c7;
+          --accent-dark: #023e8a;
+          --light-color: #f8f9fa;
+          --gray-color: #343a40;
+          --dark-color: #000000;
+          --text-color: #e9ecef;
+          --text-light: #adb5bd;
+          --transition: all 0.3s ease;
+          --gradient: linear-gradient(135deg, #023e8a, #0077b6, #0096c7);
+        }
+        
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        
+        body {
+          font-family: 'Outfit', sans-serif;
+          color: var(--text-color);
+          background-color: var(--primary-color);
+          overflow-x: hidden;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+          font-family: 'Space Grotesk', sans-serif;
+          font-weight: 600;
+          color: var(--light-color);
+        }
+        
+        .container {
+          width: 100%;
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 20px;
+        }
+        
+        /* Header */
+        header {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          padding: 25px 0;
+          z-index: 1000;
+          transition: var(--transition);
+          background-color: var(--secondary-color);
+          box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header-content {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        
+        .logo {
+          font-family: 'Space Grotesk', sans-serif;
+          font-size: 1.8rem;
+          font-weight: 700;
+          color: var(--light-color);
+          text-decoration: none;
+          transition: var(--transition);
+        }
+        
+        .nav-links {
+          display: flex;
+          align-items: center;
+          gap: 40px;
+        }
+        
+        .nav-link {
+          color: var(--light-color);
+          text-decoration: none;
+          font-weight: 500;
+          position: relative;
+          transition: var(--transition);
+        }
+        
+        .nav-link::after {
+          content: '';
+          position: absolute;
+          bottom: -5px;
+          left: 0;
+          width: 0;
+          height: 2px;
+          background: var(--gradient);
+          transition: var(--transition);
+        }
+        
+        .nav-link:hover::after {
+          width: 100%;
+        }
+        
+        .btn {
+          display: inline-block;
+          padding: 12px 24px;
+          background: var(--gradient);
+          color: var(--light-color);
+          text-decoration: none;
+          border-radius: 5px;
+          font-weight: 500;
+          transition: var(--transition);
+          border: none;
+          cursor: pointer;
+          box-shadow: 0 4px 10px rgba(0, 119, 182, 0.3);
+        }
+        
+        .btn:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 10px 20px rgba(0, 119, 182, 0.4);
+        }
+        
+        .menu-btn {
+          display: none;
+          background: none;
+          border: none;
+          cursor: pointer;
+          font-size: 1.5rem;
+          color: var(--light-color);
+          transition: var(--transition);
+        }
+
+        /* Booking Section */
+        .booking-section {
+            padding: 150px 0 100px;
+            background-color: var(--primary-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .booking-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('images/book\\ bg.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.15;
+            z-index: 0;
+        }
+
+        .booking-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient);
+            opacity: 0.1;
+            z-index: 1;
+        }
+
+        .booking-container {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .booking-content {
+            padding-right: 30px;
+        }
+
+        .booking-title {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .booking-description {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: 30px;
+            color: var(--text-light);
+        }
+
+        .booking-features {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .booking-feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .booking-feature i {
+            margin-right: 15px;
+            color: var(--accent-color);
+            font-size: 1.2rem;
+        }
+
+        /* Form Styles */
+        .booking-form {
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .form-title {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            color: var(--light-color);
+            font-family: 'Outfit', sans-serif;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23adb5bd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 16px;
+        }
+
+select.form-control option {
+    color: #000000; /* Assicura che anche le opzioni del menu siano nere */
+    background-color: #ffffff; /* Sfondo bianco */
+}
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-submit {
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .form-message {
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+
+        .form-message.success {
+            background-color: rgba(0, 128, 0, 0.1);
+            border: 1px solid rgba(0, 128, 0, 0.3);
+            color: #00ff00;
+            display: block;
+        }
+
+        .form-message.error {
+            background-color: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            color: #ff5555;
+            display: block;
+        }
+
+        .error-text {
+            color: #ff5555;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .form-control.error {
+            border-color: #ff5555;
+        }
+        
+        /* Footer */
+        footer {
+          background-color: var(--primary-color);
+          color: var(--light-color);
+          padding: 80px 0 30px;
+          border-top: 1px solid rgba(0, 119, 182, 0.1);
+        }
+        
+        .footer-content {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 40px;
+          margin-bottom: 60px;
+        }
+        
+        .footer-logo {
+          font-family: 'Space Grotesk', sans-serif;
+          font-size: 2rem;
+          font-weight: 700;
+          margin-bottom: 20px;
+          display: block;
+        }
+        
+        .footer-description {
+          margin-bottom: 20px;
+          line-height: 1.6;
+          color: var(--text-light);
+        }
+        
+        .social-links {
+          display: flex;
+          gap: 15px;
+        }
+        
+        .social-link {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          background-color: rgba(255, 255, 255, 0.05);
+          color: var(--light-color);
+          border-radius: 50%;
+          transition: var(--transition);
+        }
+        
+        .social-link:hover {
+          background: var(--gradient);
+          transform: translateY(-5px);
+        }
+        
+        .footer-title {
+          font-size: 1.2rem;
+          margin-bottom: 25px;
+          position: relative;
+          color: var(--light-color);
+        }
+        
+        .footer-title::after {
+          content: '';
+          position: absolute;
+          bottom: -10px;
+          left: 0;
+          width: 40px;
+          height: 2px;
+          background: var(--gradient);
+        }
+        
+        .footer-links {
+          list-style: none;
+        }
+        
+        .footer-link {
+          margin-bottom: 15px;
+        }
+        
+        .footer-link a {
+          color: var(--text-light);
+          text-decoration: none;
+          transition: var(--transition);
+        }
+        
+        .footer-link a:hover {
+          color: var(--accent-light);
+        }
+        
+        .contact-info {
+          display: flex;
+          align-items: flex-start;
+          margin-bottom: 15px;
+          color: var(--text-light);
+        }
+        
+        .contact-info i {
+          margin-right: 15px;
+          margin-top: 5px;
+          color: var(--accent-color);
+        }
+        
+        .copyright {
+          text-align: center;
+          padding-top: 30px;
+          border-top: 1px solid rgba(255, 255, 255, 0.05);
+          color: rgba(255, 255, 255, 0.3);
+          font-size: 0.9rem;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .booking-title {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .booking-container {
+                grid-template-columns: 1fr;
+            }
+
+            .booking-content {
+                padding-right: 0;
+                text-align: center;
+            }
+
+            .booking-feature {
+                justify-content: center;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 70%;
+                height: 100vh;
+                background-color: var(--secondary-color);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transition: var(--transition);
+                z-index: 999;
+            }
+
+            .nav-links.active {
+                right: 0;
+            }
+
+            .menu-btn {
+                display: block;
+                z-index: 1000;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .booking-title {
+                font-size: 2rem;
+            }
+
+            .booking-form {
+                padding: 30px 20px;
+            }
+
+            .booking-section {
+                padding: 120px 0 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <a href="index.html" class="logo">Paride Misuraca</a>
+            <nav>
+                <button class="menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="nav-links">
+                    <a href="index.html#about" class="nav-link">About Me</a>
+                    <a href="index.html#contact" class="nav-link">Contact</a>
+                    <a href="#booking-form" class="btn">Book Now</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Booking Section -->
+    <section class="booking-section" id="booking-form">
+        <div class="booking-bg"></div>
+        <div class="container booking-container">
+            <div class="booking-content">
+                <h1 class="booking-title">Book Your Free Consultation</h1>
+                <p class="booking-description">Ready to transform your business with innovative digital solutions? Complete the form to schedule your free initial consultation where we'll discuss your needs, goals, and how I can help you achieve digital success.</p>
+                <ul class="booking-features">
+                    <li class="booking-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>No commitment, just concrete ideas and strategies</span>
+                    </li>
+                    <li class="booking-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Personalized approach to your specific business needs</span>
+                    </li>
+                    <li class="booking-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Expert advice on the latest technologies and digital trends</span>
+                    </li>
+                    <li class="booking-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Flexible meeting options - online or in-person</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="booking-form-container">
+                <div class="booking-form">
+                    <h3 class="form-title">Schedule Your Consultation</h3>
+                    <form id="bookingForm" action="https://formsubmit.co/paridemisuraca@gmail.com" method="POST">
+                        <!-- Name Input -->
+                        <div class="form-group">
+                            <label for="name" class="form-label">Full Name *</label>
+                            <input type="text" id="name" name="name" class="form-control" placeholder="Your full name" required>
+                            <div class="error-text" id="nameError">Please enter your full name</div>
+                        </div>
+                        
+                        <!-- Email & Phone Row -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email" class="form-label">Email Address *</label>
+                                <input type="email" id="email" name="email" class="form-control" placeholder="your@email.com" required>
+                                <div class="error-text" id="emailError">Please enter a valid email address</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone" class="form-label">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" class="form-control" placeholder="Your phone number">
+                            </div>
+                        </div>
+                        
+                        <!-- Company & Service Row -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="company" class="form-label">Company</label>
+                                <input type="text" id="company" name="company" class="form-control" placeholder="Your company name">
+                            </div>
+                            <div class="form-group">
+                                <label for="service" class="form-label">Service Interested In *</label>
+                                <select id="service" name="service" class="form-control" required>
+                                    <option value="" disabled selected>Select a service</option>
+                                    <option value="Web Development">Web Development</option>
+                                    <option value="E-commerce Management">E-commerce Management</option>
+                                    <option value="Copywriting & AI Content">Copywriting & AI Content</option>
+                                    <option value="Network Infrastructure">Network Infrastructure</option>
+                                    <option value="IT Consultancy">IT Consultancy</option>
+                                    <option value="Digital Strategy">Digital Strategy</option>
+                                    <option value="Other">Other (please specify)</option>
+                                </select>
+                                <div class="error-text" id="serviceError">Please select a service</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Preferred Date & Time Row -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="preferredDate" class="form-label">Preferred Date</label>
+                                <input type="date" id="preferredDate" name="preferredDate" class="form-control" min="">
+                            </div>
+                            <div class="form-group">
+                                <label for="preferredTime" class="form-label">Preferred Time</label>
+                                <select id="preferredTime" name="preferredTime" class="form-control">
+                                    <option value="" disabled selected>Select a time</option>
+                                    <option value="Morning">Morning (9AM - 12PM)</option>
+                                    <option value="Afternoon">Afternoon (12PM - 5PM)</option>
+                                    <option value="Evening">Evening (5PM - 8PM)</option>
+                                    <option value="Flexible">Flexible</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Message -->
+                        <div class="form-group">
+                            <label for="message" class="form-label">Your Project Details</label>
+                            <textarea id="message" name="message" class="form-control" placeholder="Tell me about your project, goals, and any specific questions you have."></textarea>
+                        </div>
+                        
+                        <!-- Hidden fields for FormSubmit -->
+                        <input type="hidden" name="_subject" value="New Booking Request">
+                        <input type="hidden" name="_captcha" value="false">
+                        <input type="hidden" name="_next" value="thankyou.html">
+                        
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn form-submit">Book Consultation</button>
+                        
+                        <!-- Form Messages -->
+                        <div class="form-message" id="formMessage"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <span class="footer-logo">Paride Misuraca</span>
+                    <p class="footer-description">I develop cutting-edge web solutions that combine design, functionality, and strategy to help businesses achieve their digital goals.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="footer-title">Quick Links</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="index.html#home">Home</a></li>
+                        <li class="footer-link"><a href="index.html#about">About Me</a></li>
+                        <li class="footer-link"><a href="index.html#services">Services</a></li>
+                        <li class="footer-link"><a href="index.html#portfolio">Portfolio</a></li>
+                        <li class="footer-link"><a href="index.html#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="footer-title">Services</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Web Development</a></li>
+                        <li class="footer-link"><a href="#">E-commerce</a></li>
+                        <li class="footer-link"><a href="#">Network Infrastructure</a></li>
+                        <li class="footer-link"><a href="#">IT Consultancy</a></li>
+                        <li class="footer-link"><a href="#">Digital Strategy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="footer-title">Contact</h3>
+                    <div class="contact-info">
+                        <i class="fas fa-envelope"></i>
+                        <p>info@paridemisuraca.com</p>
+                    </div>
+                    <div class="contact-info">
+                        <i class="fas fa-phone"></i>
+                        <p>+61 048 101 4421 AUSTRALIA</p>
+                        <p>+39 351 995 2155 ITALY</p>
+                    </div>
+                    <div class="contact-info">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <p>WORLDWIDE</p>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Paride Misuraca. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu
+        const menuBtn = document.querySelector('.menu-btn');
+        const navLinks = document.querySelector('.nav-links');
+
+        menuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            
+            if (navLinks.classList.contains('active')) {
+                menuBtn.innerHTML = '<i class="fas fa-times"></i>';
+            } else {
+                menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+            }
+        });
+
+        // Set minimum date for date picker to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('preferredDate').min = today;
+
+        // Form validation
+        const form = document.getElementById('bookingForm');
+        const formMessage = document.getElementById('formMessage');
+
+        form.addEventListener('submit', function(e) {
+            let valid = true;
+            
+            // Reset errors
+            document.querySelectorAll('.form-control').forEach(input => {
+                input.classList.remove('error');
+            });
+            document.querySelectorAll('.error-text').forEach(error => {
+                error.style.display = 'none';
+            });
+            
+            // Validate name
+            const name = document.getElementById('name');
+            if (!name.value.trim()) {
+                name.classList.add('error');
+                document.getElementById('nameError').style.display = 'block';
+                valid = false;
+            }
+            
+            // Validate email
+            const email = document.getElementById('email');
+            if (!email.value.trim() || !validateEmail(email.value)) {
+                email.classList.add('error');
+                document.getElementById('emailError').style.display = 'block';
+                valid = false;
+            }
+            
+            // Validate service
+            const service = document.getElementById('service');
+            if (service.value === '') {
+                service.classList.add('error');
+                document.getElementById('serviceError').style.display = 'block';
+                valid = false;
+            }
+            
+            if (!valid) {
+                e.preventDefault();
+                formMessage.textContent = 'Please correct the errors in the form.';
+                formMessage.className = 'form-message error';
+            }
+        });
+
+        // Email validation helper function
+        function validateEmail(email) {
+            const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(String(email).toLowerCase());
+        }
+    </script>
+</body>
+</html>
