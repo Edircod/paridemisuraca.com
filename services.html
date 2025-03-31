@@ -65,23 +65,23 @@
 
         /* Services Navigation */
         .services-nav {
-    background-color: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(5px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 15px 0;
-    position: sticky;
-    top: 0;
-    width: 100%;
-    z-index: 900;
-}
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            width: 100%;
+            z-index: 900;
+        }
 
-.services-nav.sticky {
-    top: 0;
-}
+        .services-nav.sticky {
+            top: 0;
+        }
 
-.services-nav.with-header {
-    top: 80px; /* Altezza dell'header */
-}
+        .services-nav.with-header {
+            top: 80px; /* Altezza dell'header */
+        }
 
         .services-nav-container {
             display: flex;
@@ -486,9 +486,9 @@
                     <i class="fas fa-bars"></i>
                 </button>
                 <div class="nav-links">
-                    <a href="index.html#about" class="nav-link">About Me</a>
-                    <a href="index.html#services" class="nav-link">Services</a>
-                    <a href="index.html#contact" class="nav-link">Contact</a>
+                    <a href="about.html" class="nav-link">About Me</a>
+                    <a href="services.html" class="nav-link">Services</a>
+                    <a href="index.html#services" class="nav-link">My Works</a>
                     <a href="booknow.html" class="btn">Book Now</a>
                 </div>
             </nav>
@@ -882,7 +882,7 @@
 
     <!-- CTA Section -->
     <section class="cta" id="cta">
-        <div class="cta-bg" style="background-image: url('images/book\\ bg.jpg')"></div>
+        <div class="cta-bg" style="background-image: url('images/book\ bg.jpg')"></div>
         <div class="container">
             <h2 class="cta-title">Ready to Transform Your Digital Presence?</h2>
             <p class="cta-description">Book a free consultation to discuss your project requirements and explore how my services can help your business thrive in the digital landscape.</p>
@@ -961,9 +961,9 @@
                     <h3 class="footer-title">Quick Links</h3>
                     <ul class="footer-links">
                         <li class="footer-link"><a href="index.html#home">Home</a></li>
-                        <li class="footer-link"><a href="index.html#about">About Me</a></li>
-                        <li class="footer-link"><a href="index.html#services">Services</a></li>
-                        <li class="footer-link"><a href="index.html#portfolio">Portfolio</a></li>
+                        <li class="footer-link"><a href="about.html">About Me</a></li>
+                        <li class="footer-link"><a href="services.html">Services</a></li>
+                        <li class="footer-link"><a href="index.html#services">My Works</a></li>
                         <li class="footer-link"><a href="index.html#contact">Contact</a></li>
                     </ul>
                 </div>
@@ -1003,59 +1003,59 @@
     <script src="script.js"></script>
     <script>
         window.addEventListener('scroll', () => {
-    const scrollPosition = window.scrollY + 150;
-    
-    document.querySelectorAll('.service-section').forEach(section => {
-        if (section.offsetTop <= scrollPosition && 
-            section.offsetTop + section.offsetHeight > scrollPosition) {
-            document.querySelectorAll('.service-nav-item').forEach(item => {
-                item.classList.remove('active');
-                if (item.getAttribute('href') === '#' + section.getAttribute('id')) {
-                    item.classList.add('active');
+            const scrollPosition = window.scrollY + 150;
+            
+            document.querySelectorAll('.service-section').forEach(section => {
+                if (section.offsetTop <= scrollPosition && 
+                    section.offsetTop + section.offsetHeight > scrollPosition) {
+                    document.querySelectorAll('.service-nav-item').forEach(item => {
+                        item.classList.remove('active');
+                        if (item.getAttribute('href') === '#' + section.getAttribute('id')) {
+                            item.classList.add('active');
+                        }
+                    });
                 }
             });
-        }
-    });
-});
-
-const faqItems = document.querySelectorAll('.faq-item');
-
-faqItems.forEach(item => {
-    const question = item.querySelector('.faq-question');
-    
-    question.addEventListener('click', () => {
-        faqItems.forEach(otherItem => {
-            if (otherItem !== item) {
-                otherItem.classList.remove('active');
-            }
         });
-        
-        item.classList.toggle('active');
-    });
-});
 
-document.querySelectorAll('.service-nav-item').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        
-        const targetId = this.getAttribute('href');
-        const targetElement = document.querySelector(targetId);
-        
-        if (targetElement) {
-            const offsetTop = targetElement.offsetTop - 120;
+        const faqItems = document.querySelectorAll('.faq-item');
+
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
             
-            window.scrollTo({
-                top: offsetTop,
-                behavior: 'smooth'
+            question.addEventListener('click', () => {
+                faqItems.forEach(otherItem => {
+                    if (otherItem !== item) {
+                        otherItem.classList.remove('active');
+                    }
+                });
+                
+                item.classList.toggle('active');
             });
-            
-            document.querySelectorAll('.service-nav-item').forEach(item => {
-                item.classList.remove('active');
+        });
+
+        document.querySelectorAll('.service-nav-item').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    const offsetTop = targetElement.offsetTop - 120;
+                    
+                    window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                    });
+                    
+                    document.querySelectorAll('.service-nav-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                }
             });
-            this.classList.add('active');
-        }
-    });
-});
+        });
     </script>
 </body>
 </html>
