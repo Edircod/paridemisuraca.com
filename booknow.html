@@ -8,134 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
     <style>
-        :root {
-          --primary-color: #000000;
-          --secondary-color: #0a0e14;
-          --accent-color: #0077b6;
-          --accent-light: #0096c7;
-          --accent-dark: #023e8a;
-          --light-color: #f8f9fa;
-          --gray-color: #343a40;
-          --dark-color: #000000;
-          --text-color: #e9ecef;
-          --text-light: #adb5bd;
-          --transition: all 0.3s ease;
-          --gradient: linear-gradient(135deg, #023e8a, #0077b6, #0096c7);
-        }
-        
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
-        
-        body {
-          font-family: 'Outfit', sans-serif;
-          color: var(--text-color);
-          background-color: var(--primary-color);
-          overflow-x: hidden;
-        }
-        
-        h1, h2, h3, h4, h5, h6 {
-          font-family: 'Space Grotesk', sans-serif;
-          font-weight: 600;
-          color: var(--light-color);
-        }
-        
-        .container {
-          width: 100%;
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 20px;
-        }
-        
-        /* Header */
-        header {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          padding: 25px 0;
-          z-index: 1000;
-          transition: var(--transition);
-          background-color: var(--secondary-color);
-          box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-        }
-        
-        .header-content {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-        
-        .logo {
-          font-family: 'Space Grotesk', sans-serif;
-          font-size: 1.8rem;
-          font-weight: 700;
-          color: var(--light-color);
-          text-decoration: none;
-          transition: var(--transition);
-        }
-        
-        .nav-links {
-          display: flex;
-          align-items: center;
-          gap: 40px;
-        }
-        
-        .nav-link {
-          color: var(--light-color);
-          text-decoration: none;
-          font-weight: 500;
-          position: relative;
-          transition: var(--transition);
-        }
-        
-        .nav-link::after {
-          content: '';
-          position: absolute;
-          bottom: -5px;
-          left: 0;
-          width: 0;
-          height: 2px;
-          background: var(--gradient);
-          transition: var(--transition);
-        }
-        
-        .nav-link:hover::after {
-          width: 100%;
-        }
-        
-        .btn {
-          display: inline-block;
-          padding: 12px 24px;
-          background: var(--gradient);
-          color: var(--light-color);
-          text-decoration: none;
-          border-radius: 5px;
-          font-weight: 500;
-          transition: var(--transition);
-          border: none;
-          cursor: pointer;
-          box-shadow: 0 4px 10px rgba(0, 119, 182, 0.3);
-        }
-        
-        .btn:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 10px 20px rgba(0, 119, 182, 0.4);
-        }
-        
-        .menu-btn {
-          display: none;
-          background: none;
-          border: none;
-          cursor: pointer;
-          font-size: 1.5rem;
-          color: var(--light-color);
-          transition: var(--transition);
-        }
-
         /* Booking Section */
         .booking-section {
             padding: 150px 0 100px;
@@ -150,7 +24,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('images/book\\ bg.jpg');
+            background-image: url('images/book\ bg.jpg');
             background-size: cover;
             background-position: center;
             opacity: 0.15;
@@ -273,10 +147,11 @@
             background-size: 16px;
         }
 
-select.form-control option {
-    color: #000000; /* Assicura che anche le opzioni del menu siano nere */
-    background-color: #ffffff; /* Sfondo bianco */
-}
+        select.form-control option {
+            color: #000000;
+            background-color: #ffffff;
+        }
+
         textarea.form-control {
             min-height: 120px;
             resize: vertical;
@@ -319,113 +194,6 @@ select.form-control option {
         .form-control.error {
             border-color: #ff5555;
         }
-        
-        /* Footer */
-        footer {
-          background-color: var(--primary-color);
-          color: var(--light-color);
-          padding: 80px 0 30px;
-          border-top: 1px solid rgba(0, 119, 182, 0.1);
-        }
-        
-        .footer-content {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          gap: 40px;
-          margin-bottom: 60px;
-        }
-        
-        .footer-logo {
-          font-family: 'Space Grotesk', sans-serif;
-          font-size: 2rem;
-          font-weight: 700;
-          margin-bottom: 20px;
-          display: block;
-        }
-        
-        .footer-description {
-          margin-bottom: 20px;
-          line-height: 1.6;
-          color: var(--text-light);
-        }
-        
-        .social-links {
-          display: flex;
-          gap: 15px;
-        }
-        
-        .social-link {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 40px;
-          height: 40px;
-          background-color: rgba(255, 255, 255, 0.05);
-          color: var(--light-color);
-          border-radius: 50%;
-          transition: var(--transition);
-        }
-        
-        .social-link:hover {
-          background: var(--gradient);
-          transform: translateY(-5px);
-        }
-        
-        .footer-title {
-          font-size: 1.2rem;
-          margin-bottom: 25px;
-          position: relative;
-          color: var(--light-color);
-        }
-        
-        .footer-title::after {
-          content: '';
-          position: absolute;
-          bottom: -10px;
-          left: 0;
-          width: 40px;
-          height: 2px;
-          background: var(--gradient);
-        }
-        
-        .footer-links {
-          list-style: none;
-        }
-        
-        .footer-link {
-          margin-bottom: 15px;
-        }
-        
-        .footer-link a {
-          color: var(--text-light);
-          text-decoration: none;
-          transition: var(--transition);
-        }
-        
-        .footer-link a:hover {
-          color: var(--accent-light);
-        }
-        
-        .contact-info {
-          display: flex;
-          align-items: flex-start;
-          margin-bottom: 15px;
-          color: var(--text-light);
-        }
-        
-        .contact-info i {
-          margin-right: 15px;
-          margin-top: 5px;
-          color: var(--accent-color);
-        }
-        
-        .copyright {
-          text-align: center;
-          padding-top: 30px;
-          border-top: 1px solid rgba(255, 255, 255, 0.05);
-          color: rgba(255, 255, 255, 0.3);
-          font-size: 0.9rem;
-        }
 
         /* Responsive Styles */
         @media (max-width: 992px) {
@@ -446,30 +214,6 @@ select.form-control option {
 
             .booking-feature {
                 justify-content: center;
-            }
-
-            .nav-links {
-                position: fixed;
-                top: 0;
-                right: -100%;
-                width: 70%;
-                height: 100vh;
-                background-color: var(--secondary-color);
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                transition: var(--transition);
-                z-index: 999;
-            }
-
-            .nav-links.active {
-                right: 0;
-            }
-
-            .menu-btn {
-                display: block;
-                z-index: 1000;
             }
 
             .form-row {
@@ -503,9 +247,10 @@ select.form-control option {
                     <i class="fas fa-bars"></i>
                 </button>
                 <div class="nav-links">
-                    <a href="index.html#about" class="nav-link">About Me</a>
-                    <a href="index.html#contact" class="nav-link">Contact</a>
-                    <a href="#booking-form" class="btn">Book Now</a>
+                    <a href="about.html" class="nav-link">About Me</a>
+                    <a href="services.html" class="nav-link">Services</a>
+                    <a href="index.html#services" class="nav-link">My Works</a>
+                    <a href="booknow.html" class="btn">Book Now</a>
                 </div>
             </nav>
         </div>
@@ -625,7 +370,7 @@ select.form-control option {
     </section>
 
     <!-- Footer -->
-    <footer>
+    <footer id="contact">
         <div class="container">
             <div class="footer-content">
                 <div>
@@ -641,20 +386,20 @@ select.form-control option {
                     <h3 class="footer-title">Quick Links</h3>
                     <ul class="footer-links">
                         <li class="footer-link"><a href="index.html#home">Home</a></li>
-                        <li class="footer-link"><a href="index.html#about">About Me</a></li>
-                        <li class="footer-link"><a href="index.html#services">Services</a></li>
-                        <li class="footer-link"><a href="index.html#portfolio">Portfolio</a></li>
+                        <li class="footer-link"><a href="about.html">About Me</a></li>
+                        <li class="footer-link"><a href="services.html">Services</a></li>
+                        <li class="footer-link"><a href="index.html#services">My Works</a></li>
                         <li class="footer-link"><a href="index.html#contact">Contact</a></li>
                     </ul>
                 </div>
                 <div>
                     <h3 class="footer-title">Services</h3>
                     <ul class="footer-links">
-                        <li class="footer-link"><a href="#">Web Development</a></li>
-                        <li class="footer-link"><a href="#">E-commerce</a></li>
-                        <li class="footer-link"><a href="#">Network Infrastructure</a></li>
-                        <li class="footer-link"><a href="#">IT Consultancy</a></li>
-                        <li class="footer-link"><a href="#">Digital Strategy</a></li>
+                        <li class="footer-link"><a href="services.html#web-development">Web Development</a></li>
+                        <li class="footer-link"><a href="services.html#ecommerce">E-commerce</a></li>
+                        <li class="footer-link"><a href="services.html#network">Network Infrastructure</a></li>
+                        <li class="footer-link"><a href="services.html#it-consultancy">IT Consultancy</a></li>
+                        <li class="footer-link"><a href="services.html#digital-strategy">Digital Strategy</a></li>
                     </ul>
                 </div>
                 <div>
@@ -680,21 +425,8 @@ select.form-control option {
         </div>
     </footer>
 
+    <script src="script.js"></script>
     <script>
-        // Mobile menu
-        const menuBtn = document.querySelector('.menu-btn');
-        const navLinks = document.querySelector('.nav-links');
-
-        menuBtn.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-            
-            if (navLinks.classList.contains('active')) {
-                menuBtn.innerHTML = '<i class="fas fa-times"></i>';
-            } else {
-                menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
-            }
-        });
-
         // Set minimum date for date picker to today
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('preferredDate').min = today;
