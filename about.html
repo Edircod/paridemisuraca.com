@@ -1,60 +1,1145 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>About | Paride Misuraca</title>
-  <link rel="stylesheet" href="css/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Me | Paride Misuraca</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        /* Styles specific to about page */
+        .about-header {
+            padding: 180px 0 80px;
+            background-color: var(--secondary-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('images/digital\ wave\ bg.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .about-header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60%;
+            height: 100%;
+            background: var(--gradient);
+            clip-path: polygon(90% 0, 100% 0, 100% 100%, 20% 100%);
+            z-index: 1;
+            opacity: 0.2;
+        }
+
+        .about-header-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+        }
+
+        .about-title {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .about-subtitle {
+            font-size: 1.2rem;
+            line-height: 1.7;
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        /* Main Content Styles */
+        .about-content-section {
+            padding: 100px 0;
+            background-color: var(--primary-color);
+            position: relative;
+        }
+
+        .about-content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .about-image-container {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .about-image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: var(--transition);
+        }
+
+        .about-image-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient);
+            opacity: 0.2;
+            transition: var(--transition);
+        }
+
+        .about-image-container:hover img {
+            transform: scale(1.05);
+        }
+
+        .about-image-container:hover::after {
+            opacity: 0.1;
+        }
+
+        .about-text h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .about-text h2::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 0;
+            width: 80px;
+            height: 3px;
+            background: var(--gradient);
+        }
+
+        .about-text p {
+            margin-bottom: 25px;
+            line-height: 1.8;
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        .highlight {
+            color: var(--accent-light);
+            font-weight: 500;
+        }
+
+        /* Skills Section */
+        .skills-section {
+            padding: 100px 0;
+            background-color: var(--secondary-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skills-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 10% 20%, rgba(0, 119, 182, 0.1) 0%, rgba(0, 0, 0, 0) 80%);
+        }
+
+        .skills-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .skills-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--gradient);
+        }
+
+        .skills-visualization {
+            width: 100%;
+            height: 400px;
+            margin-bottom: 60px;
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .skills-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .skill-category {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 30px;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .skill-category:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: var(--accent-color);
+        }
+
+        .skill-category h3 {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .skill-category h3 i {
+            margin-right: 10px;
+            color: var(--accent-color);
+        }
+
+        .skills-list {
+            list-style: none;
+        }
+
+        .skill-item {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .skill-icon {
+            color: var(--accent-color);
+            margin-right: 10px;
+            font-size: 0.8rem;
+        }
+
+        /* Journey Section */
+        .journey-section {
+            padding: 100px 0;
+            background-color: var(--primary-color);
+            position: relative;
+        }
+
+        .journey-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .journey-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--gradient);
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            background: var(--gradient);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -1px;
+        }
+
+        .timeline-item {
+            padding: 10px 40px;
+            position: relative;
+            width: 50%;
+            box-sizing: border-box;
+            margin-bottom: 30px;
+        }
+
+        .timeline-item:nth-child(odd) {
+            left: 0;
+            text-align: right;
+        }
+
+        .timeline-item:nth-child(even) {
+            left: 50%;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: var(--accent-color);
+            border: 4px solid var(--secondary-color);
+            border-radius: 50%;
+            top: 15px;
+            z-index: 1;
+        }
+
+        .timeline-item:nth-child(odd)::after {
+            right: -13px;
+        }
+
+        .timeline-item:nth-child(even)::after {
+            left: -13px;
+        }
+
+        .timeline-date {
+            font-size: 1.1rem;
+            color: var(--accent-light);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .timeline-content {
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: var(--transition);
+            backdrop-filter: blur(5px);
+        }
+
+        .timeline-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-color: var(--accent-color);
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content::after {
+            content: '';
+            position: absolute;
+            top: 15px;
+            right: -10px;
+            width: 0;
+            height: 0;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-left: 10px solid rgba(0, 0, 0, 0.3);
+        }
+
+        .timeline-item:nth-child(even) .timeline-content::after {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: -10px;
+            width: 0;
+            height: 0;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-right: 10px solid rgba(0, 0, 0, 0.3);
+        }
+
+        .timeline-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .timeline-description {
+            color: var(--text-light);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 100px 0;
+            background: var(--secondary-color);
+            text-align: center;
+            color: var(--light-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('images/book\ bg.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.15;
+            z-index: 0;
+        }
+
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient);
+            opacity: 0.1;
+            z-index: 1;
+        }
+
+        .cta-title {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta-description {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            line-height: 1.6;
+            position: relative;
+            z-index: 2;
+            color: var(--text-light);
+        }
+
+        .cta .btn {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .about-title {
+                font-size: 3rem;
+            }
+
+            .about-content-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .about-image-container {
+                margin: 0 auto;
+                max-width: 500px;
+            }
+
+            .timeline::after {
+                left: 31px;
+            }
+
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+
+            .timeline-item:nth-child(odd) {
+                left: 0;
+                text-align: left;
+            }
+
+            .timeline-item:nth-child(even) {
+                left: 0;
+            }
+
+            .timeline-item::after {
+                left: 18px;
+            }
+
+            .timeline-item:nth-child(odd)::after {
+                right: auto;
+                left: 18px;
+            }
+
+            .timeline-item:nth-child(odd) .timeline-content::after {
+                right: auto;
+                left: -10px;
+                border-right: 10px solid rgba(0, 0, 0, 0.3);
+                border-left: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .about-title {
+                font-size: 2.5rem;
+            }
+
+            .about-header {
+                padding: 150px 0 60px;
+            }
+
+            .skills-container {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-title {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .about-title {
+                font-size: 2rem;
+            }
+
+            .about-text h2 {
+                font-size: 1.8rem;
+            }
+
+            .about-subtitle, .about-text p {
+                font-size: 1rem;
+            }
+
+            .about-content-section, .skills-section, .journey-section {
+                padding: 60px 0;
+            }
+
+            .skills-title, .journey-title {
+                font-size: 2rem;
+                margin-bottom: 40px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- Off-canvas Navigation -->
-  <nav id="sideNav" class="side-nav">
-    <button id="closeNav" class="nav-toggle">&times;</button>
-    <ul>
-      <li><a href="index.html">Home</a></li>
-      <li><a href="about.html">About</a></li>
-      <li><a href="portfolio.html">Portfolio</a></li>
-      <li><a href="services.html">Services</a></li>
-      <li><a href="contact.html">Contact</a></li>
-    </ul>
-  </nav>
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <a href="index.html" class="logo">Paride Misuraca</a>
+            <nav>
+                <button class="menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="nav-links">
+                    <a href="about.html" class="nav-link">About Me</a>
+                    <a href="services.html" class="nav-link">Services</a>
+                    <a href="index.html#services" class="nav-link">My Works</a>
+                    <a href="booknow.html" class="btn">Book Now</a>
+                </div>
+            </nav>
+        </div>
+    </header>
 
-  <!-- Header -->
-  <header class="header">
-    <div class="container">
-      <button id="openNav" class="nav-toggle">&#9776;</button>
-      <h1 class="logo">Paride Misuraca</h1>
-      <p class="tagline">Innovative Web Developer, Digital Strategist & AI Visionary</p>
-    </div>
-  </header>
+    <!-- About Header -->
+    <section class="about-header">
+        <div class="about-header-bg"></div>
+        <div class="container about-header-content">
+            <h1 class="about-title">About Me</h1>
+            <p class="about-subtitle">I'm Paride Misuraca, a versatile digital creator who combines technical expertise with strategic vision to deliver innovative solutions that empower businesses in today's digital landscape.</p>
+        </div>
+    </section>
 
-  <!-- About Section -->
-  <section class="about">
-    <div class="container about-container">
-      <div class="about-image">
-        <!-- Replace with your futuristic portrait -->
-        <img src="https://via.placeholder.com/400x400.png?text=Your+Image" alt="Paride Misuraca">
-      </div>
-      <div class="about-text">
-        <h2>About Me</h2>
-        <p>I am Paride Misuraca, a forward-thinking digital creator who has been shaping the online world since the early 2030s. Combining next-generation web development techniques with innovative digital marketing strategies, I specialize in transforming complex ideas into visually arresting and interactive digital experiences.</p>
-        <p>My expertise spans from crafting immersive user interfaces to leveraging artificial intelligence in creative campaigns. With a career steeped in innovation, I continue to push the boundaries of technology and design, ensuring that every project not only meets but exceeds expectations.</p>
-      </div>
-    </div>
-  </section>
+    <!-- Main Content Section -->
+    <section class="about-content-section">
+        <div class="container about-content-grid">
+            <div class="about-image-container">
+                <img src="images/webdev.jpg" alt="Paride Misuraca">
+            </div>
+            <div class="about-text">
+                <h2>My Journey</h2>
+                <p>With over a decade of experience in the digital realm, I've built my career on a foundation of technical knowledge, creative problem-solving, and a deep understanding of how businesses operate in the digital space. My journey began with a passion for technology and a curiosity about how digital tools could transform the way we work and communicate.</p>
+                <p>Today, I specialize in creating <span class="highlight">comprehensive digital solutions</span> that go beyond aesthetics to deliver meaningful results. My approach combines technical implementation with strategic thinking, ensuring that every project not only looks impressive but also supports your business objectives.</p>
+                <p>My expertise spans multiple disciplines, from <span class="highlight">web development</span> and <span class="highlight">e-commerce</span> to <span class="highlight">network infrastructure</span> and <span class="highlight">IT consultancy</span>. This breadth of knowledge allows me to view challenges holistically and create integrated solutions that address all aspects of your digital presence.</p>
+                <p>Based between Australia and Italy, I work with clients worldwide, bringing a global perspective to local business challenges. I believe in building lasting relationships with my clients, becoming a trusted partner in their digital journey rather than just a service provider.</p>
+            </div>
+        </div>
+    </section>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container">
-      <p>&copy; 2050 Paride Misuraca. All rights reserved.</p>
-      <div class="social">
-        <a href="#" target="_blank">LinkedIn</a>
-        <a href="#" target="_blank">GitHub</a>
-        <a href="#" target="_blank">Twitter</a>
-      </div>
-    </div>
-  </footer>
+    <!-- Skills Section -->
+    <section class="skills-section">
+        <div class="skills-bg"></div>
+        <div class="container">
+            <h2 class="skills-title">My Expertise</h2>
+            
+            <!-- Interactive 3D Skills Visualization -->
+            <div id="skills-visualization" class="skills-visualization"></div>
+            
+            <div class="skills-container">
+                <div class="skill-category">
+                    <h3><i class="fas fa-code"></i> Development</h3>
+                    <ul class="skills-list">
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>HTML5, CSS3 & SASS/SCSS</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>JavaScript / TypeScript</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>React, Next.js & Vue.js</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Node.js & Express</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>PHP, Laravel & MySQL</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Python & Django</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Three.js & WebGL</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>RESTful APIs & GraphQL</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h3><i class="fas fa-shopping-cart"></i> E-commerce</h3>
+                    <ul class="skills-list">
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Shopify & Shopify Plus</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>WooCommerce & WordPress</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Magento & Adobe Commerce</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Stripe, PayPal & Payment Integration</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Multi-currency Support</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Inventory & Order Management</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>CRM & ERP Integration</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h3><i class="fas fa-network-wired"></i> Network & Infrastructure</h3>
+                    <ul class="skills-list">
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Cisco Systems & Networking</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Network Security & Firewall Setup</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Cloud Infrastructure (AWS, Azure, GCP)</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>VPN & Secure Remote Access</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Server Administration (Linux/Windows)</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Network Monitoring & Troubleshooting</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Disaster Recovery Planning</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h3><i class="fas fa-bullhorn"></i> Digital Strategy</h3>
+                    <ul class="skills-list">
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Content Strategy & Creation</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>SEO & SEM Optimization</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Google Analytics & Data Studio</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Marketing Automation</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Conversion Rate Optimization</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Digital Transformation Consulting</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h3><i class="fas fa-palette"></i> UI/UX Design</h3>
+                    <ul class="skills-list">
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Figma & Adobe XD</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Responsive & Mobile-First Design</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Wireframing & Prototyping</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>User Research & Testing</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Information Architecture</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Accessibility Standards (WCAG)</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Interactive Design & Animation</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h3><i class="fas fa-cloud"></i> Cloud & DevOps</h3>
+                    <ul class="skills-list">
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>AWS, Azure & Google Cloud Platform</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Docker & Containerization</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>CI/CD Pipelines</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Kubernetes & Orchestration</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Infrastructure as Code (Terraform)</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Monitoring & Logging</span>
+                        </li>
+                        <li class="skill-item">
+                            <i class="fas fa-chevron-right skill-icon"></i>
+                            <span>Performance Optimization</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
 
-  <script src="js/script.js"></script>
+    <!-- Professional Journey -->
+    <section class="journey-section">
+        <div class="container">
+            <h2 class="journey-title">Professional Journey</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">2024 - 2025</div>
+                    <div class="timeline-content">
+                        <h3 class="timeline-title">Enterprise E-commerce Developer</h3>
+                        <p class="timeline-description">Led the development and optimization of a global e-commerce platform for a major international brand, implementing advanced features for worldwide sales, multi-currency support, and localized user experiences while managing a team of frontend and backend developers.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2021 - 2022</div>
+                    <div class="timeline-content">
+                        <h3 class="timeline-title">IT Infrastructure Specialist</h3>
+                        <p class="timeline-description">Worked for an engineering institute managing network infrastructure, security protocols, hardware deployments, and software implementations for complex technical environments.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2019 - 2021</div>
+                    <div class="timeline-content">
+                        <h3 class="timeline-title">E-commerce Solutions Manager</h3>
+                        <p class="timeline-description">Designed and optimized online store platforms for mid-sized retailers, integrating payment systems, inventory management solutions, and robust analytics tracking.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2017 - Present</div>
+                    <div class="timeline-content">
+                        <h3 class="timeline-title">IT Freelancer & Consultant</h3>
+                        <p class="timeline-description">Providing specialized technical services including web development, network solutions, and digital strategy consulting for businesses of various sizes across multiple industries.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2015 - 2017</div>
+                    <div class="timeline-content">
+                        <h3 class="timeline-title">Web Developer & Content Creator</h3>
+                        <p class="timeline-description">Created responsive websites and digital content for startups and small businesses, focusing on user experience optimization and conversion-focused design.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-bg"></div>
+        <div class="container">
+            <h2 class="cta-title">Let's Create Something Remarkable</h2>
+            <p class="cta-description">Ready to discuss your project? Book a free consultation to explore how we can transform your digital presence and achieve your business goals.</p>
+            <a href="booknow.html" class="btn">Book Your Free Consultation</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <span class="footer-logo">Paride Misuraca</span>
+                    <p class="footer-description">I develop cutting-edge web solutions that combine design, functionality, and strategy to help businesses achieve their digital goals.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="footer-title">Quick Links</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="index.html#home">Home</a></li>
+                        <li class="footer-link"><a href="about.html">About Me</a></li>
+                        <li class="footer-link"><a href="services.html">Services</a></li>
+                        <li class="footer-link"><a href="index.html#services">My Works</a></li>
+                        <li class="footer-link"><a href="index.html#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="footer-title">Services</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="services.html#web-development">Web Development</a></li>
+                        <li class="footer-link"><a href="services.html#ecommerce">E-commerce</a></li>
+                        <li class="footer-link"><a href="services.html#network">Network Infrastructure</a></li>
+                        <li class="footer-link"><a href="services.html#it-consultancy">IT Consultancy</a></li>
+                        <li class="footer-link"><a href="services.html#digital-strategy">Digital Strategy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="footer-title">Contact</h3>
+                    <div class="contact-info">
+                        <i class="fas fa-envelope"></i>
+                        <p>info@paridemisuraca.com</p>
+                    </div>
+                    <div class="contact-info">
+                        <i class="fas fa-phone"></i>
+                        <p>+61 048 101 4421 AUSTRALIA</p>
+                        <p>+39 351 995 2155 ITALY</p>
+                    </div>
+                    <div class="contact-info">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <p>WORLDWIDE</p>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Paride Misuraca. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Three.js Skills Visualization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create the container for our 3D scene if it doesn't exist
+            if (!document.getElementById('skills-visualization')) {
+                return;
+            }
+            
+            const container = document.getElementById('skills-visualization');
+            const width = container.clientWidth;
+            const height = 400; // Fixed height for the visualization
+            
+            // Create a scene
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a0e14); // Match website background
+            
+            // Create a camera
+            const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+            camera.position.z = 30;
+            
+            // Create a renderer
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(width, height);
+            container.appendChild(renderer.domElement);
+            
+            // Create lights
+            const ambientLight = new THREE.AmbientLight(0x404040, 1);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+            
+            // Create skill nodes
+            const skills = [
+                { name: "Web Development", color: 0x0077b6 },
+                { name: "JavaScript", color: 0x0096c7 },
+                { name: "Node.js", color: 0x023e8a },
+                { name: "React", color: 0x61dafb },
+                { name: "Three.js", color: 0xffcc00 },
+                { name: "Python", color: 0x3776ab },
+                { name: "Network Security", color: 0xff5555 },
+                { name: "Cloud Services", color: 0x8c52ff },
+                { name: "UI/UX Design", color: 0x00c896 }
+            ];
+            
+            // Create nodes
+            const nodes = [];
+            const connections = [];
+            const nodeGeometry = new THREE.IcosahedronGeometry(1, 0);
+            
+            // Function to create a glowing material
+            function createGlowMaterial(color) {
+                return new THREE.MeshPhongMaterial({
+                    color: color,
+                    shininess: 70,
+                    emissive: color,
+                    emissiveIntensity: 0.2
+                });
+            }
+            
+            // Create nodes in a circular formation
+            const radius = 15;
+            skills.forEach((skill, index) => {
+                const angle = (index / skills.length) * Math.PI * 2;
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+                const z = Math.sin(index * 0.5) * 3; // Some variation in z
+                
+                const material = createGlowMaterial(skill.color);
+                const node = new THREE.Mesh(nodeGeometry, material);
+                node.position.set(x, y, z);
+                node.scale.set(1.5, 1.5, 1.5);
+                node.userData = { skill: skill.name, originalColor: skill.color };
+                scene.add(node);
+                nodes.push(node);
+                
+                // Create connection lines between adjacent nodes
+                if (index > 0) {
+                    const lineGeometry = new THREE.BufferGeometry().setFromPoints([
+                        new THREE.Vector3(x, y, z),
+                        new THREE.Vector3(nodes[index-1].position.x, nodes[index-1].position.y, nodes[index-1].position.z)
+                    ]);
+                    
+                    const lineMaterial = new THREE.LineBasicMaterial({ 
+                        color: 0x0077b6,
+                        transparent: true,
+                        opacity: 0.3
+                    });
+                    
+                    const line = new THREE.Line(lineGeometry, lineMaterial);
+                    scene.add(line);
+                    connections.push(line);
+                }
+                
+                // Connect last node to first node
+                if (index === skills.length - 1) {
+                    const lineGeometry = new THREE.BufferGeometry().setFromPoints([
+                        new THREE.Vector3(x, y, z),
+                        new THREE.Vector3(nodes[0].position.x, nodes[0].position.y, nodes[0].position.z)
+                    ]);
+                    
+                    const lineMaterial = new THREE.LineBasicMaterial({ 
+                        color: 0x0077b6,
+                        transparent: true,
+                        opacity: 0.3
+                    });
+                    
+                    const line = new THREE.Line(lineGeometry, lineMaterial);
+                    scene.add(line);
+                    connections.push(line);
+                }
+            });
+            
+            // Create central node
+            const centralGeometry = new THREE.SphereGeometry(3, 32, 32);
+            const centralMaterial = createGlowMaterial(0xffffff);
+            const centralNode = new THREE.Mesh(centralGeometry, centralMaterial);
+            scene.add(centralNode);
+            
+            // Connect central node to all other nodes
+            nodes.forEach(node => {
+                const lineGeometry = new THREE.BufferGeometry().setFromPoints([
+                    new THREE.Vector3(0, 0, 0),
+                    new THREE.Vector3(node.position.x, node.position.y, node.position.z)
+                ]);
+                
+                const lineMaterial = new THREE.LineBasicMaterial({ 
+                    color: node.userData.originalColor,
+                    transparent: true,
+                    opacity: 0.2
+                });
+                
+                const line = new THREE.Line(lineGeometry, lineMaterial);
+                scene.add(line);
+                connections.push({
+                    line: line,
+                    source: centralNode,
+                    target: node
+                });
+            });
+            
+            // Add some floating particles for atmosphere
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particleCount = 200;
+            
+            const posArray = new Float32Array(particleCount * 3);
+            for (let i = 0; i < particleCount * 3; i += 3) {
+                // Create particles in a sphere distribution
+                const radius = 25 + Math.random() * 10;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+                
+                posArray[i] = radius * Math.sin(phi) * Math.cos(theta);
+                posArray[i+1] = radius * Math.sin(phi) * Math.sin(theta);
+                posArray[i+2] = radius * Math.cos(phi);
+            }
+            
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.2,
+                transparent: true,
+                color: 0x0096c7,
+                opacity: 0.5
+            });
+            
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+            
+            // Mouse interaction
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+            let hoverText = document.createElement('div');
+            hoverText.style.position = 'absolute';
+            hoverText.style.color = '#ffffff';
+            hoverText.style.padding = '5px 10px';
+            hoverText.style.background = 'rgba(0,0,0,0.8)';
+            hoverText.style.borderRadius = '4px';
+            hoverText.style.fontSize = '14px';
+            hoverText.style.fontFamily = 'Outfit, sans-serif';
+            hoverText.style.pointerEvents = 'none';
+            hoverText.style.opacity = 0;
+            hoverText.style.transition = 'opacity 0.3s';
+            container.appendChild(hoverText);
+            
+            container.addEventListener('mousemove', (event) => {
+                // Calculate mouse position in normalized device coordinates
+                const rect = renderer.domElement.getBoundingClientRect();
+                mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+                
+                // Update hover text position
+                hoverText.style.left = event.clientX - rect.left + 'px';
+                hoverText.style.top = event.clientY - rect.top - 30 + 'px';
+            });
+            
+            // Animation loop
+            const animate = function() {
+                requestAnimationFrame(animate);
+                
+                // Rotate the entire scene slowly
+                scene.rotation.y += 0.002;
+                
+                // Make nodes pulse slightly
+                nodes.forEach((node, index) => {
+                    const time = Date.now() * 0.001;
+                    const scale = 1.5 + Math.sin(time + index) * 0.1;
+                    node.scale.set(scale, scale, scale);
+                });
+                
+                // Make particles twinkle
+                particlesMesh.rotation.x += 0.0005;
+                particlesMesh.rotation.y -= 0.0005;
+                
+                // Raycasting for hover effects
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects(nodes);
+                
+                // Reset all nodes to original appearance
+                nodes.forEach(node => {
+                    node.material.emissiveIntensity = 0.2;
+                    node.scale.set(1.5, 1.5, 1.5);
+                });
+                
+                // If hovering over a node, highlight it
+                if (intersects.length > 0) {
+                    const hoveredNode = intersects[0].object;
+                    hoveredNode.material.emissiveIntensity = 0.5;
+                    hoveredNode.scale.set(1.8, 1.8, 1.8);
+                    
+                    // Show tooltip with skill name
+                    hoverText.textContent = hoveredNode.userData.skill;
+                    hoverText.style.opacity = 1;
+                } else {
+                    hoverText.style.opacity = 0;
+                }
+                
+                renderer.render(scene, camera);
+            };
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                const newWidth = container.clientWidth;
+                camera.aspect = newWidth / height;
+                camera.updateProjectionMatrix();
+                renderer.setSize(newWidth, height);
+            });
+            
+            // Start animation
+            animate();
+        });
+    </script>
 </body>
 </html>
