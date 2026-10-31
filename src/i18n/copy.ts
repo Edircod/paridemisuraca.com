@@ -57,11 +57,11 @@ export const copy = {
       write: 'Scrivimi',
       portraitLabel: 'Ritratto di Paride disegnato con curve di livello. Passa il cursore per colorarlo, clicca per mandare un’onda.',
     },
-    scroller: 'ERP / CRM / Siti web / E-commerce / Web app / Mobile app / Agenti AI / Integrazioni / Consulenza IT / Codice · Onde · Corde / ',
+    scroller: 'ERP / CRM / Siti web / E-commerce / Web app / Mobile app / Agenti AI / Integrazioni / Consulenza IT / Codice · Software · Debug / ',
     about: {
-      title: 'I confini li lascio alle mappe.',
+      title: 'La distanza non conta.',
       body: [
-        'Software stabili e istantanei. Se qualcosa si inceppa sono reperibile, e il debug parte subito.',
+        'Clienti in Italia e all’estero, progetti seguiti da remoto in qualsiasi lingua. Software stabile e veloce; se qualcosa si blocca sono reperibile, e il debug parte subito.',
       ],
       portraitLabel: 'Ritratto di Paride composto da caratteri di codice. Passando il cursore cade una pioggia di codice viola.',
       globe: 'Mappamondo: trascinalo per girarlo.',
@@ -224,11 +224,11 @@ export const copy = {
       write: 'Write to me',
       portraitLabel: 'Portrait of Paride drawn as contour lines. Hover to colour it, click to send a wave.',
     },
-    scroller: 'ERP / CRM / Websites / E-commerce / Web apps / Mobile apps / AI agents / Integrations / IT consulting / Code · Waves · Strings / ',
+    scroller: 'ERP / CRM / Websites / E-commerce / Web apps / Mobile apps / AI agents / Integrations / IT consulting / Code · Software · Debug / ',
     about: {
-      title: 'I leave borders to the maps.',
+      title: 'Distance doesn’t matter.',
       body: [
-        'Stable, instant software. If something jams I’m on call, and debugging starts right away.',
+        'Clients in Italy and abroad, projects run remotely in any language. Stable, fast software; if something breaks I’m on call, and debugging starts right away.',
       ],
       portraitLabel: 'Portrait of Paride made of code characters. Hovering sets off a violet rain of code.',
       globe: 'Globe: drag it to spin.',
