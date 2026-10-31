@@ -7,3 +7,5 @@ assets-src/
 design/
 PRODUCT.md
 .vercel/
+.vercel
+.env*

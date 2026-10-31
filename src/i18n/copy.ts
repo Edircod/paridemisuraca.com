@@ -59,7 +59,7 @@ export const copy = {
     },
     scroller: 'ERP / CRM / Siti web / E-commerce / Web app / Mobile app / Agenti AI / Integrazioni / Consulenza IT / Codice · Onde · Corde / ',
     about: {
-      title: 'Sistemi che funzionano.',
+      title: 'I confini li lascio alle mappe.',
       body: [
         'Software stabili e istantanei. Se qualcosa si inceppa sono reperibile, e il debug parte subito.',
       ],
@@ -107,6 +107,8 @@ export const copy = {
           ['Destra', 'Accelera'],
           ['Sinistra', 'Rallenta e ti infili nel tubo'],
           ['Su e giù', 'Ti muovi sulla parete'],
+          ['Clic sulla parete', 'Cutback', 'Tocco sulla parete'],
+          ['Clic nel tubo', 'Mani in aria, o ti accovacci se sei in fondo', 'Tocco nel tubo'],
           ['Oltre il labbro', 'Salti'],
           ['In aria, su / giù', '360 frontside / backside'],
           ['In aria, tieni premuto', 'Grab'],
@@ -121,6 +123,7 @@ export const copy = {
           grab: 'Grab',
           frontside: '360 frontside',
           backside: '360 backside',
+          cutback: 'Cutback',
           tube: 'Tubo',
           wipeout: 'Wipeout!',
           retry: 'Clicca per ripartire',
@@ -223,7 +226,7 @@ export const copy = {
     },
     scroller: 'ERP / CRM / Websites / E-commerce / Web apps / Mobile apps / AI agents / Integrations / IT consulting / Code · Waves · Strings / ',
     about: {
-      title: 'Systems that work.',
+      title: 'I leave borders to the maps.',
       body: [
         'Stable, instant software. If something jams I’m on call, and debugging starts right away.',
       ],
@@ -271,6 +274,8 @@ export const copy = {
           ['Right', 'Speed up'],
           ['Left', 'Slow down and pull into the tube'],
           ['Up and down', 'Move on the face'],
+          ['Click on the face', 'Cutback', 'Tap on the face'],
+          ['Click in the tube', 'Hands up, or tuck in when you’re deep', 'Tap in the tube'],
           ['Past the lip', 'Launch'],
           ['In the air, up / down', 'Frontside / backside 360'],
           ['In the air, hold', 'Grab'],
@@ -285,6 +290,7 @@ export const copy = {
           grab: 'Grab',
           frontside: 'Frontside 360',
           backside: 'Backside 360',
+          cutback: 'Cutback',
           tube: 'Tube',
           wipeout: 'Wipeout!',
           retry: 'Click to go again',

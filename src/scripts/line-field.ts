@@ -73,15 +73,18 @@ vec3 sea(float t) {
   return t < 0.35 ? mix(deep, teal, t / 0.35) : t < 0.72 ? mix(teal, lit, (t - 0.35) / 0.37) : mix(lit, foam, clamp((t - 0.72) / 0.28, 0.0, 1.0));
 }
 
-// The crest of the game's wave: highest at the peak, lower towards the shoulder on the right and,
-// until the wave starts to break, on the left too.
+// The crest of the game's wave: a rounded peak, easing down into a long shoulder on the right and,
+// until the wave starts to break, a shorter one on the left. Once it breaks, the wave left of the curl
+// stays as tall as the peak: from there on it is the lip and the whitewater.
 float crest(float x) {
-  float left = 0.22 * (1.0 - smoothstep(0.0, 0.5, uBreak));
-  return uWave.x + max(0.0, x - uWave.z) * 0.22 + max(0.0, uWave.z - x) * left - 18.0 * exp(-abs(x - uWave.z) / 140.0);
+  float d = (x - uWave.z) / uView.x;
+  float h = 0.92 * exp(-d * d / (d > 0.0 ? 0.9 : 0.5)) + 0.08 * exp(-d * d / 0.01);
+  if (d < 0.0) h = mix(1.0, h, 1.0 - smoothstep(0.0, 0.5, uBreak));
+  return uWave.y - (uWave.y - uWave.x) * (0.28 + 0.72 * h);
 }
 
 // The game's wave seen from the beach at sunset, with the sun low behind it. uWave holds the crest y,
-// the trough y, the x of the peak and how far the thrown lip reaches once the wave has broken. uBreak
+// the trough y, the x of the curl and how far the thrown lip reaches once the wave has broken. uBreak
 // takes it from an unbroken swell to a full tube with the whitewater rolling on behind it; uZoom
 // brings the water towards the screen while you paddle in, the sky staying put. Right of the curl the
 // open face, backlit and glowing through the top; in front flat water; behind the sky, the open sea
@@ -155,6 +158,8 @@ vec3 scene(vec2 p, bool fine) {
     c = mix(vec3(0.24, 0.66, 0.56) + vec3(0.5, 0.28, 0.06) * sunward, vec3(0.035, 0.25, 0.3), smoothstep(0.0, 0.32, f));
     c = mix(c, vec3(0.01, 0.065, 0.09), smoothstep(0.28, 1.0, f));
     c *= 1.0 - 0.3 * steep * smoothstep(0.15, 0.7, f);
+    // Round the curl the pitching lip hangs over the upper face and shades it.
+    c *= 1.0 - 0.35 * formed * exp(-abs(x - curl) / (90.0 * k)) * smoothstep(0.02, 0.2, f) * (1.0 - smoothstep(0.3, 0.75, f));
     if (fine) {
       // Long bands of swell, and thin streaks of water drawn up the face as it moves past.
       float band = fbm(vec2(along * 0.005, f * 9.0 - uTime * 0.15));
@@ -179,26 +184,44 @@ vec3 scene(vec2 p, bool fine) {
       c = mix(c, vec3(0.6, 0.7, 0.74), smoothstep(0.62, 0.72, lace) * 0.35 * (1.0 - 0.7 * d));
     }
     c = mix(c, FOAM * 0.75, exp(-(y - trough) / (5.0 * k)) * 0.3);
+    // The tube shades the water just in front of it.
+    c *= 1.0 - 0.45 * formed * exp(-(y - trough) / (30.0 * k)) * smoothstep(0.0, 0.2, s) * (1.0 - smoothstep(0.9, 1.2, s));
   }
 
   if (s > 0.0 && s < 1.0 && y <= trough) {
     // The lip throws out over the face. Its leading edge arcs from the crest down to where it lands:
     // above it a translucent curtain of falling water, below it the tube, in shadow.
     float edge = lip + fall * (1.0 - sqrt(1.0 - s * s));
-    if (y < edge - 2.5 * k) {
-      float fall = fine ? fbm(vec2(x / k * 0.09, y / k * 0.025 - uTime * 2.2)) : 0.5;
-      vec3 curtain = mix(vec3(0.2, 0.6, 0.54) + vec3(0.42, 0.24, 0.05) * sunward, vec3(0.05, 0.28, 0.32), clamp((y - lip) / (edge - lip + 1.0), 0.0, 1.0) * 0.7);
-      c = mix(curtain * (0.75 + 0.5 * fall), FOAM, smoothstep(0.55, 1.0, s) * 0.55);
+    // The lip only starts to throw at the curl: blend in from the open face.
+    float shade = smoothstep(0.0, 0.2, s);
+    if (y < edge - 2.0 * k) {
+      // The curtain: thin at the top, where the low sun shines through it, thicker, darker and more
+      // aerated as it falls, with streaks of water running down it; the thick lip along the crest
+      // catches the light, and it whitens towards where it lands.
+      float u = clamp((y - lip) / (edge - lip + 1.0), 0.0, 1.0);
+      float streak = fine ? fbm(vec2(x / k * 0.12, y / k * 0.02 - uTime * 2.4)) : 0.5;
+      vec3 curtain = mix(vec3(0.3, 0.76, 0.6) + vec3(0.55, 0.34, 0.08) * sunward, vec3(0.03, 0.2, 0.24), smoothstep(0.0, 0.85, u) * 0.85);
+      curtain *= 0.7 + 0.6 * streak;
+      curtain = mix(curtain, vec3(0.8, 0.95, 0.86), smoothstep(7.0 * k, 0.0, y - lip) * 0.45);
+      curtain = mix(curtain, FOAM, smoothstep(0.6, 1.0, s) * 0.45 + smoothstep(0.7, 1.0, u) * 0.4 * streak);
+      c = mix(c, curtain, shade);
     } else if (y < edge + 1.5 * k) {
-      c = FOAM;
+      // The leading edge of the lip, frothing.
+      c = mix(c, FOAM, shade);
     } else {
-      // Inside the barrel: the back wall, darker the deeper in and the further from the curtain,
-      // lit only through the mouth and the falling lip.
-      float wall = fine ? fbm(vec2((x + uScroll * 0.2) / k * 0.03, y / k * 0.05 + uTime * 1.2)) : 0.5;
-      // While the tube is still forming its shadow fades out below where the lip lands.
+      // Inside the barrel: the back wall in the lip's shadow. Light only comes in through the mouth
+      // by the curl, so it is darker the deeper in, darkest right under the lip; water streams up
+      // the wall, and deep inside the foamball churns.
       float inside = clamp((y - edge) / (trough - edge + 1.0), 0.0, 1.0);
-      float open = 1.0 - (1.0 - formed) * smoothstep(lip + fall, lip + fall + 60.0 * k, y);
-      c = mix(c, mix(vec3(0.01, 0.055, 0.075), vec3(0.06, 0.26, 0.28), (1.0 - s) * (0.4 + 0.7 * wall)), smoothstep(0.0, 0.45, s) * mix(0.55, 1.0, inside) * open);
+      float wall = fine ? fbm(vec2((x + uScroll * 0.2) / k * 0.025, y / k * 0.06 + uTime * 1.4)) : 0.5;
+      // It starts out as the face itself at the mouth, so the shadow deepens into the tube with no seam.
+      vec3 back = c * (0.18 + 0.82 * exp(-s * 2.6) * (0.65 + 0.5 * wall));
+      back *= 0.4 + 0.6 * smoothstep(0.0, 26.0 * k, y - edge);
+      float ball = fine ? fbm(vec2(x / k * 0.035 - uTime * 0.5, y / k * 0.035 - uTime * 0.9)) : 0.5;
+      back = mix(back, vec3(0.6, 0.68, 0.72), smoothstep(0.62, 0.95, s) * smoothstep(0.4, 0.7, ball + inside * 0.35) * 0.85);
+      // While the tube is still forming there is no hollow below where the lip lands.
+      float open = 1.0 - smoothstep(lip + fall, lip + fall + 40.0 * k, y);
+      c = mix(c, back, shade * mix(0.75, 1.0, inside) * open);
     }
   }
 
@@ -215,7 +238,8 @@ vec3 scene(vec2 p, bool fine) {
     // Where the lip lands the foam spreads first along the bottom, so its edge slants.
     float f = clamp((y - lip) / (trough - lip), 0.0, 1.0);
     float bottom = mix(lip + fall + (20.0 + (billow - 0.5) * 60.0) * k, front, smoothstep(0.05, 0.6, uBreak));
-    c = mix(c, soup, smoothstep(0.78, 1.02, s + 0.2 * f + (billow - 0.5) * 0.25) * broken * (1.0 - smoothstep(bottom - 8.0 * k, bottom, y)));
+    // Billows break up its edge by some pixels too, or it looks cut while the lip is still short.
+    c = mix(c, soup, smoothstep(0.78, 1.02, s + 0.2 * f + (billow - 0.5) * (0.25 + 60.0 * k / reach)) * broken * (1.0 - smoothstep(bottom - 8.0 * k, bottom, y)));
   }
   return c;
 }

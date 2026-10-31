@@ -1,10 +1,12 @@
 // A small surf game hidden in the sea portrait. Keep the cursor on the picture for two seconds: it
 // takes on the colours of the sea, its lines get finer, then they re-form into a swell seen from the
-// beach at sunset. You paddle into it as it rises and comes at you; click to take off, and the wave
-// starts breaking, little by little, into a tube. The surfer goes wherever the cursor is: further
-// right is faster, further left slower and deeper into the tube, until the falling lip hides you; go
-// further still and it lands on you. Shells are worth points. Surfers and rocks wipe you out; dodge
-// them by moving up and down the face. Shoot up past the lip to fly: keep going up for a frontside
+// beach at sunset. You paddle into it, towards the beach, as it rises and comes at you; click to take
+// off: you pop up, drop straight down the face and bottom turn along it, while the wave breaks at the
+// peak and then starts to barrel, peeling towards you. The surfer goes wherever the cursor is: further
+// right is faster and keeps you ahead of the tube; slower, it catches up, until the falling lip hides
+// you, and further still it lands on you. Shells are worth points. Surfers and rocks wipe you out; dodge
+// them by moving up and down the face. Click on the face for a cutback; in the tube, for hands in the
+// air, or a tuck when deep in. Shoot up past the lip to fly: keep going up for a frontside
 // 360, pull down for a backside one, hold the button to grab the rail. Every air lands. The wave is
 // drawn by the sea shader (line-field.ts); people, rocks, birds, shells and the score go on its 2D
 // layer.
@@ -18,6 +20,7 @@ export interface GameCopy {
   grab: string;
   frontside: string;
   backside: string;
+  cutback: string;
   tube: string;
   wipeout: string;
   retry: string;
@@ -34,10 +37,16 @@ const CHARGE = 2;
 const LEAVE = 2500;
 const MORPH_IN = 1.4;
 const MORPH_OUT = 0.9;
-// Seconds for the swell to rise, to pop up on the board, and for the wave to break into a tube.
+// Seconds for the swell to rise, to pop up on the board, to drop down the face (pop-up included), for
+// the bottom turn, and for the wave to break into a tube.
 const SWELL = 3.2;
-const POP = 0.45;
+const POP = 0.35;
+const DROP = 1;
+const TURN = 0.4;
 const BREAK = 4;
+// Seconds for a cutback, and for a pose in the tube.
+const CUT = 0.9;
+const POSE = 1.2;
 // How far off the swell starts, as a zoom on the water.
 const FAR = 0.72;
 const PAPER = '#f0efea';
@@ -101,6 +110,8 @@ interface Pose {
   // Drives the paddling stroke, the kicking and the arms swinging for balance.
   time: number;
   grab: boolean;
+  // 0 arms out for balance, 1 raised overhead.
+  claim: number;
   rim: number;
   wake: number;
   board: Board;
@@ -205,6 +216,86 @@ function rideBoard(ctx: CanvasRenderingContext2D, [deck, rail]: Board, fins: num
   ctx.fill();
 }
 
+// A surfer seen from the front, coming down the face towards the beach on a board that points at us,
+// foreshortened. Lying down at stand 0, paddling with the arms windmilling either side and the feet
+// kicking; up at 1, crouched, arms out for balance. wake draws the track left down the face.
+function frontRider(ctx: CanvasRenderingContext2D, p: { stand: number; time: number; board: Board; wake: number }) {
+  const s = p.stand;
+  const t = p.time;
+  if (p.wake > 0) {
+    const g = ctx.createLinearGradient(0, -12, 0, -64);
+    g.addColorStop(0, `rgba(235, 245, 245, ${(0.75 * p.wake).toFixed(3)})`);
+    g.addColorStop(1, 'rgba(235, 245, 245, 0)');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.moveTo(-4, -12);
+    ctx.lineTo(-10, -64);
+    ctx.lineTo(10, -64);
+    ctx.lineTo(4, -12);
+    ctx.fill();
+  }
+  const [deck, rail] = p.board;
+  const outline = (dy: number) => {
+    ctx.beginPath();
+    ctx.moveTo(0, -17 + dy);
+    ctx.bezierCurveTo(5, -16 + dy, 7.5, -8 + dy, 6.5, -1 + dy);
+    ctx.bezierCurveTo(5.5, 5 + dy, 2, 8 + dy, 0, 9 + dy);
+    ctx.bezierCurveTo(-2, 8 + dy, -5.5, 5 + dy, -6.5, -1 + dy);
+    ctx.bezierCurveTo(-7.5, -8 + dy, -5, -16 + dy, 0, -17 + dy);
+  };
+  ctx.fillStyle = rail;
+  outline(1.6);
+  ctx.fill();
+  ctx.fillStyle = deck;
+  outline(0);
+  ctx.fill();
+
+  const kick = Math.sin(t * 8) * 1.2;
+  const swing = Math.sin(t * 2.4) * 1.5;
+  const at = (down: Point, up: Point): Point => mix(down, up, s);
+  const hips: Point[] = [at([-2.2, -10], [-3, -16]), at([2.2, -10], [3, -16])];
+  const knees: Point[] = [at([-2.4, -14], [-7, -11]), at([2.4, -14], [6.5, -7])];
+  const feet: Point[] = [at([-2 - kick, -18.5], [-3.5, -7]), at([2 + kick, -18.5], [3, 1])];
+  const neck = at([0, -3.5], [0, -26]);
+  const shoulders: Point[] = [at([-5.5, -3.5], [-5.5, -25.5]), at([5.5, -3.5], [5.5, -25.5])];
+  const head = at([0, -0.5], [0, -30.5]);
+  const limbs: Limb[] = [];
+  const wet: [Point, Point][] = [];
+  for (const i of [0, 1]) {
+    const side = i ? 1 : -1;
+    limbs.push([hips[i][0], hips[i][1], knees[i][0], knees[i][1], 4.4], [knees[i][0], knees[i][1], feet[i][0], feet[i][1], 3.4]);
+    // Paddling, each hand reaches forward towards us, pulls back under the water along the rail and
+    // swings round over it again.
+    const a = t * 5.5 + i * Math.PI;
+    const under = Math.sin(a) < 0 && s < 0.5;
+    const hand = at([side * (8 + 2.5 * Math.sin(a)), -3 + 7 * Math.cos(a)], [side * 16, -20 + side * swing]);
+    const elbow = at(mix(shoulders[i], hand, 0.5), [side * 11, -23 + side * swing * 0.5]);
+    if (under) wet.push([elbow, hand]);
+    else limbs.push([shoulders[i][0], shoulders[i][1], elbow[0], elbow[1], 2.8], [elbow[0], elbow[1], hand[0], hand[1], 2.3]);
+  }
+  limbs.push(
+    [hips[0][0], hips[0][1], hips[1][0], hips[1][1], 4.6],
+    [(hips[0][0] + hips[1][0]) / 2, (hips[0][1] + hips[1][1]) / 2, neck[0], neck[1], 7.5],
+    [shoulders[0][0], shoulders[0][1], shoulders[1][0], shoulders[1][1], 4.2],
+  );
+  body(ctx, limbs, [head[0], head[1], 3.4], 1);
+  const alpha = ctx.globalAlpha;
+  for (const [elbow, hand] of wet) {
+    ctx.globalAlpha = alpha * 0.35;
+    ctx.strokeStyle = SUIT;
+    ctx.lineWidth = 2.6;
+    ctx.beginPath();
+    ctx.moveTo(elbow[0], elbow[1]);
+    ctx.lineTo(hand[0], hand[1]);
+    ctx.stroke();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = 'rgba(235, 245, 245, 0.8)';
+    ctx.beginPath();
+    ctx.ellipse(elbow[0], elbow[1] + 1, 2.4, 1, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
 // Rings of water spreading in front of something floating.
 function ripples(ctx: CanvasRenderingContext2D, phase: number, width: number) {
   ctx.strokeStyle = 'rgba(225, 240, 240, 0.5)';
@@ -269,7 +360,20 @@ function rider(ctx: CanvasRenderingContext2D, p: Pose) {
           [shoulder[0] + 12, shoulder[1] + 3 + swing * 5],
         ],
   ];
-  const arms = up.map(([elbow, hand], i): [Point, Point] => [mix(mix(lyingShoulder, strokes[i], 0.5), elbow, s), mix(strokes[i], hand, s)]);
+  const raised: [Point, Point][] = [
+    [
+      [shoulder[0] - 4, shoulder[1] - 6],
+      [shoulder[0] - 7, shoulder[1] - 13],
+    ],
+    [
+      [shoulder[0] + 4, shoulder[1] - 6],
+      [shoulder[0] + 7, shoulder[1] - 13],
+    ],
+  ];
+  const arms = up.map(([elbow, hand], i): [Point, Point] => [
+    mix(mix(lyingShoulder, strokes[i], 0.5), mix(elbow, raised[i][0], p.claim), s),
+    mix(strokes[i], mix(hand, raised[i][1], p.claim), s),
+  ]);
 
   // The leash, from the tail to the back ankle.
   ctx.strokeStyle = '#15171b';
@@ -507,8 +611,10 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
   let lip = 0;
   let trough = 0;
   let reach = 0;
-  // Where the wave peaks and the lip pitches.
+  // Where the lip pitches: the peak at first, then peeling towards the surfer unless they outrun it.
   let curl = 0;
+  // Where the drop down the face started.
+  let dropFrom = 0;
   let swell = 0;
   let breaking = 0;
   let rx = 0;
@@ -530,23 +636,29 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
   let nextShells = 0;
   let nextGull = 0;
   let air: Air | null = null;
+  // Seconds into a cutback or a tube pose, -1 when not doing one.
+  let cut = -1;
+  let pose = -1;
+  let tuck = false;
   let things: Thing[] = [];
   let popups: Popup[] = [];
 
   const measure = () => {
     ({ w: W, h: H } = sea.size());
     k = Math.max(0.62, H / 700);
-    lip = H * 0.3;
+    lip = H * 0.22;
     trough = H * 0.8;
-    reach = (trough - lip) * 1.05;
+    reach = (trough - lip) * 1.25;
   };
-  // The barrel holds still a little right of the middle, opening and closing a little as it breathes.
-  const place = () => (curl = W * (0.58 + 0.04 * Math.sin(clock * 0.45)));
-  // Same wave as the shader: the crest rises as the swell builds; tallest at the peak, lower towards
-  // the shoulder and, until it starts breaking, on the left too.
+  // Same wave as the shader: the crest rises as the swell builds; a rounded peak easing down into the
+  // shoulders, and once it breaks as tall as the peak left of the curl.
   const crest = () => trough - (trough - lip) * (0.45 + 0.55 * smooth(swell));
-  const lipAt = (px: number) =>
-    crest() + Math.max(0, px - curl) * 0.22 + Math.max(0, curl - px) * 0.22 * (1 - step(0, 0.5, breaking)) - 18 * Math.exp(-Math.abs(px - curl) / 140);
+  const lipAt = (px: number) => {
+    const d = (px - curl) / W;
+    let h = 0.92 * Math.exp((-d * d) / (d > 0 ? 0.9 : 0.5)) + 0.08 * Math.exp((-d * d) / 0.01);
+    if (d < 0) h = 1 + (h - 1) * (1 - step(0, 0.5, breaking));
+    return trough - (trough - crest()) * (0.28 + 0.72 * h);
+  };
   // As it breaks, a small curl at the top grows into a tube as tall as the wave: the lip throws further
   // out and lower down. The whitewater spreads left from where it lands and tumbles down the face.
   const formed = () => step(0, 0.7, breaking);
@@ -588,11 +700,11 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
     sea.foam(sx, sy, radius * zoom(), amount);
   };
 
-  // Paddling into the swell as it rises, waiting to take off.
+  // Paddling for the swell, just right of the peak and high on it, carried up as it rises.
   const paddle = () => {
-    rx = W * 0.68;
+    rx = W * 0.56;
     const c = lipAt(rx);
-    y = c + (trough - c) * 0.55;
+    y = c + (trough - c) * 0.14;
   };
 
   const reset = () => {
@@ -601,7 +713,7 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
     upAt = -1;
     swell = 0;
     breaking = 0;
-    place();
+    curl = W * 0.5;
     paddle();
     vx = 0;
     vy = 0;
@@ -614,6 +726,8 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
     inTube = 0;
     deepest = 0;
     air = null;
+    cut = -1;
+    pose = -1;
     things = [];
     popups = [];
     // A few clear seconds to get the feel of it before the first surfer shows up.
@@ -625,10 +739,50 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
   const takeOff = () => {
     mode = 'play';
     upAt = clock;
-    speed = pace();
+    dropFrom = y;
+    vx = 0;
+    vy = 0;
+  };
+
+  // The take off: up on the board, straight down the face, faster and faster, then a bottom turn that
+  // throws a fan of spray and sets off along the wave to the right.
+  const dropIn = (dt: number, since: number) => {
+    const c = lipAt(rx);
+    const bottom = c + (trough - c) * 0.82;
+    if (since < DROP) {
+      const u = clamp((since - POP * 0.5) / (DROP - POP * 0.5), 0, 1);
+      const next = dropFrom + (bottom - dropFrom) * u * u;
+      vy = (next - y) / Math.max(dt, 0.001);
+      y = next;
+      speed = pace() * (0.3 + 0.5 * u);
+      if (u > 0.2) spray(rx + (Math.random() - 0.5) * 10 * k, y - 14 * k, (Math.random() - 0.5) * 60, -(40 + Math.random() * 80) * k, 0.4);
+    } else {
+      const u = (since - DROP) / TURN;
+      vx = pace() * 1.1 * smooth(u);
+      rx += vx * dt;
+      y = bottom - (bottom - (c + (trough - c) * 0.6)) * smooth(u);
+      vy = 0;
+      speed = pace() * (0.8 + 0.2 * u);
+      for (let i = 0; i < 3; i++) spray(rx - 6 * k, y + 2 * k, -(80 + Math.random() * 120) * k, -(120 + Math.random() * 220) * k, 0.5);
+    }
+    travelled += speed * dt;
+    score += (speed * dt) / (30 * k);
   };
 
   const popup = (text: string, px = rx, py = y - 48 * k) => popups.push({ text, x: px, y: py, age: 0 });
+
+  // A click while riding: a cutback on the open face; in the tube, hands in the air near the mouth, or
+  // a tuck further back.
+  const trick = () => {
+    if (mode !== 'play' || air || clock - upAt < DROP + TURN || cut >= 0 || pose >= 0) return;
+    const s = depth(rx);
+    if (s > 0 && s < 1 && breaking > 0.5) {
+      pose = 0;
+      tuck = s > 0.3;
+    } else {
+      cut = 0;
+    }
+  };
 
   const wipe = () => {
     mode = 'over';
@@ -637,6 +791,8 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
     best = Math.max(best, Math.round(score));
     air = null;
     inTube = 0;
+    cut = -1;
+    pose = -1;
     const [sx, sy] = toScreen(rx, y);
     sea.crash(sx, sy, 0.7);
     // Left the picture during the ride: the wipeout screen waits only so long.
@@ -693,16 +849,30 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
     const g = gravity();
     const [ax, ay] = aim();
     const since = clock - upAt;
+    if (since < DROP + TURN) return dropIn(dt, since);
+    if (cut >= 0 && (cut += dt) >= CUT) {
+      cut = -1;
+      score += 150;
+      popup(`+150 ${copy.cutback}`);
+    }
+    if (pose >= 0 && (pose += dt) >= POSE) pose = -1;
     // The surfer follows the cursor along the wave, back and forth, with less grip in the air;
-    // control eases in as the ride starts. Not quite to the right edge, so whoever is paddling out
-    // is seen coming.
-    const grip = (air ? 0.25 : 1) * Math.min(1, since / 0.8);
-    const wantX = clamp((clamp(ax, 10 * k, W * 0.9) - rx) * 6, -900 * k, 900 * k);
+    // control eases in after the bottom turn. Not quite to the right edge, so whoever is paddling out
+    // is seen coming. A cutback carves back towards the curl first, as far as its shoulder, then
+    // swings round down the line.
+    const grip = (air ? 0.25 : 1) * Math.min(1, (since - DROP - TURN) / 0.6);
+    const back = clamp((curl + 60 * k - rx) * 6, -420 * k, 0);
+    const wantX = cut >= 0 ? (cut < CUT * 0.55 ? back : 260 * k) : clamp((clamp(ax, 10 * k, W * 0.9) - rx) * 6, -900 * k, 900 * k);
     vx += (wantX - vx) * Math.min(1, dt * 8 * grip);
     rx = Math.max(10 * k, rx + vx * dt);
     // Further right is faster, further left slower and deeper in the tube.
     const ahead = clamp((rx - curl) / (W * 0.45), -0.5, 1);
     speed += (pace() * (0.85 + 0.75 * ahead) + Math.max(0, vx) * 0.25 - speed) * Math.min(1, dt * 2.2);
+    // Once the tube has formed it peels along the wave: hang back and it comes for you, taking more of
+    // the picture, faster the further back you are; ride far enough right and it falls behind. Sit
+    // in it and it closes on you, the faster the deeper you are.
+    const closing = pace() * (2 * (0.7 - rx / W) + 1.2 * Math.max(0, depth(rx)));
+    curl = clamp(curl + closing * dt * step(0.35, 0.8, breaking), W * 0.35, W + reach);
 
     if (air) {
       air.t += dt;
@@ -727,13 +897,14 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
       }
     } else {
       const top = topAt(rx);
-      // The pointer may go above the crest: that is how you ask for air.
-      const target = clamp(ay, crest() - 160 * k, trough);
+      // The pointer may go above the crest: that is how you ask for air. A cutback turns at the top of
+      // the face and comes back down to the middle.
+      const target = cut >= 0 ? (cut < CUT * 0.45 ? top + 16 * k : lipAt(rx) + (trough - lipAt(rx)) * 0.55) : clamp(ay, crest() - 160 * k, trough);
       const want = clamp((target - y) * 7, -760 * k, 760 * k);
       vy += (want - vy) * Math.min(1, dt * 10);
       const next = y + vy * dt;
       if (next < top) {
-        if (rx > curl && vy < -260 * k && speed > 200 * k) {
+        if (cut < 0 && rx > curl && vy < -260 * k && speed > 200 * k) {
           // The faster you hit the lip, the higher you fly.
           const lift = (220 + (speed / k) * 0.7) * k;
           air = { vy: -lift, t: 0, from: ay, peak: top, spin: 0, spinFrom: 0, spinDur: 1, grab: 0, grabbing: false };
@@ -748,6 +919,10 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
       const carve = Math.abs(vy) / (760 * k);
       for (let i = 0; i < Math.floor(carve * 4); i++) {
         spray(rx - 12 * k, y + 2 * k, -speed * 0.6 + Math.random() * 40, -(60 + Math.random() * 180) * carve * k, 0.35 + Math.random() * 0.3);
+      }
+      // The fan thrown off the tail as the board comes round in a cutback.
+      if (cut > CUT * 0.15 && cut < CUT * 0.5) {
+        for (let i = 0; i < 5; i++) spray(rx + 6 * k, y, (40 + Math.random() * 260) * k, -(180 + Math.random() * 320) * k, 0.45 + Math.random() * 0.4);
       }
     }
 
@@ -892,7 +1067,6 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
       sea.setCharge(1);
       clock += dt;
       swell = Math.min(1, swell + dt / SWELL);
-      place();
       if (mode === 'paddle') paddle();
       else breaking = Math.min(1, breaking + dt / BREAK);
       if (mode === 'play') ride(dt);
@@ -904,18 +1078,60 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
   });
 
   const drawSurfer = (ctx: CanvasRenderingContext2D) => {
-    const stand = upAt < 0 ? 0 : clamp((clock - upAt) / POP, 0, 1);
-    let tilt = Math.atan2(vy, Math.max(speed, 1)) * 0.75 * stand;
+    const since = upAt < 0 ? -1 : clock - upAt;
+    if (since < DROP + TURN && mode !== 'over') {
+      // Paddling and dropping in, seen from the front and coming closer; in the bottom turn they
+      // swing round side-on.
+      const stand = since < 0 ? 0 : clamp(since / POP, 0, 1);
+      const u = since < DROP ? 0 : (since - DROP) / TURN;
+      const grow = 1 + 0.15 * clamp((since - POP) / (DROP - POP), 0, 1);
+      const alpha = ctx.globalAlpha;
+      ctx.translate(rx, y);
+      ctx.scale(k * grow, k * grow);
+      if (u < 1) {
+        ctx.globalAlpha = alpha * (1 - u);
+        frontRider(ctx, { stand: smooth(stand), time: clock, board: OWN, wake: since > POP ? 1 : 0 });
+        if (stand < 1) {
+          ctx.globalAlpha *= 1 - stand;
+          ripples(ctx, clock, 12);
+        }
+      }
+      if (u > 0) {
+        ctx.globalAlpha = alpha * u;
+        ctx.scale(Math.max(0.15, u), 1);
+        rider(ctx, { stand: 1, crouch: 0.8, lean: 0.1, time: clock, grab: false, claim: 0, rim: 1, wake: u, board: OWN });
+      }
+      return;
+    }
+    let tilt = Math.atan2(vy, Math.max(speed, 1)) * 0.75;
     let crouch = clamp(0.3 + (Math.abs(vy) / (760 * k)) * 0.7, 0, 1);
     let lean = clamp(vy / (760 * k), -1, 1) * 0.3;
     let turn = 1;
     let grab = false;
+    let claim = 0;
     let sink = 0;
     const s = depth(rx);
     // In the shade of the tube only a little light reaches the surfer, through the mouth; deeper in,
     // the falling lip hides them altogether.
     let rim = clamp(1 - s * 3, 0.3, 1);
     if (s > 0 && (s < 1 || caught(rx, y))) ctx.globalAlpha *= 1 - step(0.45, 0.88, Math.min(s, 1));
+    if (cut >= 0) {
+      // The cutback seen from the beach: the board comes round to face the curl, heads back a moment,
+      // and comes round again, the surfer compressing through each turn.
+      const a = Math.PI * (step(0, 0.4, cut / CUT) + step(0.6, 1, cut / CUT));
+      turn = Math.cos(a);
+      tilt = tilt * turn + Math.sin(a) * 0.2;
+      crouch = Math.max(crouch, 0.9 * Math.abs(Math.sin(a)));
+    }
+    if (pose >= 0 && !air) {
+      const p = step(0, 0.15, pose) * (1 - step(POSE - 0.3, POSE, pose));
+      if (tuck) {
+        crouch += (1 - crouch) * p;
+        lean += (0.3 - lean) * p;
+      } else {
+        claim = p;
+      }
+    }
     if (air) {
       tilt = clamp(air.vy / (900 * k), -0.6, 0.6) * 0.6;
       crouch = air.grabbing ? 1 : 0.65;
@@ -939,11 +1155,7 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
     ctx.rotate(tilt);
     // Never quite edge-on, so the board doesn't vanish mid-spin.
     ctx.scale(k * (Math.abs(turn) < 0.06 ? (turn < 0 ? -0.06 : 0.06) : turn), k);
-    rider(ctx, { stand: smooth(stand), crouch, lean, time: clock, grab, rim, wake: !air && mode === 'play' ? stand : 0, board: OWN });
-    if (stand < 1) {
-      ctx.globalAlpha *= 1 - stand;
-      ripples(ctx, clock, 18);
-    }
+    rider(ctx, { stand: 1, crouch, lean, time: clock, grab, claim, rim, wake: !air && mode === 'play' ? 1 : 0, board: OWN });
   };
 
   const drawSurfers = (ctx: CanvasRenderingContext2D, t: Thing) => {
@@ -994,6 +1206,7 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
       lean: clamp(climb / (760 * k), -1, 1) * 0.3,
       time: s,
       grab: false,
+      claim: 0,
       rim: 1,
       wake: t.pop,
       board: t.board,
@@ -1194,6 +1407,7 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
     if (mode === 'paddle') takeOff();
     // Left button (or a finger) in the air grabs the rail for as long as it is held.
     else if (air) air.grabbing = true;
+    else if (!touch) trick();
   });
   stage.addEventListener('pointerup', () => {
     if (air) air.grabbing = false;
@@ -1206,6 +1420,8 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
       reset();
       mode = 'paddle';
     }
+    // The finger steers, so on touch screens the tricks take a tap, not every touch.
+    else if (touch) trick();
   });
   new IntersectionObserver(([e]) => {
     if (!e.isIntersecting && mode !== 'idle') drop();
