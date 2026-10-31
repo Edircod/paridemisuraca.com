@@ -32,6 +32,7 @@ const lines = t.manifesto.lines.map((line) => ({
         ))
       }
     </div>
+    {lines.map(() => <span class="stop" aria-hidden="true" data-stop />)}
   </div>
 </section>
 
@@ -83,6 +84,34 @@ const lines = t.manifesto.lines.map((line) => ({
   }
   .kinetic:global(.is-live) .line {
     grid-area: 1 / 1;
+  }
+  /* Where a fling stops on touch screens: each line while it holds still, set by the script. */
+  .stop {
+    display: none;
+  }
+  .kinetic:global(.is-live) {
+    position: relative;
+  }
+  /* Full width: browsers skip a snap area that doesn't cross the screen. */
+  .kinetic:global(.is-live) .stop {
+    position: absolute;
+    top: calc(var(--p) * (100% - 100svh));
+    left: 0;
+    right: 0;
+    display: block;
+  }
+  @media (pointer: coarse) {
+    .kinetic {
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+    }
+    .kinetic:global(.is-live) {
+      scroll-snap-align: none;
+    }
+    .kinetic:global(.is-live) .stop {
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+    }
   }
 </style>
 
@@ -145,6 +174,10 @@ const lines = t.manifesto.lines.map((line) => ({
         },
         at + 3,
       );
+    });
+    // A line is all in by about 1.8s after it starts and holds until 3s.
+    kinetic.querySelectorAll<HTMLElement>('[data-stop]').forEach((stop, k) => {
+      stop.style.setProperty('--p', String((k * 4.4 + 2.4) / tl.duration()));
     });
     return () => kinetic.classList.remove('is-live');
   });

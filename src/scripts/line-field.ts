@@ -13,6 +13,9 @@ const CRASH_DISTANCE = 1400;
 const PITCH = 3.6;
 const FINE = 2.2;
 const FOAM_CELL = 6;
+// Device pixels the shader may fill per frame on phones and tablets, where the game can take the whole
+// screen and the GPU is far weaker than a desktop's.
+const TOUCH_PIXELS = 800_000;
 
 const VERT = `#version 300 es
 void main() {
@@ -75,11 +78,12 @@ vec3 sea(float t) {
 
 // The crest of the game's wave: a rounded peak, easing down into a long shoulder on the right and,
 // until the wave starts to break, a shorter one on the left. Once it breaks, the wave left of the curl
-// stays as tall as the peak: from there on it is the lip and the whitewater.
+// is the lip and the whitewater: as tall as the peak at the curl, lower and lower along the tube.
 float crest(float x) {
   float d = (x - uWave.z) / uView.x;
   float h = 0.92 * exp(-d * d / (d > 0.0 ? 0.9 : 0.5)) + 0.08 * exp(-d * d / 0.01);
-  if (d < 0.0) h = mix(1.0, h, 1.0 - smoothstep(0.0, 0.5, uBreak));
+  float tube = 1.0 - 0.4 * smoothstep(0.0, 1.3, (uWave.z - x) / uWave.w);
+  if (d < 0.0) h = mix(tube, h, 1.0 - smoothstep(0.0, 0.5, uBreak));
   return uWave.y - (uWave.y - uWave.x) * (0.28 + 0.72 * h);
 }
 
@@ -115,10 +119,13 @@ vec3 scene(vec2 p, bool fine) {
   float broken = s > 0.0 ? 1.0 - smoothstep(spread / k - 60.0, spread / k, behind + rag) : 0.0;
   // The top of the water in this column: the crest, or the lower whitewater, lower the further it
   // rolls on, with billows on top.
+  // It eases down from the crest, starting a little before the lip lands, so the wave tapers into the
+  // whitewater like a shoulder instead of stepping down.
   float top = lip;
-  if (s > 1.0 && broken > 0.0) {
-    float soupTop = lip + (trough - lip) * (0.12 * min(1.0, behind / 40.0) + 0.36 * (1.0 - exp(-behind / 260.0)));
-    if (fine) soupTop -= abs(fbm(vec2(x / k * 0.018 - uTime * 0.12, uTime * 0.35)) - 0.5) * 40.0 * k * min(1.0, behind / 40.0);
+  float rolled = (curl - reach * 0.8 - x) / k;
+  if (rolled > 0.0 && broken > 0.0) {
+    float soupTop = lip + (trough - lip) * 0.48 * (1.0 - exp(-rolled * rolled / 48400.0));
+    if (fine) soupTop -= abs(fbm(vec2(x / k * 0.018 - uTime * 0.12, uTime * 0.35)) - 0.5) * 40.0 * k * min(1.0, rolled / 60.0);
     top = mix(lip, soupTop, broken);
   }
 
@@ -225,7 +232,10 @@ vec3 scene(vec2 p, bool fine) {
     }
   }
 
-  if (s > 0.58) {
+  // Billows break up the whitewater's edge by some pixels, or it looks cut while the lip is still
+  // short; the edge can reach this far ahead of where it would be.
+  float ragged = 0.25 + 60.0 * k / reach;
+  if (s > 0.58 - 0.5 * ragged) {
     // Whitewater: churning foam, lit warm along its top, grey-blue in its own shade lower down. In
     // front of the break it spreads over the flat water and thins out.
     float billow = fine ? fbm(vec2(x / k * 0.025 + uTime * 0.1, y / k * 0.03 - uTime * 0.6)) : 0.5;
@@ -238,8 +248,7 @@ vec3 scene(vec2 p, bool fine) {
     // Where the lip lands the foam spreads first along the bottom, so its edge slants.
     float f = clamp((y - lip) / (trough - lip), 0.0, 1.0);
     float bottom = mix(lip + fall + (20.0 + (billow - 0.5) * 60.0) * k, front, smoothstep(0.05, 0.6, uBreak));
-    // Billows break up its edge by some pixels too, or it looks cut while the lip is still short.
-    c = mix(c, soup, smoothstep(0.78, 1.02, s + 0.2 * f + (billow - 0.5) * (0.25 + 60.0 * k / reach)) * broken * (1.0 - smoothstep(bottom - 8.0 * k, bottom, y)));
+    c = mix(c, soup, smoothstep(0.78, 1.02, s + 0.2 * f + (billow - 0.5) * ragged) * broken * (1.0 - smoothstep(bottom - 8.0 * k, bottom, y)));
   }
   return c;
 }
@@ -344,8 +353,9 @@ export interface Sea {
   onDraw(cb: (ctx: CanvasRenderingContext2D) => void): void;
 }
 
-export function mountLineField(stage: HTMLElement, canvas: HTMLCanvasElement, sprayCanvas: HTMLCanvasElement, data: FieldData): Sea | undefined {
+export async function mountLineField(stage: HTMLElement, canvas: HTMLCanvasElement, sprayCanvas: HTMLCanvasElement, data: FieldData): Promise<Sea | undefined> {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const coarse = matchMedia('(pointer: coarse)').matches;
   const gl = canvas.getContext('webgl2', { premultipliedAlpha: true, alpha: true, antialias: false });
   if (!gl) return;
   const ctx = sprayCanvas.getContext('2d')!;
@@ -354,13 +364,18 @@ export function mountLineField(stage: HTMLElement, canvas: HTMLCanvasElement, sp
     const s = gl.createShader(type)!;
     gl.shaderSource(s, src);
     gl.compileShader(s);
-    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s) ?? 'shader compile failed');
     return s;
   };
   const prog = gl.createProgram()!;
-  gl.attachShader(prog, compile(gl.VERTEX_SHADER, VERT));
-  gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FRAG));
+  const shaders = [compile(gl.VERTEX_SHADER, VERT), compile(gl.FRAGMENT_SHADER, FRAG)];
+  for (const s of shaders) gl.attachShader(prog, s);
   gl.linkProgram(prog);
+  // Building this shader can take the driver a couple of seconds. Where the browser can do it off the
+  // main thread, wait for it a frame at a time: asking for the result straight away freezes the page,
+  // mid-scroll, as the section comes up.
+  const parallel = gl.getExtension('KHR_parallel_shader_compile');
+  if (parallel) while (!gl.getProgramParameter(prog, parallel.COMPLETION_STATUS_KHR)) await new Promise((r) => requestAnimationFrame(r));
+  for (const s of shaders) if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s) ?? 'shader compile failed');
   if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog) ?? 'program link failed');
   const u: Record<string, WebGLUniformLocation | null> = {};
   for (const name of ['uView', 'uDpr', 'uTime', 'uCount', 'uPointer', 'uEnergy', 'uVal', 'uFoam', 'uTint', 'uMorph', 'uOrigin', 'uWave', 'uScroll', 'uBreak', 'uZoom']) u[name] = gl.getUniformLocation(prog, name);
@@ -420,7 +435,7 @@ export function mountLineField(stage: HTMLElement, canvas: HTMLCanvasElement, sp
 
   const resize = () => {
     const r = stage.getBoundingClientRect();
-    dpr = Math.min(devicePixelRatio || 1, 2);
+    dpr = Math.min(devicePixelRatio || 1, 2, coarse ? Math.sqrt(TOUCH_PIXELS / Math.max(1, r.width * r.height)) : 2);
     W = r.width;
     H = r.height;
     canvas.width = sprayCanvas.width = Math.round(W * dpr);

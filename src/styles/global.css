@@ -167,6 +167,19 @@ a {
   padding: var(--section) calc(var(--frame) + var(--gutter));
 }
 
+/* On touch screens a fling stops at every section, and at every station of the scroll animations,
+   instead of flying past them. Sections taller than the screen still scroll freely inside. */
+@media (pointer: coarse) {
+  html {
+    scroll-snap-type: y mandatory;
+  }
+  .hero,
+  .section:not(.portal) {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

@@ -18,9 +18,14 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
   <h2 id="beyond-title" data-reveal="lines">{t.title}</h2>
 
   <article class="scene surf" id="surf">
-    <div class="stage" data-sea data-game={JSON.stringify(t.surf.game)} role="img" aria-label={t.surf.label}>
-      <canvas aria-hidden="true"></canvas>
-      <canvas aria-hidden="true" data-spray></canvas>
+    <div class="shell" data-shell>
+      <div class="stage" data-sea data-game={JSON.stringify(t.surf.game)} role="img" aria-label={t.surf.label}>
+        <canvas aria-hidden="true"></canvas>
+        <canvas aria-hidden="true" data-spray></canvas>
+      </div>
+      <button class="exit" type="button" aria-label={t.surf.game.exit} data-exit>
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"></path></svg>
+      </button>
     </div>
     <div class="side">
       <svg class="board" viewBox="0 0 80 300" aria-hidden="true">
@@ -141,10 +146,46 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
     cursor: crosshair;
     touch-action: pan-y;
   }
-  .surf .stage {
+  .surf .shell {
     grid-column: 1 / span 8;
     width: min(100%, calc(84svh * 720 / 670));
+  }
+  .surf .stage {
     aspect-ratio: 720 / 670;
+  }
+  /* On touch screens the game takes the whole screen while it runs. */
+  .shell.full {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    width: auto;
+    background: var(--ink);
+  }
+  .full .stage {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+  .exit {
+    display: none;
+  }
+  .full .exit {
+    position: absolute;
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid color-mix(in srgb, var(--paper) 40%, transparent);
+    background: color-mix(in srgb, var(--ink) 70%, transparent);
+    color: var(--paper);
+  }
+  .exit svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
   }
   .music .stage {
     grid-column: 7 / span 6;
@@ -496,7 +537,7 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
   }
 
   @media (max-width: 860px) {
-    .surf .stage,
+    .surf .shell,
     .surf .side,
     .music .stage,
     .music .side {
@@ -547,7 +588,8 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
           .then((r) => r.json() as Promise<FieldData>)
           .then(mount);
       },
-      { rootMargin: '400px 0px' },
+      // Two screens ahead: the sea's shader takes the GPU a second or two to build.
+      { rootMargin: '200% 0px' },
     );
     io.observe(el);
   }
@@ -561,9 +603,9 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
     void count.offsetWidth;
     count.classList.add('bump');
   });
-  lazy(sea, '/data/surf.json', (data) => {
-    const field = mountLineField(sea, sea.querySelector('canvas')!, sea.querySelector('[data-spray]')!, data);
-    if (field) mountSurfGame(sea, field, JSON.parse(sea.dataset.game!) as GameCopy);
+  lazy(sea, '/data/surf.json', async (data) => {
+    const field = await mountLineField(sea, sea.querySelector('canvas')!, sea.querySelector('[data-spray]')!, data);
+    if (field) mountSurfGame(sea, document.querySelector<HTMLElement>('[data-shell]')!, field, JSON.parse(sea.dataset.game!) as GameCopy);
   });
 
   const amp = document.querySelector<HTMLElement>('[data-amp]')!;

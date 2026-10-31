@@ -198,6 +198,15 @@ const pad = (i: number) => String(i).padStart(2, '0');
     }
     .step {
       min-height: 46svh;
+      /* Centred in what the sticky tower leaves free. */
+      scroll-margin-top: calc(44px + 290px);
+    }
+  }
+  /* On touch screens a fling stops at each step. */
+  @media (pointer: coarse) {
+    .is-live .step {
+      scroll-snap-align: center;
+      scroll-snap-stop: always;
     }
   }
   @media (prefers-reduced-motion: reduce) {

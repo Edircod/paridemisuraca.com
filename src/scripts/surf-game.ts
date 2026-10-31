@@ -2,14 +2,14 @@
 // takes on the colours of the sea, its lines get finer, then they re-form into a swell seen from the
 // beach at sunset. You paddle into it, towards the beach, as it rises and comes at you; click to take
 // off: you pop up, drop straight down the face and bottom turn along it, while the wave breaks at the
-// peak and then starts to barrel, peeling towards you. The surfer goes wherever the cursor is: further
-// right is faster and keeps you ahead of the tube; slower, it catches up, until the falling lip hides
+// peak and then starts to barrel, peeling a little way and then holding. The surfer goes wherever the
+// cursor is: further right is faster; back left takes you into the tube, until the falling lip hides
 // you, and further still it lands on you. Shells are worth points. Surfers and rocks wipe you out; dodge
 // them by moving up and down the face. Click on the face for a cutback; in the tube, for hands in the
 // air, or a tuck when deep in. Shoot up past the lip to fly: keep going up for a frontside
 // 360, pull down for a backside one, hold the button to grab the rail. Every air lands. The wave is
 // drawn by the sea shader (line-field.ts); people, rocks, birds, shells and the score go on its 2D
-// layer.
+// layer. On touch screens the game takes the whole screen and the finger steers like a trackpad.
 import type { Sea } from './line-field';
 
 export interface GameCopy {
@@ -29,6 +29,7 @@ export interface GameCopy {
   takeoffTouch: string;
   shells: string;
   newBest: string;
+  exit: string;
 }
 
 // Seconds of hovering before the picture turns into the game; ms it may then be left alone while
@@ -591,7 +592,8 @@ function drawGull(ctx: CanvasRenderingContext2D, t: Thing, k: number) {
   ctx.stroke();
 }
 
-export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
+// shell holds the stage and the button that leaves the full-screen game.
+export function mountSurfGame(stage: HTMLElement, shell: HTMLElement, sea: Sea, copy: GameCopy) {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   let mode: 'idle' | 'in' | 'paddle' | 'play' | 'over' | 'out' = 'idle';
@@ -611,7 +613,7 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
   let lip = 0;
   let trough = 0;
   let reach = 0;
-  // Where the lip pitches: the peak at first, then peeling towards the surfer unless they outrun it.
+  // Where the lip pitches: the peak at first, a little further along once the tube has formed.
   let curl = 0;
   // Where the drop down the face started.
   let dropFrom = 0;
@@ -640,23 +642,28 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
   let cut = -1;
   let pose = -1;
   let tuck = false;
+  let steering = false;
   let things: Thing[] = [];
   let popups: Popup[] = [];
 
   const measure = () => {
     ({ w: W, h: H } = sea.size());
     k = Math.max(0.62, H / 700);
-    lip = H * 0.22;
     trough = H * 0.8;
-    reach = (trough - lip) * 1.25;
+    // On a phone held upright the wave would be a tall, narrow peak: keep its face no taller than the
+    // screen is wide.
+    lip = trough - Math.min(H * 0.58, W * 0.9);
+    // A long tube, but always ending on screen, where going too deep can still get you.
+    reach = Math.min((trough - lip) * 1.5, W * 0.6);
   };
   // Same wave as the shader: the crest rises as the swell builds; a rounded peak easing down into the
-  // shoulders, and once it breaks as tall as the peak left of the curl.
+  // shoulders, and once it breaks, left of the curl, the lip getting lower along the tube.
   const crest = () => trough - (trough - lip) * (0.45 + 0.55 * smooth(swell));
   const lipAt = (px: number) => {
     const d = (px - curl) / W;
     let h = 0.92 * Math.exp((-d * d) / (d > 0 ? 0.9 : 0.5)) + 0.08 * Math.exp((-d * d) / 0.01);
-    if (d < 0) h = 1 + (h - 1) * (1 - step(0, 0.5, breaking));
+    const tube = 1 - 0.4 * step(0, 1.3, (curl - px) / reach);
+    if (d < 0) h = tube + (h - tube) * (1 - step(0, 0.5, breaking));
     return trough - (trough - crest()) * (0.28 + 0.72 * h);
   };
   // As it breaks, a small curl at the top grows into a tube as tall as the wave: the lip throws further
@@ -710,6 +717,7 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
   const reset = () => {
     measure();
     clock = 0;
+    steering = false;
     upAt = -1;
     swell = 0;
     breaking = 0;
@@ -850,28 +858,30 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
     const [ax, ay] = aim();
     const since = clock - upAt;
     if (since < DROP + TURN) return dropIn(dt, since);
+    // Touch steering picks up from the surfer once the bottom turn is done.
+    if (touch && !steering) {
+      [pointer.x, pointer.y] = toScreen(rx, y);
+      anchor();
+      steering = true;
+    }
     if (cut >= 0 && (cut += dt) >= CUT) {
       cut = -1;
       score += 150;
       popup(`+150 ${copy.cutback}`);
     }
     if (pose >= 0 && (pose += dt) >= POSE) pose = -1;
-    // The surfer follows the cursor along the wave, back and forth, with less grip in the air;
-    // control eases in after the bottom turn. Not quite to the right edge, so whoever is paddling out
-    // is seen coming. A cutback carves back towards the curl first, as far as its shoulder, then
-    // swings round down the line.
+    // The surfer follows the cursor along the wave, back and forth, quickly, with less grip in the
+    // air; control eases in after the bottom turn. Not quite to the right edge, so whoever is
+    // paddling out is seen coming. A cutback carves back towards the curl first, as far as its
+    // shoulder, then swings round down the line.
     const grip = (air ? 0.25 : 1) * Math.min(1, (since - DROP - TURN) / 0.6);
     const back = clamp((curl + 60 * k - rx) * 6, -420 * k, 0);
-    const wantX = cut >= 0 ? (cut < CUT * 0.55 ? back : 260 * k) : clamp((clamp(ax, 10 * k, W * 0.9) - rx) * 6, -900 * k, 900 * k);
-    vx += (wantX - vx) * Math.min(1, dt * 8 * grip);
+    const wantX = cut >= 0 ? (cut < CUT * 0.55 ? back : 260 * k) : clamp((clamp(ax, 10 * k, W * 0.92) - rx) * 9, -1300 * k, 1300 * k);
+    vx += (wantX - vx) * Math.min(1, dt * 12 * grip);
     rx = Math.max(10 * k, rx + vx * dt);
     // Further right is faster, further left slower and deeper in the tube.
-    const ahead = clamp((rx - curl) / (W * 0.45), -0.5, 1);
-    speed += (pace() * (0.85 + 0.75 * ahead) + Math.max(0, vx) * 0.25 - speed) * Math.min(1, dt * 2.2);
-    // Once the tube has formed it peels along the wave: hang back and it slowly comes for you, taking
-    // more of the picture, faster the further back you are; ride far enough right and it falls behind,
-    // so there is always a way out. Sit in it long enough and it closes on you.
-    curl = clamp(curl + pace() * (0.7 - rx / W) * dt * step(0.35, 0.8, breaking), W * 0.35, W + reach);
+    const ahead = clamp((rx - curl) / (W * 0.3), -0.5, 1);
+    speed += (pace() * (0.8 + ahead) + Math.max(0, vx) * 0.3 - speed) * Math.min(1, dt * 2.2);
 
     if (air) {
       air.t += dt;
@@ -1015,6 +1025,19 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
     spray(curl + Math.random() * 80 * k, lipAt(curl) - 2, 40 + Math.random() * 60, -(30 + Math.random() * 70) * k, 0.4 + Math.random() * 0.3);
   };
 
+  // On touch screens the game takes the whole screen, with a button to leave it; where the browser
+  // allows, the real full screen, without its bars.
+  // The page underneath is put back where it was: the stage leaving the flow would shift it.
+  let kept = 0;
+  const restore = () => scrollTo({ top: kept, behavior: 'instant' });
+  const full = (on: boolean) => {
+    if (on === shell.classList.contains('full')) return;
+    if (on) kept = scrollY;
+    shell.classList.toggle('full', on);
+    if (on && document.fullscreenEnabled && !document.fullscreenElement) void shell.requestFullscreen({ navigationUI: 'hide' });
+    if (!on && document.fullscreenElement === shell) void document.exitFullscreen();
+    if (!on) restore();
+  };
   const begin = () => {
     reset();
     origin.x = pointer.x;
@@ -1023,6 +1046,7 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
     awayFrom = -1;
     sea.setGame(true);
     stage.style.touchAction = 'none';
+    if (touch) full(true);
   };
   const end = () => {
     mode = 'out';
@@ -1038,6 +1062,11 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
     sea.setCharge(0);
     sea.setMorph(0, 0, 0);
     stage.style.touchAction = '';
+    full(false);
+  };
+  const quit = () => {
+    full(false);
+    end();
   };
 
   sea.onFrame((dt, now) => {
@@ -1068,6 +1097,9 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
       swell = Math.min(1, swell + dt / SWELL);
       if (mode === 'paddle') paddle();
       else breaking = Math.min(1, breaking + dt / BREAK);
+      // The wave peels a little way while the tube forms, then holds: where the surfer is along it is
+      // up to them.
+      curl = W * (0.5 + 0.12 * step(0.2, 0.8, breaking));
       if (mode === 'play') ride(dt);
       if (breaking > 0.4) breakers();
     }
@@ -1385,10 +1417,27 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
     ctx.restore();
   });
 
+  // On touch screens, while riding, the finger steers like a trackpad from wherever it lands, so it
+  // never covers the surfer, and a short move of the thumb goes a long way.
+  const finger = { x: 0, y: 0, x0: 0, y0: 0, px: 0, py: 0 };
+  const anchor = () => {
+    finger.x0 = finger.x;
+    finger.y0 = finger.y;
+    finger.px = pointer.x;
+    finger.py = pointer.y;
+  };
   const locate = (e: PointerEvent) => {
     const r = stage.getBoundingClientRect();
-    pointer.x = e.clientX - r.left;
-    pointer.y = e.clientY - r.top;
+    if (e.pointerType === 'mouse' || mode !== 'play') {
+      pointer.x = e.clientX - r.left;
+      pointer.y = e.clientY - r.top;
+      return;
+    }
+    finger.x = e.clientX;
+    finger.y = e.clientY;
+    if (e.type === 'pointerdown') anchor();
+    pointer.x = clamp(finger.px + (finger.x - finger.x0) * 1.6, 0, r.width);
+    pointer.y = clamp(finger.py + (finger.y - finger.y0) * 1.6, 0, r.height);
   };
   stage.addEventListener('pointermove', (e) => {
     locate(e);
@@ -1421,6 +1470,13 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
     }
     // The finger steers, so on touch screens the tricks take a tap, not every touch.
     else if (touch) trick();
+  });
+  shell.querySelector('[data-exit]')!.addEventListener('click', quit);
+  // Left with the system's back gesture or key.
+  document.addEventListener('fullscreenchange', () => {
+    if (document.fullscreenElement) return;
+    if (shell.classList.contains('full')) quit();
+    else restore();
   });
   new IntersectionObserver(([e]) => {
     if (!e.isIntersecting && mode !== 'idle') drop();

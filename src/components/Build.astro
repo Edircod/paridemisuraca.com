@@ -50,6 +50,7 @@ const pad = (i: number) => String(i).padStart(2, '0');
       <span class="bar"><span data-hud-bar></span></span>
     </p>
   </div>
+  {[0, ...t.items.map((_, i) => (i + 0.75) / n)].map((p) => <span class="stop" style={`--p: ${p}`} aria-hidden="true" />)}
 </section>
 
 <style>
@@ -190,6 +191,24 @@ const pad = (i: number) => String(i).padStart(2, '0');
   }
   .portal .hud.on {
     opacity: 1;
+  }
+  /* Where a fling stops on touch screens: the gate, then each panel halfway through its hold. */
+  .stop {
+    display: none;
+  }
+  /* Full width: browsers skip a snap area that doesn't cross the screen. */
+  .portal .stop {
+    position: absolute;
+    top: calc(var(--p) * (100% - 100svh));
+    left: 0;
+    right: 0;
+    display: block;
+  }
+  @media (pointer: coarse) {
+    .portal .stop {
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+    }
   }
   .hud [data-hud] {
     color: var(--signal);
@@ -343,7 +362,8 @@ const pad = (i: number) => String(i).padStart(2, '0');
     const state = { cam: 0 };
     const follow = gsap.quickTo(state, 'cam', { duration: 0.7, ease: 'power3.out', onUpdate: () => render(state.cam) });
     render(0);
-    // Each station gets a stretch of scroll: half to fly there, half to hold still and read.
+    // Each station gets a stretch of scroll: half to fly there, half to hold still and read. The
+    // .stop markers sit in the middle of each hold.
     const st = ScrollTrigger.create({
       trigger: section,
       start: 'top top',
