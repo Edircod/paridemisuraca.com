@@ -1,0 +1,314 @@
+---
+import { copy, type Lang } from '../i18n/copy';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = copy[lang];
+const items = [
+  { id: 'cosa-costruisco', label: t.nav.build },
+  { id: 'metodo', label: t.nav.method },
+  { id: 'chi-sono', label: t.nav.about },
+  { id: 'fuori-orario', label: t.nav.beyond },
+  { id: 'console', label: t.nav.console },
+  { id: 'contatti', label: t.nav.contact },
+];
+---
+
+<div class="chart" aria-hidden="true">
+  <div class="band band-top"></div>
+  <div class="band band-bottom"></div>
+  <div class="band band-left"></div>
+  <div class="band band-right"></div>
+  <div class="neatline">
+    <div class="grad grad-top"></div>
+    <div class="grad grad-bottom"></div>
+    <div class="grad grad-left"></div>
+    <div class="grad grad-right"></div>
+  </div>
+</div>
+
+<header class="margin-top">
+  <p class="coords mono" data-coords>38°07′N · 13°21′E</p>
+  <div class="end">
+    <nav class="nav" aria-label={t.nav.label}>
+      <ul>
+        {items.map((it) => <li><a href={`#${it.id}`} data-nav={it.id}>{it.label}</a></li>)}
+      </ul>
+    </nav>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-panel" data-menu-toggle>
+      <span data-open>{t.nav.menu}</span><span data-close hidden>{t.nav.close}</span>
+    </button>
+    <p class="lang mono" role="group" aria-label={t.nav.lang}>
+      <a href="/" aria-current={lang === 'it' ? 'true' : undefined} lang="it">IT</a>
+      <a href="/en/" aria-current={lang === 'en' ? 'true' : undefined} lang="en">EN</a>
+    </p>
+  </div>
+</header>
+
+<div class="menu-panel" id="menu-panel" data-menu-panel hidden>
+  <ul>
+    {items.map((it) => <li><a href={`#${it.id}`}>{it.label}</a></li>)}
+  </ul>
+</div>
+
+<footer class="margin-bottom">
+  <p class="base mono">
+    <svg class="globe" viewBox="0 0 16 16" aria-hidden="true">
+      <circle cx="8" cy="8" r="6.5"></circle>
+      <ellipse cx="8" cy="8" rx="2.8" ry="6.5"></ellipse>
+      <path d="M1.5 8h13M2.7 4.5h10.6M2.7 11.5h10.6"></path>
+    </svg>
+    {t.chart.base}
+  </p>
+</footer>
+
+<style>
+  .chart {
+    --top: 44px;
+    --bottom: 34px;
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    pointer-events: none;
+  }
+  .band {
+    position: absolute;
+    background: var(--ink);
+  }
+  .band-top { inset: 0 0 auto 0; height: var(--top); }
+  .band-bottom { inset: auto 0 0 0; height: var(--bottom); }
+  .band-left { inset: 0 auto 0 0; width: var(--frame); }
+  .band-right { inset: 0 0 0 auto; width: var(--frame); }
+
+  .neatline {
+    position: absolute;
+    inset: var(--top) var(--frame) var(--bottom);
+    border: 1px solid color-mix(in srgb, var(--paper) 55%, transparent);
+  }
+  .grad {
+    position: absolute;
+    --tick: color-mix(in srgb, var(--paper) 40%, transparent);
+  }
+  .grad-top,
+  .grad-bottom {
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: repeating-linear-gradient(90deg, var(--tick) 0 60px, transparent 60px 120px);
+  }
+  .grad-top { top: 0; }
+  .grad-bottom { bottom: 0; }
+  .grad-left,
+  .grad-right {
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: repeating-linear-gradient(180deg, var(--tick) 0 60px, transparent 60px 120px);
+  }
+  .grad-left { left: 0; }
+  .grad-right { right: 0; }
+
+  .margin-top,
+  .margin-bottom {
+    position: fixed;
+    left: calc(var(--frame) + 4px);
+    right: calc(var(--frame) + 4px);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .margin-top { top: 0; height: 44px; }
+  .margin-bottom { bottom: 0; height: 34px; justify-content: flex-end; color: var(--mute); }
+  .coords { color: var(--paper); }
+  .base {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  /* Online lamp: a green globe breathing slowly. */
+  .globe {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: #3ee07f;
+    stroke-width: 1.2;
+    filter: drop-shadow(0 0 4px #3ee07f);
+    animation: online 3.2s ease-in-out infinite;
+  }
+  @keyframes online {
+    50% { opacity: 0.4; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .globe { animation: none; }
+  }
+  .end {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* Boxed controls: the bar has to read at a glance over any section. */
+  .nav ul,
+  .lang,
+  .menu-toggle {
+    display: flex;
+    height: 30px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid color-mix(in srgb, var(--paper) 22%, transparent);
+    background: var(--ink-raised);
+  }
+  .nav ul { list-style: none; }
+  .nav a,
+  .lang a {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    text-decoration: none;
+    color: var(--paper);
+    transition:
+      color 160ms ease,
+      background-color 160ms ease;
+  }
+  .nav a {
+    padding: 0 clamp(8px, 1vw, 14px);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+  }
+  .nav a[aria-current='location'] {
+    background: var(--signal);
+    color: var(--ink);
+  }
+  .lang a {
+    padding: 0 10px;
+    font-size: 0.75rem;
+  }
+  .lang a[aria-current='true'] {
+    background: var(--paper);
+    color: var(--ink);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .nav a:not([aria-current]):hover,
+    .lang a:not([aria-current]):hover { color: var(--signal); }
+  }
+
+  .menu-toggle {
+    display: none;
+    align-items: center;
+    padding: 0 14px;
+    color: var(--paper);
+    font: 500 0.8125rem var(--font-sans);
+    cursor: pointer;
+  }
+  .menu-panel {
+    position: fixed;
+    inset: 44px var(--frame) 34px;
+    z-index: 45;
+    display: grid;
+    align-content: center;
+    padding: 0 var(--gutter);
+    background: var(--ink);
+  }
+  .menu-panel[hidden] { display: none; }
+  .menu-panel ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .menu-panel a {
+    display: block;
+    padding: 10px 0;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 9vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    text-decoration: none;
+  }
+
+  /* Between tablet and desktop the full menu needs the room the coordinates take. */
+  @media (min-width: 861px) and (max-width: 1080px) {
+    .coords { display: none; }
+    .margin-top { justify-content: flex-end; }
+  }
+  @media (max-width: 860px) {
+    .nav { display: none; }
+    .menu-toggle { display: flex; }
+  }
+  /* Fingers need more than the boxes show: the hit areas take the full height of the bar. */
+  @media (pointer: coarse) {
+    .lang a,
+    .menu-toggle { position: relative; }
+    .lang a::after,
+    .menu-toggle::after {
+      content: '';
+      position: absolute;
+      inset: -7px -3px;
+    }
+  }
+</style>
+
+<script>
+  const coords = document.querySelector<HTMLElement>('[data-coords]');
+  const navLinks = [...document.querySelectorAll<HTMLAnchorElement>('[data-nav]')];
+
+  // The readout drifts west as the visitor "sails" down the page.
+  const fmt = (deg: number, pos: string, neg: string) => {
+    const a = Math.abs(deg);
+    const d = Math.floor(a);
+    const m = Math.floor((a - d) * 60);
+    return `${d}°${String(m).padStart(2, '0')}′${deg >= 0 ? pos : neg}`;
+  };
+  let queued = false;
+  const update = () => {
+    queued = false;
+    const max = document.documentElement.scrollHeight - innerHeight;
+    const p = max > 0 ? scrollY / max : 0;
+    if (coords) coords.textContent = `${fmt(38.1157 - p * 0.42, 'N', 'S')} · ${fmt(13.3615 - p * 1.9, 'E', 'W')}`;
+  };
+  addEventListener('scroll', () => {
+    if (!queued) {
+      queued = true;
+      requestAnimationFrame(update);
+    }
+  }, { passive: true });
+
+  // Every section is observed, so one without a nav entry clears the highlight.
+  const sections = document.querySelectorAll('main > section');
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      for (const a of navLinks) {
+        if (a.dataset.nav === e.target.id) a.setAttribute('aria-current', 'location');
+        else a.removeAttribute('aria-current');
+      }
+    }
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  sections.forEach((s) => io.observe(s));
+
+  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]')!;
+  const panel = document.querySelector<HTMLElement>('[data-menu-panel]')!;
+  const setOpen = (open: boolean) => {
+    panel.hidden = !open;
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.querySelector<HTMLElement>('[data-open]')!.hidden = open;
+    toggle.querySelector<HTMLElement>('[data-close]')!.hidden = !open;
+  };
+  toggle.addEventListener('click', () => setOpen(panel.hidden));
+  panel.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a')) setOpen(false);
+  });
+  addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !panel.hidden) {
+      setOpen(false);
+      toggle.focus();
+    }
+  });
+</script>

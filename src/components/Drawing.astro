@@ -1,0 +1,175 @@
+---
+import type { Drawing } from '../i18n/copy';
+
+interface Props {
+  name: Drawing;
+}
+
+const { name } = Astro.props;
+---
+
+<svg class="drawing" viewBox="0 0 240 150" aria-hidden="true">
+  {
+    name === 'erp' && (
+      <>
+        <rect data-stroke x="8" y="22" width="76" height="106" />
+        <path data-stroke d="M8 40H84M8 62H84M8 84H84M8 106H84M30 22V128" />
+        <rect data-stroke x="156" y="22" width="76" height="106" />
+        <path data-stroke d="M156 40H232M156 62H232M156 84H232M156 106H232M178 22V128" />
+        <path data-stroke d="M84 51H104L120 75M84 95H104L120 75M156 51H136L120 75M156 95H136L120 75" />
+        <path class="pulse" pathLength="100" d="M84 51H104L120 75L136 95H156" />
+        <path class="pulse late" pathLength="100" d="M156 51H136L120 75L104 95H84" />
+        <rect class="acc" data-stroke x="111" y="66" width="18" height="18" transform="rotate(45 120 75)" />
+      </>
+    )
+  }
+  {
+    name === 'apps' && (
+      <>
+        <rect data-stroke x="8" y="18" width="150" height="112" />
+        <path data-stroke d="M8 34H158M22 50H96M22 62H140M22 72H128M22 82H112" />
+        <circle data-stroke cx="18" cy="26" r="2.5" />
+        <circle data-stroke cx="27" cy="26" r="2.5" />
+        <circle data-stroke cx="36" cy="26" r="2.5" />
+        <rect class="acc" data-stroke x="22" y="96" width="54" height="22" />
+        <rect data-stroke x="88" y="96" width="54" height="22" />
+        <rect data-stroke x="176" y="30" width="56" height="108" rx="9" />
+        <path data-stroke d="M197 39H211M186 58H222M186 68H214M186 78H218" />
+        <rect class="acc" data-stroke x="186" y="112" width="36" height="14" />
+        <path class="pulse" pathLength="100" d="M76 107C120 140 160 140 186 119" />
+      </>
+    )
+  }
+  {
+    name === 'agents' && (
+      <>
+        <path data-stroke d="M28 75C50 75 62 36 92 36M28 75C50 75 62 114 92 114M92 36C122 36 130 75 160 75M92 114C122 114 130 75 160 75M160 75C186 75 190 40 218 40M160 75C186 75 190 110 218 110" />
+        <path class="pulse" pathLength="100" d="M28 75C50 75 62 36 92 36C122 36 130 75 160 75C186 75 190 40 218 40" />
+        <path class="pulse late" pathLength="100" d="M28 75C50 75 62 114 92 114C122 114 130 75 160 75C186 75 190 110 218 110" />
+        <circle class="node" data-stroke cx="28" cy="75" r="8" />
+        <circle class="node" data-stroke cx="92" cy="36" r="8" />
+        <circle class="node" data-stroke cx="92" cy="114" r="8" />
+        <circle class="node" data-stroke cx="218" cy="40" r="8" />
+        <circle class="node" data-stroke cx="218" cy="110" r="8" />
+        <polygon class="node acc" data-stroke points="174,75 167,87.1 153,87.1 146,75 153,62.9 167,62.9" />
+      </>
+    )
+  }
+  {
+    name === 'api' && (
+      <>
+        <rect data-stroke x="8" y="35" width="64" height="80" />
+        <path data-stroke d="M34 55q-6 0-6 6v6q0 8-6 8q6 0 6 8v6q0 6 6 6M46 55q6 0 6 6v6q0 8 6 8q-6 0-6 8v6q0 6-6 6" />
+        <rect data-stroke x="168" y="35" width="64" height="80" />
+        <path data-stroke d="M180 55H220M180 75H220M180 95H220" />
+        <path data-stroke d="M72 62H168M168 88H72" />
+        <path class="acc" data-stroke d="M160 57L168 62L160 67M80 83L72 88L80 93" />
+        <path class="pulse" pathLength="100" d="M72 62H168" />
+        <path class="pulse late" pathLength="100" d="M168 88H72" />
+      </>
+    )
+  }
+  {
+    name === 'shop' && (
+      <>
+        <rect data-stroke x="8" y="30" width="46" height="58" />
+        <rect data-stroke x="62" y="30" width="46" height="58" />
+        <rect data-stroke x="116" y="30" width="46" height="58" />
+        <circle data-stroke cx="31" cy="52" r="10" />
+        <circle data-stroke cx="85" cy="52" r="10" />
+        <circle data-stroke cx="139" cy="52" r="10" />
+        <path data-stroke d="M18 76H44M72 76H98M126 76H152M8 100H162" />
+        <path data-stroke d="M180 20H232V130L225.5 124L219 130L212.5 124L206 130L199.5 124L193 130L186.5 124L180 130Z" />
+        <path data-stroke d="M188 38H224M188 50H216M188 62H220M188 74H210" />
+        <path class="acc" data-stroke d="M188 100H224" />
+        <path class="pulse" pathLength="100" d="M85 88C110 126 160 118 188 100" />
+      </>
+    )
+  }
+  {
+    name === 'sites' && (
+      <>
+        <rect data-stroke x="16" y="46" width="124" height="88" />
+        <rect data-stroke x="30" y="32" width="124" height="88" />
+        <rect class="sheet" data-stroke x="44" y="18" width="124" height="88" />
+        <path data-stroke d="M44 32H168M56 46H120M56 58H150M56 68H140M56 84H96" />
+        <circle data-stroke cx="208" cy="122" r="12" />
+        <path data-stroke d="M196 122H220M208 110C202 116 202 128 208 134C214 128 214 116 208 110" />
+        <path class="acc" data-stroke d="M208 108V22M198 34L208 22L218 34" />
+        <path class="pulse" pathLength="100" d="M208 108V22" />
+      </>
+    )
+  }
+  {
+    name === 'desktop' && (
+      <>
+        <rect data-stroke x="8" y="18" width="150" height="112" />
+        <path data-stroke d="M8 34H158M128 26H136M144 22L152 30M152 22L144 30" />
+        <path data-stroke d="M22 52L30 58L22 64" />
+        <path class="acc caret" d="M34 64H46" />
+        <path data-stroke d="M22 82H90M22 94H120M22 106H72" />
+        <path class="acc" data-stroke d="M196 52L222 67L196 82L170 67ZM170 67V97L196 112L222 97V67M196 82V112" />
+        <path class="pulse" pathLength="100" d="M120 94C140 94 150 82 170 82" />
+      </>
+    )
+  }
+</svg>
+
+<style>
+  .drawing {
+    display: block;
+    width: 100%;
+    max-width: 240px;
+    height: auto;
+    overflow: visible;
+    color: color-mix(in srgb, var(--paper) 62%, transparent);
+    transition: color 240ms ease;
+  }
+  .drawing :global(*) {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.2;
+    vector-effect: non-scaling-stroke;
+    stroke-linejoin: round;
+  }
+  .drawing :global(.node),
+  .drawing :global(.sheet) {
+    fill: var(--ink);
+  }
+  .drawing :global(.acc) {
+    stroke: var(--signal);
+  }
+  .drawing :global(.pulse) {
+    stroke: var(--violet);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-dasharray: 5 95;
+    stroke-dashoffset: 100;
+    opacity: 0;
+  }
+  .drawing :global(.caret) {
+    stroke-width: 2.4;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.live) .drawing :global(.pulse) {
+      opacity: 1;
+      animation: travel 2.4s linear infinite;
+    }
+    :global(.live) .drawing :global(.pulse.late) {
+      animation-delay: -1.2s;
+    }
+    :global(.live) .drawing :global(.caret) {
+      animation: blink 1.06s steps(1) infinite;
+    }
+  }
+  @keyframes travel {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+</style>

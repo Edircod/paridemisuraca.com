@@ -1,0 +1,164 @@
+---
+import { copy, links, type Lang } from '../i18n/copy';
+import Scroller from './Scroller.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = copy[lang];
+---
+
+<section class="hero" data-hero>
+  <canvas class="field" data-field aria-hidden="true"></canvas>
+
+  <div class="intro">
+    <h1>Paride<br />Misuraca</h1>
+    <p class="role">{t.hero.role}</p>
+    <p class="lede">{t.hero.lede}</p>
+    <div class="actions">
+      <a class="btn btn-signal" href="#contatti">
+        {t.hero.write}
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" /></svg>
+      </a>
+      {
+        [
+          { label: 'Fiverr', href: links.fiverr },
+          { label: 'LinkedIn', href: links.linkedin },
+        ].map((l) => (
+          <a class="btn btn-line" href={l.href} target="_blank" rel="noopener">
+            {l.label}
+            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M4 2h8v8M12 2 2 12" fill="none" stroke="currentColor" stroke-width="1.5" /></svg>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+
+  <figure class="portrait">
+    <div class="slot" data-portrait-slot role="img" aria-label={t.hero.portraitLabel}></div>
+  </figure>
+
+  <Scroller text={t.scroller} />
+</section>
+
+<style>
+  .hero {
+    --scroller-h: clamp(96px, 14vh, 136px);
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-rows: 1fr auto;
+    column-gap: 24px;
+    min-height: 100svh;
+    padding: 44px calc(var(--frame) + var(--gutter)) 34px;
+    overflow: hidden;
+    cursor: crosshair;
+  }
+  .field {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .intro {
+    position: relative;
+    grid-column: 1 / span 6;
+    align-self: center;
+    padding-top: clamp(24px, 4vh, 48px);
+    cursor: auto;
+  }
+  h1 {
+    font-size: clamp(3.25rem, min(7.6vw, 12svh), 6rem);
+    line-height: 0.88;
+    letter-spacing: -0.03em;
+  }
+  .role {
+    margin-top: clamp(20px, 3.4vh, 32px);
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+  .lede {
+    max-width: 40ch;
+    margin-top: 12px;
+    color: var(--mute);
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: clamp(24px, 4.4vh, 40px);
+  }
+  .portrait {
+    position: relative;
+    grid-column: 7 / span 6;
+    align-self: center;
+    justify-self: center;
+    margin: 0;
+  }
+  .slot {
+    height: min(calc(100svh - 78px - var(--scroller-h) - 48px), 640px);
+    aspect-ratio: 360 / 499;
+  }
+
+  .hero :global(.scroller) {
+    grid-column: 1 / -1;
+    margin-inline: calc(-1 * var(--gutter));
+  }
+
+  @media (max-width: 860px) {
+    .hero {
+      grid-template-rows: auto auto auto;
+      align-content: start;
+      row-gap: 8px;
+    }
+    .intro {
+      grid-column: 1 / -1;
+      padding-top: 8px;
+    }
+    .role {
+      margin-top: 16px;
+    }
+    .actions {
+      margin-top: 20px;
+    }
+    .portrait {
+      grid-column: 1 / -1;
+      order: -1;
+      margin-top: 16px;
+    }
+    .slot {
+      height: min(33svh, 300px);
+    }
+  }
+</style>
+
+<script>
+  import { ContourField, type ContourData } from '../scripts/contour-field';
+
+  const hero = document.querySelector<HTMLElement>('[data-hero]')!;
+  const canvas = hero.querySelector<HTMLCanvasElement>('[data-field]')!;
+  const slot = hero.querySelector<HTMLElement>('[data-portrait-slot]')!;
+  const field = ContourField.create(canvas);
+
+  if (field) {
+    const load = (url: string) => fetch(url).then((r) => r.json() as Promise<ContourData>);
+    Promise.all([load('/data/seabed.json'), load('/data/portrait-pro.json')]).then(([seabed, portrait]) => {
+      field.addLayer(seabed, { seabed: true, colorLow: '#1a1a1c', colorHigh: '#2a2a2d', colorWave: '#b56cff' });
+      field.addLayer(portrait, { slot, relief: 70, colorLow: '#5d5c58', colorHigh: '#e4e2dc', colorOutline: '#f0efea', colorWave: '#b56cff' });
+    });
+
+    hero.addEventListener('pointermove', (e) => field.setPointer(e.clientX, e.clientY, e.pointerType === 'mouse'));
+    hero.addEventListener('pointerleave', (e) => field.setPointer(e.clientX, e.clientY, false));
+    hero.addEventListener('click', (e) => {
+      if (!(e.target as Element).closest('a, button')) field.ping(e.clientX, e.clientY);
+    });
+
+    // One sonar ping once the portrait has surfaced, so the interaction announces itself.
+    setTimeout(() => {
+      const r = slot.getBoundingClientRect();
+      field.ping(r.left + r.width / 2, r.top + r.height * 0.3);
+    }, 2300);
+  }
+</script>

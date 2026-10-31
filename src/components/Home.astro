@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+import Frame from './Frame.astro';
+import Hero from './Hero.astro';
+import About from './About.astro';
+import Build from './Build.astro';
+import Method from './Method.astro';
+import Beyond from './Beyond.astro';
+import Manifesto from './Manifesto.astro';
+import Console from './Console.astro';
+import Contact from './Contact.astro';
+import type { Lang } from '../i18n/copy';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<Base lang={lang}>
+  <Frame lang={lang} />
+  <main id="main">
+    <Hero lang={lang} />
+    <Build lang={lang} />
+    <Method lang={lang} />
+    <About lang={lang} />
+    <Manifesto lang={lang} />
+    <Beyond lang={lang} />
+    <Console lang={lang} />
+    <Contact lang={lang} />
+  </main>
+</Base>
+
+<script>
+  import '../scripts/motion';
+</script>

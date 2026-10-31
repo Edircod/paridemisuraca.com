@@ -1,0 +1,264 @@
+---
+import { copy, type Lang } from '../i18n/copy';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = copy[lang].method;
+const n = t.steps.length;
+const pad = (i: number) => String(i).padStart(2, '0');
+---
+
+<section class="section method" id="metodo" aria-labelledby="method-title" data-method style={`--count: ${n}`}>
+  <h2 id="method-title" data-reveal="lines">{t.title}</h2>
+  <div class="body">
+    <div class="stage" aria-hidden="true">
+      <div class="tower" data-tower>
+        <span class="post" style="left: 0; top: 0"></span>
+        <span class="post" style="left: 100%; top: 0"></span>
+        <span class="post" style="left: 0; top: 100%"></span>
+        <span class="post" style="left: 100%; top: 100%"></span>
+        <span class="beam"><span data-beam></span></span>
+        {
+          t.steps.map((s, i) => (
+            <div class="plate" data-plate style={`--i: ${i}`}>
+              <span class="label mono">
+                {pad(i + 1)} · {s.title}
+              </span>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+    <ol class="steps">
+      {
+        t.steps.map((s, i) => (
+          <li class="step" data-step>
+            <p class="num mono">
+              {pad(i + 1)} / {pad(n)}
+            </p>
+            <h3>{s.title}</h3>
+            <p class="text">{s.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .method {
+    --plate: clamp(200px, 19vw, 280px);
+    --gap: clamp(52px, 5vw, 72px);
+  }
+  .body {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 24px;
+    margin-top: clamp(24px, 4vh, 48px);
+  }
+  .stage {
+    grid-column: 1 / span 6;
+    position: sticky;
+    top: calc(50svh - 290px);
+    display: grid;
+    place-items: center;
+    height: 580px;
+    perspective: 1600px;
+  }
+  .tower {
+    position: relative;
+    width: var(--plate);
+    height: var(--plate);
+    margin-top: calc(var(--gap) * (var(--count) - 1) * 0.8);
+    transform-style: preserve-3d;
+    transform: rotateX(60deg) rotateZ(-38deg);
+  }
+  .plate {
+    --lift: 0px;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    padding: 14px;
+    border: 1px solid color-mix(in srgb, var(--paper) 32%, transparent);
+    background:
+      repeating-linear-gradient(0deg, color-mix(in srgb, var(--paper) 6%, transparent) 0 1px, transparent 1px 22px),
+      repeating-linear-gradient(90deg, color-mix(in srgb, var(--paper) 6%, transparent) 0 1px, transparent 1px 22px),
+      color-mix(in srgb, var(--ink) 82%, transparent);
+    transform: translateZ(calc((var(--count) - 1 - var(--i)) * var(--gap) + var(--lift)));
+    transition:
+      transform 600ms var(--ease-out),
+      border-color 300ms ease,
+      box-shadow 300ms ease,
+      background-color 300ms ease;
+  }
+  .label {
+    color: var(--mute);
+    transition: color 300ms ease;
+  }
+  .plate.done {
+    border-color: color-mix(in srgb, var(--paper) 60%, transparent);
+  }
+  .plate.on {
+    --lift: calc(var(--gap) * 0.45);
+    border-color: var(--signal);
+    box-shadow:
+      0 0 0 1px var(--signal),
+      0 0 70px color-mix(in srgb, var(--violet) 45%, transparent);
+  }
+  .plate.on .label {
+    color: var(--signal);
+  }
+  .post,
+  .beam {
+    position: absolute;
+    width: 1px;
+    height: calc(var(--gap) * (var(--count) - 1));
+    transform-origin: top center;
+    transform: rotateX(90deg);
+  }
+  .post {
+    background: color-mix(in srgb, var(--paper) 22%, transparent);
+  }
+  .beam {
+    left: 50%;
+    top: 50%;
+    width: 2px;
+    background: color-mix(in srgb, var(--violet) 25%, transparent);
+  }
+  .beam span {
+    position: absolute;
+    inset: 0;
+    background: var(--violet);
+    box-shadow: 0 0 12px var(--violet);
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+
+  .steps {
+    grid-column: 7 / span 6;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .step {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 62svh;
+    padding: 32px 0;
+    transition: opacity 400ms ease;
+  }
+  .num {
+    color: var(--signal);
+  }
+  h3 {
+    margin-top: 14px;
+    font-size: clamp(2rem, 3.6vw, 3.25rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .text {
+    max-width: 40ch;
+    margin-top: 18px;
+    font-size: 1.1875rem;
+    color: var(--mute);
+  }
+  .is-live .step {
+    opacity: 0.28;
+  }
+  .is-live .step.on {
+    opacity: 1;
+  }
+
+  @media (max-width: 860px) {
+    .method {
+      --plate: 150px;
+      --gap: 34px;
+    }
+    .body {
+      display: block;
+    }
+    .stage {
+      top: 44px;
+      z-index: 2;
+      height: 290px;
+      margin: 0 calc(-1 * var(--gutter));
+      background: linear-gradient(var(--ink) 82%, transparent);
+    }
+    .label {
+      font-size: 0.625rem;
+    }
+    .plate {
+      padding: 8px;
+    }
+    .step {
+      min-height: 46svh;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .plate {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const section = document.querySelector<HTMLElement>('[data-method]')!;
+  const tower = section.querySelector<HTMLElement>('[data-tower]')!;
+  const beam = section.querySelector<HTMLElement>('[data-beam]')!;
+  const plates = [...section.querySelectorAll<HTMLElement>('[data-plate]')];
+  const steps = [...section.querySelectorAll<HTMLElement>('[data-step]')];
+
+  const activate = (k: number) => {
+    plates.forEach((p, i) => {
+      p.classList.toggle('on', i === k);
+      p.classList.toggle('done', i < k);
+    });
+    steps.forEach((s, i) => s.classList.toggle('on', i === k));
+  };
+
+  const mm = gsap.matchMedia();
+  mm.add('(prefers-reduced-motion: reduce)', () => {
+    plates.forEach((p) => p.classList.add('done'));
+  });
+  mm.add('(prefers-reduced-motion: no-preference)', () => {
+    section.classList.add('is-live');
+    activate(0);
+    const triggers = steps.map((s, i) =>
+      ScrollTrigger.create({
+        trigger: s,
+        start: 'top 55%',
+        end: 'bottom 55%',
+        onToggle: (self) => self.isActive && activate(i),
+      }),
+    );
+    // The tower turns on its axis as the steps go by, and the beam drains from the top plate down.
+    const spin = { z: -38, fill: 0 };
+    const tween = gsap.to(spin, {
+      z: 38,
+      fill: 1,
+      ease: 'none',
+      scrollTrigger: { trigger: section.querySelector('.steps'), start: 'top 55%', end: 'bottom 55%', scrub: 0.8 },
+      onUpdate: () => {
+        tower.style.transform = `rotateX(60deg) rotateZ(${spin.z.toFixed(2)}deg)`;
+        beam.style.transform = `scaleY(${spin.fill.toFixed(3)})`;
+      },
+    });
+    return () => {
+      triggers.forEach((tr) => tr.kill());
+      tween.scrollTrigger?.kill();
+      tween.kill();
+      section.classList.remove('is-live');
+    };
+  });
+</script>

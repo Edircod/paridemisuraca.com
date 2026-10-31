@@ -1,0 +1,120 @@
+---
+interface Props {
+  text: string;
+  speed?: number;
+}
+
+const { text, speed = 70 } = Astro.props;
+---
+
+<div class="scroller" aria-hidden="true" data-scroller data-speed={speed}>
+  <svg>
+    <path data-wave fill="none"></path>
+    <text data-measure class="glyphs" x="-9999" y="-9999">{text}</text>
+    <text class="glyphs"><textPath data-path>{text}</textPath></text>
+  </svg>
+</div>
+
+<style>
+  .scroller {
+    position: relative;
+    height: var(--scroller-h, 128px);
+    overflow: hidden;
+    pointer-events: none;
+  }
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .glyphs {
+    fill: var(--signal);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 700;
+    font-size: var(--scroller-size, clamp(28px, 3.8vw, 54px));
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .scroller.glitch svg {
+    filter: drop-shadow(-3px 0 0 var(--violet)) drop-shadow(3px 0 0 var(--paper));
+    animation: jitter 140ms steps(3) 1;
+  }
+  @keyframes jitter {
+    0% { transform: translate(0, 0); }
+    33% { transform: translate(-6px, 2px); }
+    66% { transform: translate(5px, -1px); }
+    100% { transform: translate(0, 0); }
+  }
+</style>
+
+<script>
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-scroller]')) {
+    const svg = root.querySelector('svg')!;
+    const wave = root.querySelector<SVGPathElement>('[data-wave]')!;
+    const measure = root.querySelector<SVGTextElement>('[data-measure]')!;
+    const tp = root.querySelector<SVGTextPathElement>('[data-path]')!;
+    const id = `wave-${Math.random().toString(36).slice(2, 8)}`;
+    wave.id = id;
+    tp.setAttribute('href', `#${id}`);
+    const unitText = measure.textContent ?? '';
+    const speed = Number(root.dataset.speed);
+    let unit = 0;
+    let offset = 0;
+    let running = false;
+    let raf = 0;
+    let last = 0;
+    let nextGlitch = 0;
+
+    const layout = () => {
+      const w = root.clientWidth;
+      const h = root.clientHeight;
+      svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+      const amp = h * 0.2;
+      const lambda = Math.max(420, w / 2.4);
+      let d = `M ${-40} ${h * 0.62}`;
+      for (let x = -40; x <= w + 40; x += 12) d += ` L ${x} ${(h * 0.62 + Math.sin((x / lambda) * Math.PI * 2) * amp).toFixed(1)}`;
+      wave.setAttribute('d', d);
+      unit = measure.getComputedTextLength();
+      const reps = Math.ceil(wave.getTotalLength() / Math.max(unit, 1)) + 1;
+      tp.textContent = unitText.repeat(reps);
+    };
+
+    const tick = (t: number) => {
+      if (!running) return;
+      const dt = Math.min((t - last) / 1000, 0.05);
+      last = t;
+      offset -= speed * dt;
+      if (offset <= -unit) offset += unit;
+      if (offset > 0) offset -= unit;
+      tp.setAttribute('startOffset', offset.toFixed(1));
+      if (t > nextGlitch) {
+        root.classList.add('glitch');
+        setTimeout(() => root.classList.remove('glitch'), 140);
+        nextGlitch = t + 3500 + Math.random() * 3500;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+
+    const play = () => {
+      if (running || reduced) return;
+      running = true;
+      last = performance.now();
+      nextGlitch = last + 2500;
+      raf = requestAnimationFrame(tick);
+    };
+    const pause = () => {
+      running = false;
+      cancelAnimationFrame(raf);
+    };
+
+    document.fonts.load('italic 700 40px "Chakra Petch"').then(() => {
+      layout();
+      new ResizeObserver(layout).observe(root);
+      new IntersectionObserver(([e]) => (e.isIntersecting ? play() : pause())).observe(root);
+    });
+  }
+</script>

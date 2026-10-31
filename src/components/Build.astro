@@ -1,0 +1,339 @@
+---
+import { copy, type Lang } from '../i18n/copy';
+import Drawing from './Drawing.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = copy[lang].build;
+const n = t.items.length;
+const pad = (i: number) => String(i).padStart(2, '0');
+// One ring every half station, running a little past the last panel so the tunnel never ends in view.
+const rings = 2 * n + 5;
+---
+
+<section class="section build" id="cosa-costruisco" aria-labelledby="build-title" data-portal style={`--count: ${n}`}>
+  <div class="scene">
+    <div class="layer tunnel" aria-hidden="true">
+      <svg class="rails" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <path d="M0 0L50 50M100 0L50 50M0 100L50 50M100 100L50 50"></path>
+      </svg>
+      {Array.from({ length: rings }, (_, i) => <span class:list={['ring', { station: i % 2 === 0 }]} data-ring />)}
+    </div>
+
+    <ol class="layer panels">
+      {
+        t.items.map((it, i) => (
+          <li class="panel" data-panel style={`z-index: ${n - i}`}>
+            <div class="copy">
+              <p class="num mono">
+                {pad(i + 1)} / {pad(n)}
+              </p>
+              <h3>{it.title}</h3>
+              <p class="text">{it.text}</p>
+            </div>
+            <Drawing name={it.drawing} />
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="layer gate-layer">
+      <div class="gate" data-gate>
+        <h2 id="build-title" data-reveal="lines">{t.title}</h2>
+        <p class="enter mono">{t.enter}</p>
+      </div>
+    </div>
+
+    <p class="hud mono" aria-hidden="true">
+      <span data-hud>01</span> / {pad(n)}
+      <span class="bar"><span data-hud-bar></span></span>
+    </p>
+  </div>
+</section>
+
+<style>
+  /* Static layout: no JavaScript or reduced motion. The portal styles below take over otherwise. */
+  .scene {
+    display: flex;
+    flex-direction: column;
+  }
+  .gate-layer {
+    order: -1;
+  }
+  .gate {
+    margin-bottom: clamp(40px, 6vh, 72px);
+  }
+  .enter,
+  .tunnel,
+  .hud {
+    display: none;
+  }
+  .panels {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-bottom: 1px solid var(--rule);
+  }
+  .panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    gap: 24px 48px;
+    align-items: center;
+    padding: clamp(28px, 4vh, 44px) 0;
+    border-top: 1px solid var(--rule);
+  }
+  .num {
+    color: var(--signal);
+  }
+  h3 {
+    margin-top: 12px;
+    font-size: clamp(1.75rem, 3vw, 2.75rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .text {
+    max-width: 42ch;
+    margin-top: 16px;
+    color: var(--mute);
+  }
+  .panel :global(.drawing) {
+    justify-self: end;
+    max-width: 300px;
+  }
+
+  .portal {
+    height: calc((var(--count) * 0.9 + 1) * 100svh);
+    padding: 0;
+  }
+  .portal .scene {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    overflow: hidden;
+    background: radial-gradient(ellipse 34% 30% at 50% 50%, color-mix(in srgb, var(--violet) 16%, transparent), transparent);
+  }
+  .portal .layer {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    perspective: 900px;
+    pointer-events: none;
+  }
+  .portal .tunnel {
+    display: block;
+  }
+  .rails {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .rails path {
+    fill: none;
+    stroke: color-mix(in srgb, var(--paper) 14%, transparent);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+  .ring {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    border: 1px solid color-mix(in srgb, var(--paper) 30%, transparent);
+    visibility: hidden;
+  }
+  .ring.station {
+    --c: var(--signal);
+    --l: 28px;
+    border-color: transparent;
+    background:
+      linear-gradient(var(--c), var(--c)) 0 0 / var(--l) 2px,
+      linear-gradient(var(--c), var(--c)) 0 0 / 2px var(--l),
+      linear-gradient(var(--c), var(--c)) 100% 0 / var(--l) 2px,
+      linear-gradient(var(--c), var(--c)) 100% 0 / 2px var(--l),
+      linear-gradient(var(--c), var(--c)) 0 100% / var(--l) 2px,
+      linear-gradient(var(--c), var(--c)) 0 100% / 2px var(--l),
+      linear-gradient(var(--c), var(--c)) 100% 100% / var(--l) 2px,
+      linear-gradient(var(--c), var(--c)) 100% 100% / 2px var(--l);
+    background-repeat: no-repeat;
+  }
+  .portal .panels {
+    border: 0;
+  }
+  .portal .panel,
+  .portal .gate {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(1100px, 76vw);
+    margin: 0;
+    border: 0;
+    visibility: hidden;
+  }
+  .portal .panel {
+    padding: 40px;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--ink) 88%, transparent), transparent);
+  }
+  .portal h3 {
+    font-size: clamp(2.25rem, 5vw, 4.75rem);
+    line-height: 0.95;
+  }
+  .portal .text {
+    font-size: 1.1875rem;
+  }
+  .portal .panel :global(.drawing) {
+    max-width: 440px;
+    color: color-mix(in srgb, var(--paper) 85%, transparent);
+  }
+  .portal .gate {
+    text-align: center;
+  }
+  .portal .gate h2 {
+    font-size: clamp(3rem, 8vw, 7.5rem);
+    line-height: 0.92;
+  }
+  .portal .enter {
+    display: block;
+    margin-top: 24px;
+    color: var(--violet);
+  }
+  .portal .hud {
+    position: absolute;
+    left: calc(var(--frame) + var(--gutter));
+    bottom: calc(34px + 20px);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--mute);
+    opacity: 0;
+    transition: opacity 240ms ease;
+  }
+  .portal .hud.on {
+    opacity: 1;
+  }
+  .hud [data-hud] {
+    color: var(--signal);
+  }
+  .bar {
+    position: relative;
+    width: 120px;
+    height: 1px;
+    margin-left: 8px;
+    background: var(--rule);
+  }
+  .bar span {
+    position: absolute;
+    inset: 0;
+    background: var(--signal);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  @media (max-width: 860px) {
+    .panel {
+      grid-template-columns: 1fr;
+    }
+    .panel :global(.drawing) {
+      justify-self: start;
+      max-width: 220px;
+    }
+    .portal .panel,
+    .portal .gate {
+      width: 84vw;
+    }
+    .portal .panel {
+      padding: 24px 8px;
+    }
+    .portal .panel :global(.drawing) {
+      max-width: 240px;
+    }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { DrawSVGPlugin } from 'gsap/DrawSVGPlugin';
+
+  gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
+
+  const section = document.querySelector<HTMLElement>('[data-portal]')!;
+  const gate = section.querySelector<HTMLElement>('[data-gate]')!;
+  const panels = [...section.querySelectorAll<HTMLElement>('[data-panel]')];
+  const rings = [...section.querySelectorAll<HTMLElement>('[data-ring]')];
+  const hud = section.querySelector<HTMLElement>('.hud')!;
+  const hudNum = section.querySelector<HTMLElement>('[data-hud]')!;
+  const hudBar = section.querySelector<HTMLElement>('[data-hud-bar]')!;
+  const n = panels.length;
+  const P = 900;
+  const D = 1500;
+  const drawn = new Set<HTMLElement>();
+
+  const ease = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+  const clamp = (v: number) => Math.max(0, Math.min(1, v));
+
+  const place = (el: HTMLElement, z: number, opacity: number) => {
+    const o = clamp(opacity);
+    el.style.visibility = o > 0.01 && z < P * 0.7 ? 'visible' : 'hidden';
+    el.style.opacity = o.toFixed(3);
+    el.style.transform = `translate(-50%, -50%) translate3d(0, 0, ${z.toFixed(1)}px)`;
+  };
+
+  const render = (cam: number) => {
+    place(gate, cam, cam > 0 ? 1 - cam / (P * 0.45) : 1);
+    panels.forEach((p, i) => {
+      const z = cam - (i + 1) * D;
+      place(p, z, z > 0 ? 1 - z / (P * 0.35) : 1 + z / (D * 0.85));
+      const live = Math.abs(z) < D * 0.3;
+      p.classList.toggle('live', live);
+      if (live && !drawn.has(p)) {
+        drawn.add(p);
+        gsap.to(p.querySelectorAll('[data-stroke]'), { drawSVG: '100%', duration: 1.1, ease: 'power2.inOut', stagger: 0.04 });
+      }
+    });
+    rings.forEach((r, j) => {
+      const z = cam - (j * D) / 2;
+      const o = z > 0 ? 0.9 * (1 - z / (P * 0.6)) : 0.9 * (1 + z / (D * 3.2));
+      r.style.visibility = o > 0.01 && z < P * 0.8 ? 'visible' : 'hidden';
+      r.style.opacity = clamp(o).toFixed(3);
+      r.style.transform = `translate3d(0, 0, ${z.toFixed(1)}px)`;
+    });
+    const at = Math.max(1, Math.min(n, Math.round(cam / D)));
+    hud.classList.toggle('on', cam > D * 0.5);
+    hudNum.textContent = String(at).padStart(2, '0');
+    hudBar.style.transform = `scaleX(${clamp(cam / (n * D)).toFixed(3)})`;
+  };
+
+  gsap.matchMedia().add('(prefers-reduced-motion: no-preference)', () => {
+    section.classList.add('portal');
+    // Drawings stay blank while their panel approaches, so the first sight of them is the draw-in.
+    // Once drawn they stay put for the rest of the visit.
+    gsap.set(panels.filter((p) => !drawn.has(p)).flatMap((p) => [...p.querySelectorAll('[data-stroke]')]), { drawSVG: 0 });
+    const state = { cam: 0 };
+    const follow = gsap.quickTo(state, 'cam', { duration: 0.7, ease: 'power3.out', onUpdate: () => render(state.cam) });
+    render(0);
+    // Each station gets a stretch of scroll: half to fly there, half to hold still and read.
+    const st = ScrollTrigger.create({
+      trigger: section,
+      start: 'top top',
+      end: 'bottom bottom',
+      onUpdate: (self) => {
+        const x = self.progress * n;
+        const k = Math.min(Math.floor(x), n - 1);
+        const f = x - k;
+        follow((k + (f < 0.5 ? ease(f / 0.5) : 1)) * D);
+      },
+    });
+    return () => {
+      st.kill();
+      section.classList.remove('portal');
+      for (const el of [gate, ...panels, ...rings]) el.removeAttribute('style');
+      panels.forEach((p, i) => (p.style.zIndex = String(n - i)));
+    };
+  });
+</script>

@@ -1,0 +1,251 @@
+@font-face {
+  font-family: 'Bai Jamjuree';
+  src: url('/fonts/bai-jamjuree-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Bai Jamjuree';
+  src: url('/fonts/bai-jamjuree-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Bai Jamjuree';
+  src: url('/fonts/bai-jamjuree-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Share Tech Mono';
+  src: url('/fonts/share-tech-mono.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Chakra Petch';
+  src: url('/fonts/chakra-petch-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Chakra Petch';
+  src: url('/fonts/chakra-petch-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Chakra Petch';
+  src: url('/fonts/chakra-petch-700-italic.woff2') format('woff2');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  --ink: #0b0b0c;
+  --ink-raised: #141415;
+  --rule: #2b2b2d;
+  --paper: #f0efea;
+  --mute: #a2a19c;
+  --signal: #f3e600;
+  --violet: #b56cff;
+
+  --font-sans: 'Bai Jamjuree', system-ui, sans-serif;
+  --font-display: 'Chakra Petch', 'Bai Jamjuree', sans-serif;
+  --font-mono: 'Share Tech Mono', ui-monospace, monospace;
+
+  --frame: 14px;
+  --gutter: clamp(20px, 4vw, 64px);
+  --section: clamp(112px, 16vh, 176px);
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+
+  color-scheme: dark;
+}
+
+@media (max-width: 720px) {
+  :root {
+    --frame: 8px;
+    --section: 96px;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--ink);
+  -webkit-text-size-adjust: 100%;
+  scrollbar-color: var(--rule) var(--ink);
+  scrollbar-width: thin;
+}
+
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  font-kerning: normal;
+  -webkit-font-smoothing: antialiased;
+  caret-color: var(--signal);
+}
+
+h1,
+h2,
+h3,
+p,
+figure,
+blockquote,
+dl,
+dd {
+  margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-wrap: balance;
+}
+
+h2 {
+  font-size: clamp(2.5rem, 5.6vw, 4.75rem);
+  line-height: 0.98;
+  letter-spacing: -0.025em;
+}
+
+a {
+  color: inherit;
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: 1px;
+}
+
+::selection {
+  background: var(--signal);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 3px;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--ink);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--rule);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.section {
+  position: relative;
+  padding: var(--section) calc(var(--frame) + var(--gutter));
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip {
+  position: fixed;
+  top: calc(var(--frame) + 12px);
+  left: calc(var(--frame) + 12px);
+  z-index: 100;
+  padding: 10px 14px;
+  background: var(--signal);
+  color: var(--ink);
+  font-weight: 600;
+  transform: translateY(-200%);
+  transition: transform 200ms var(--ease-out);
+}
+.skip:focus-visible {
+  transform: none;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 22px;
+  border: 0;
+  font: 600 0.9375rem/1 var(--font-sans);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 160ms var(--ease-out),
+    background-color 200ms ease,
+    border-color 200ms ease;
+}
+.btn svg {
+  transition: transform 240ms var(--ease-out);
+}
+.btn:active {
+  transform: scale(0.97);
+}
+.btn-signal {
+  background: var(--signal);
+  color: var(--ink);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+}
+.btn-line {
+  border: 1px solid color-mix(in srgb, var(--paper) 40%, transparent);
+  color: var(--paper);
+}
+@media (hover: hover) and (pointer: fine) {
+  .btn-signal:hover {
+    background: #fff36b;
+  }
+  .btn-signal:hover svg {
+    transform: translateX(4px);
+  }
+  .btn-line:hover {
+    border-color: var(--paper);
+    background: color-mix(in srgb, var(--paper) 8%, transparent);
+  }
+  .btn-line:hover svg {
+    transform: translate(2px, -2px);
+  }
+}
+
+/* Hidden until motion.ts takes over, so nothing flashes in its final state first. */
+html.js [data-reveal] {
+  visibility: hidden;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.js [data-reveal] {
+    visibility: visible;
+  }
+}

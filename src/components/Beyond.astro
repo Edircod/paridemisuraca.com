@@ -1,0 +1,662 @@
+---
+import { copy, type Lang } from '../i18n/copy';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = copy[lang].beyond;
+const knobs = [
+  { id: 'gain', label: t.music.gain, value: 4 },
+  { id: 'volume', label: t.music.volume, value: 7 },
+];
+const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20';
+---
+
+<section class="section beyond" id="fuori-orario" aria-labelledby="beyond-title">
+  <h2 id="beyond-title" data-reveal="lines">{t.title}</h2>
+
+  <article class="scene surf" id="surf">
+    <div class="stage" data-sea data-game={JSON.stringify(t.surf.game)} role="img" aria-label={t.surf.label}>
+      <canvas aria-hidden="true"></canvas>
+      <canvas aria-hidden="true" data-spray></canvas>
+    </div>
+    <div class="side">
+      <svg class="board" viewBox="0 0 80 300" aria-hidden="true">
+        <path class="outline" d="M40 4C62 40 70 110 66 190 63 250 52 286 40 296 28 286 17 250 14 190 10 110 18 40 40 4Z"></path>
+        <path class="rail" d="M40 14C56 46 62 110 59 188 57 244 49 276 40 286M40 14C24 46 18 110 21 188 23 244 31 276 40 286"></path>
+        <path class="stringer" d="M40 10V290"></path>
+        <path class="leash" d="M40 296c0 10-12 10-12 18s12 8 12 16-12 8-12 16"></path>
+      </svg>
+      <div class="copy">
+        <h3>{t.surf.title}</h3>
+        <p class="text">{t.surf.text}</p>
+        <p class="counter">
+          <span class="mono">{t.surf.counter}</span>
+          <span class="count" data-count>000</span>
+        </p>
+        <p class="hint">{t.surf.hint}</p>
+        <p class="hint touch">{t.surf.hintTouch}</p>
+        <dl class="tutorial">
+          {
+            t.surf.tutorial.map(([key, action, touchKey]) => (
+              <div>
+                <dt class="mono">
+                  {touchKey ? (
+                    <>
+                      <span class="key-mouse">{key}</span>
+                      <span class="key-touch">{touchKey}</span>
+                    </>
+                  ) : (
+                    key
+                  )}
+                </dt>
+                <dd>{action}</dd>
+              </div>
+            ))
+          }
+        </dl>
+        <p class="note">{t.surf.note}</p>
+      </div>
+    </div>
+    <svg class="swell" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true">
+      <path d={swell}></path>
+    </svg>
+  </article>
+
+  <article class="scene music" id="musica">
+    <div class="side">
+      <div class="copy">
+        <h3>{t.music.title}</h3>
+        <p class="text">{t.music.text}</p>
+      </div>
+      <div class="amp" data-amp>
+        <div class="brand mono">
+          <span aria-hidden="true">PM-11</span>
+          <div class="mains">
+            <span class="jewel" aria-hidden="true"></span>
+            <button class="toggle mono" type="button" role="switch" aria-checked="false" aria-label={t.music.power} data-power>
+              <span class="label-on" aria-hidden="true">On</span>
+              <span class="nut" aria-hidden="true"><span class="lever"></span></span>
+              <span class="label-off" aria-hidden="true">Off</span>
+            </button>
+            <span class="mono" aria-hidden="true">Power</span>
+          </div>
+        </div>
+        <div class="controls">
+          {
+            knobs.map((k) => (
+              <div class="control">
+                <div
+                  class="knob"
+                  role="slider"
+                  tabindex="0"
+                  aria-label={k.label}
+                  aria-valuemin="0"
+                  aria-valuemax="11"
+                  aria-valuenow={k.value}
+                  data-knob={k.id}
+                >
+                  <span class="dial">
+                    <span class="mark" />
+                  </span>
+                </div>
+                <span class="mono">{k.label}</span>
+                <span class="value mono" data-value>
+                  {k.value}
+                </span>
+              </div>
+            ))
+          }
+          <div class="meter" aria-hidden="true" data-meter>
+            {Array.from({ length: 14 }, () => <span />)}
+          </div>
+        </div>
+      </div>
+      <p class="hint">{t.music.hint}</p>
+    </div>
+    <div class="stage" data-symbols role="img" aria-label={t.music.label}>
+      <canvas aria-hidden="true"></canvas>
+    </div>
+  </article>
+</section>
+
+<style>
+  .scene {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 24px;
+    align-items: center;
+  }
+  .surf {
+    margin-top: clamp(40px, 6vh, 72px);
+  }
+  .music {
+    margin-top: clamp(96px, 14vh, 160px);
+  }
+  .stage {
+    position: relative;
+    cursor: crosshair;
+    touch-action: pan-y;
+  }
+  .surf .stage {
+    grid-column: 1 / span 8;
+    width: min(100%, calc(84svh * 720 / 670));
+    aspect-ratio: 720 / 670;
+  }
+  .music .stage {
+    grid-column: 7 / span 6;
+    justify-self: center;
+    width: min(100%, calc(86svh * 520 / 826));
+    aspect-ratio: 520 / 826;
+  }
+  canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .side {
+    display: grid;
+    gap: 32px;
+  }
+  .surf .side {
+    grid-column: 9 / span 4;
+    grid-template-columns: 72px 1fr;
+    align-items: end;
+  }
+  .music .side {
+    grid-column: 1 / span 5;
+  }
+  h3 {
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    line-height: 0.92;
+    letter-spacing: -0.025em;
+  }
+  .text {
+    max-width: 34ch;
+    margin-top: 16px;
+    font-size: 1.1875rem;
+    color: var(--mute);
+  }
+  .hint {
+    font-size: 0.875rem;
+    color: var(--violet);
+  }
+  .copy .hint {
+    margin-top: 20px;
+  }
+  .hint.touch {
+    display: none;
+  }
+  .tutorial {
+    display: grid;
+    gap: 8px;
+    margin: 16px 0 0;
+    font-size: 0.875rem;
+  }
+  .tutorial div {
+    display: grid;
+    grid-template-columns: minmax(0, 9em) 1fr;
+    gap: 12px;
+    align-items: baseline;
+  }
+  .tutorial dt {
+    font-size: 0.6875rem;
+    color: var(--mute);
+  }
+  .tutorial dd {
+    margin: 0;
+  }
+  .note {
+    margin-top: 12px;
+    font-size: 0.875rem;
+    color: var(--mute);
+  }
+
+  .board {
+    width: 72px;
+    height: auto;
+    overflow: visible;
+    animation: bob 5s ease-in-out infinite;
+  }
+  .board path {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .outline {
+    stroke: var(--paper);
+    stroke-width: 1.5;
+  }
+  .rail {
+    stroke: color-mix(in srgb, var(--paper) 30%, transparent);
+  }
+  .stringer {
+    stroke: var(--signal);
+    stroke-width: 1.5;
+  }
+  .leash {
+    stroke: var(--violet);
+    stroke-width: 1.5;
+  }
+  .counter {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-top: 28px;
+    padding-top: 14px;
+    border-top: 1px solid var(--rule);
+  }
+  .counter .mono {
+    color: var(--mute);
+  }
+  .count {
+    font-family: var(--font-display);
+    font-size: 2.25rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--signal);
+    font-variant-numeric: tabular-nums;
+  }
+  .count:global(.bump) {
+    animation: bump 420ms var(--ease-out);
+  }
+  .swell {
+    grid-column: 1 / -1;
+    width: 100%;
+    height: 28px;
+    margin-top: 32px;
+    overflow: hidden;
+  }
+  .swell path {
+    fill: none;
+    stroke: color-mix(in srgb, var(--paper) 35%, transparent);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    animation: roll 6s linear infinite;
+  }
+
+  .amp {
+    padding: 20px 22px 24px;
+    border: 1px solid var(--rule);
+    background:
+      repeating-linear-gradient(90deg, color-mix(in srgb, var(--paper) 3%, transparent) 0 1px, transparent 1px 4px),
+      var(--ink-raised);
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    color: var(--mute);
+  }
+  /* Mains switch: a chrome bat-handle toggle and a jewel pilot lamp, no standby. */
+  .mains {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .jewel {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #5a5a5e, #1d1d1f 70%);
+    box-shadow: inset 0 0 0 1px #3a3a3d;
+    transition:
+      background 200ms ease,
+      box-shadow 200ms ease;
+  }
+  .amp:global(.on) .jewel {
+    background: radial-gradient(circle at 35% 30%, #fffbd0, var(--signal) 55%, #8a8300);
+    box-shadow:
+      inset 0 0 0 1px #8a8300,
+      0 0 14px var(--signal);
+  }
+  .amp:global(.on.eleven) .jewel {
+    background: radial-gradient(circle at 35% 30%, #f1e6ff, var(--violet) 55%, #5a2d8a);
+    box-shadow:
+      inset 0 0 0 1px #5a2d8a,
+      0 0 16px var(--violet);
+  }
+  .toggle {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 2px;
+    padding: 2px 6px;
+    border: 0;
+    background: none;
+    color: var(--mute);
+    font-size: 0.5625rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .nut {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    margin: 12px 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #e9e9ec, #8c8c92 45%, #3b3b3f 80%);
+    box-shadow:
+      0 0 0 3px #1a1a1b,
+      0 0 0 4px #3a3a3d;
+  }
+  .lever {
+    position: absolute;
+    left: 50%;
+    bottom: 50%;
+    width: 6px;
+    height: 16px;
+    margin-left: -3px;
+    border-radius: 3px 3px 2px 2px;
+    background: linear-gradient(90deg, #6d6d72, #f4f4f6 45%, #8c8c92);
+    transform: scaleY(-1);
+    transform-origin: 50% 100%;
+    transition: transform 120ms cubic-bezier(0.6, 0, 0.2, 1);
+  }
+  /* The bat-handle tip. */
+  .lever::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -2px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #ffffff, #a9a9ae 60%, #55555a);
+  }
+  .toggle[aria-checked='true'] .lever {
+    transform: scaleY(1);
+  }
+  .toggle[aria-checked='true'] .label-on,
+  .toggle[aria-checked='false'] .label-off {
+    color: var(--paper);
+  }
+  .mains > .mono {
+    font-size: 0.6875rem;
+  }
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px 28px;
+    margin-top: 18px;
+  }
+  .control {
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+  }
+  .control .mono {
+    font-size: 0.6875rem;
+    color: var(--mute);
+  }
+  .control .value {
+    font-size: 0.8125rem;
+    color: var(--paper);
+  }
+  .amp:global(.eleven) .control .value {
+    color: var(--violet);
+  }
+  .knob {
+    width: 64px;
+    height: 64px;
+    border: 1px solid #3a3a3d;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #303033, #141415 70%);
+    cursor: grab;
+    touch-action: none;
+  }
+  .knob:active {
+    cursor: grabbing;
+  }
+  .dial {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    transform: rotate(var(--angle, 0deg));
+  }
+  .mark {
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    width: 2px;
+    height: 16px;
+    margin-left: -1px;
+    background: var(--signal);
+  }
+  .meter {
+    display: flex;
+    gap: 3px;
+    flex: 1 1 140px;
+    min-width: 140px;
+    height: 22px;
+  }
+  .meter span {
+    flex: 1;
+    background: color-mix(in srgb, var(--paper) 8%, transparent);
+  }
+  .meter span:global(.lit) {
+    background: var(--paper);
+  }
+  .meter span:global(.lit):nth-child(n + 10) {
+    background: var(--signal);
+  }
+  .meter span:global(.lit):nth-child(n + 13) {
+    background: var(--violet);
+  }
+
+  @keyframes bob {
+    50% {
+      transform: translateY(-8px) rotate(2deg);
+    }
+  }
+  @keyframes roll {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes bump {
+    from {
+      transform: translateY(-6px);
+      color: var(--paper);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .board,
+    .swell path {
+      animation: none;
+    }
+  }
+  .key-touch {
+    display: none;
+  }
+  @media (hover: none) {
+    .hint,
+    .key-mouse {
+      display: none;
+    }
+    .hint.touch {
+      display: block;
+    }
+    .key-touch {
+      display: inline;
+    }
+  }
+  @media (pointer: coarse) {
+    .toggle {
+      padding: 2px 12px;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .surf .stage,
+    .surf .side,
+    .music .stage,
+    .music .side {
+      grid-column: 1 / -1;
+    }
+    .surf .side {
+      margin-top: 32px;
+      grid-template-columns: 52px 1fr;
+    }
+    .board {
+      width: 52px;
+    }
+    .tutorial dt,
+    .mains > .mono,
+    .control .mono {
+      font-size: 0.75rem;
+    }
+    .music .stage {
+      order: -1;
+      width: min(86%, 380px);
+      margin-bottom: 32px;
+    }
+  }
+  /* On a phone the board would only push the text in. */
+  @media (max-width: 600px) {
+    .surf .side {
+      grid-template-columns: 1fr;
+    }
+    .board {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { mountLineField } from '../scripts/line-field';
+  import { mountSurfGame, type GameCopy } from '../scripts/surf-game';
+  import { mountSymbolField } from '../scripts/symbol-field';
+  import { createGuitarAudio } from '../scripts/guitar-audio';
+  import type { FieldData } from '../scripts/glyph-portrait';
+
+  function lazy(el: HTMLElement, url: string, mount: (data: FieldData) => void) {
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        io.disconnect();
+        fetch(url)
+          .then((r) => r.json() as Promise<FieldData>)
+          .then(mount);
+      },
+      { rootMargin: '400px 0px' },
+    );
+    io.observe(el);
+  }
+
+  const sea = document.querySelector<HTMLElement>('[data-sea]')!;
+  const count = document.querySelector<HTMLElement>('[data-count]')!;
+  let broken = 0;
+  sea.addEventListener('wavebreak', () => {
+    count.textContent = String(++broken).padStart(3, '0');
+    count.classList.remove('bump');
+    void count.offsetWidth;
+    count.classList.add('bump');
+  });
+  lazy(sea, '/data/surf.json', (data) => {
+    const field = mountLineField(sea, sea.querySelector('canvas')!, sea.querySelector('[data-spray]')!, data);
+    if (field) mountSurfGame(sea, field, JSON.parse(sea.dataset.game!) as GameCopy);
+  });
+
+  const amp = document.querySelector<HTMLElement>('[data-amp]')!;
+  const segments = [...amp.querySelectorAll<HTMLElement>('[data-meter] span')];
+  const knobs = [...amp.querySelectorAll<HTMLElement>('[data-knob]')];
+  const values: Record<string, number> = {};
+  const audio = createGuitarAudio();
+  const power = amp.querySelector<HTMLButtonElement>('[data-power]')!;
+  const setPower = (on: boolean) => {
+    power.setAttribute('aria-checked', String(on));
+    amp.classList.toggle('on', on);
+    audio.setPower(on);
+  };
+  power.addEventListener('click', () => setPower(power.getAttribute('aria-checked') !== 'true'));
+  let onChange = (id: string, v: number) => (id === 'gain' ? audio.setGain(v) : audio.setVolume(v));
+
+  const set = (knob: HTMLElement, v: number) => {
+    const value = Math.max(0, Math.min(11, v));
+    const id = knob.dataset.knob!;
+    values[id] = value;
+    const shown = Math.round(value);
+    knob.setAttribute('aria-valuenow', String(shown));
+    knob.querySelector<HTMLElement>('.dial')!.style.setProperty('--angle', `${(value / 11) * 270 - 135}deg`);
+    knob.parentElement!.querySelector<HTMLElement>('[data-value]')!.textContent = String(shown);
+    amp.classList.toggle('eleven', Math.round(values.gain ?? 0) === 11);
+    onChange(id, value / 11);
+  };
+
+  for (const knob of knobs) {
+    set(knob, Number(knob.getAttribute('aria-valuenow')));
+    let from: { x: number; y: number; v: number } | null = null;
+    knob.addEventListener('pointerdown', (e) => {
+      knob.setPointerCapture(e.pointerId);
+      from = { x: e.clientX, y: e.clientY, v: values[knob.dataset.knob!] };
+    });
+    knob.addEventListener('pointermove', (e) => {
+      if (from) set(knob, from.v + ((e.clientX - from.x - (e.clientY - from.y)) / 140) * 11);
+    });
+    const release = () => (from = null);
+    knob.addEventListener('pointerup', release);
+    knob.addEventListener('pointercancel', release);
+    knob.addEventListener('keydown', (e) => {
+      const v = values[knob.dataset.knob!];
+      const next = { ArrowUp: v + 1, ArrowRight: v + 1, ArrowDown: v - 1, ArrowLeft: v - 1, PageUp: v + 3, PageDown: v - 3, Home: 0, End: 11 }[e.key];
+      if (next === undefined) return;
+      e.preventDefault();
+      set(knob, Math.round(next));
+    });
+  }
+
+  const guitar = document.querySelector<HTMLElement>('[data-symbols]')!;
+  lazy(guitar, '/data/guitar.json', (data) => {
+    const field = mountSymbolField(guitar, guitar.querySelector('canvas')!, data);
+    onChange = (id, v) => {
+      if (id === 'gain') {
+        field.setGain(v);
+        audio.setGain(v);
+      } else {
+        field.setVolume(v);
+        audio.setVolume(v);
+      }
+    };
+    // The stage is cut into a grid of frets: every new cell the cursor enters plucks the note
+    // of its row, higher up the stage meaning higher up the scale.
+    const ROWS = 13;
+    const COLS = 6;
+    let at = { cell: -1, x: 0, y: 0, t: 0 };
+    let lastPluck = 0;
+    guitar.addEventListener('pointermove', (e) => {
+      const r = guitar.getBoundingClientRect();
+      const u = (e.clientX - r.left) / r.width;
+      const v = (e.clientY - r.top) / r.height;
+      const row = Math.min(ROWS - 1, Math.floor(v * ROWS));
+      const cell = row * COLS + Math.min(COLS - 1, Math.floor(u * COLS));
+      const now = performance.now();
+      const speed = Math.hypot(e.clientX - at.x, e.clientY - at.y) / Math.max(now - at.t, 1);
+      if (at.cell >= 0 && cell !== at.cell && now - lastPluck > 45) {
+        lastPluck = now;
+        audio.pluck(1 - row / (ROWS - 1), Math.min(1, speed / 1.5));
+      }
+      at = { cell, x: e.clientX, y: e.clientY, t: now };
+    });
+    guitar.addEventListener('pointerleave', () => (at.cell = -1));
+    guitar.addEventListener('click', () => {
+      setPower(true);
+      audio.strum();
+      field.strum();
+    });
+    field.setGain(values.gain / 11);
+    field.setVolume(values.volume / 11);
+    field.onLevel((v) => {
+      const lit = Math.round(v * segments.length);
+      segments.forEach((s, i) => s.classList.toggle('lit', i < lit));
+    });
+  });
+</script>

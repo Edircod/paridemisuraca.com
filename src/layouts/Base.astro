@@ -1,0 +1,38 @@
+---
+import '../styles/global.css';
+import { copy, type Lang } from '../i18n/copy';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = copy[lang];
+const alternate = lang === 'it' ? '/en/' : '/';
+const canonical = new URL(lang === 'it' ? '/' : '/en/', Astro.site);
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <script is:inline>document.documentElement.classList.add('js')</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{t.meta.title}</title>
+    <meta name="description" content={t.meta.description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang={lang === 'it' ? 'en' : 'it'} href={new URL(alternate, Astro.site)} />
+    <meta name="theme-color" content="#0b0b0c" />
+    <meta property="og:title" content={t.meta.title} />
+    <meta property="og:description" content={t.meta.description} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/bai-jamjuree-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/chakra-petch-700.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/data/portrait-pro.json" as="fetch" crossorigin />
+  </head>
+  <body>
+    <a class="skip" href="#main">{t.nav.skip}</a>
+    <slot />
+  </body>
+</html>

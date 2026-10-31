@@ -1,0 +1,151 @@
+---
+import { copy, type Lang } from '../i18n/copy';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = copy[lang];
+// "*word*" marks the accent; everything else lands in paper.
+const lines = t.manifesto.lines.map((line) => ({
+  plain: line.replaceAll('*', ''),
+  words: line.split(' ').map((token) => {
+    const m = token.match(/^\*(.+?)\*(.*)$/);
+    return m ? [{ text: m[1], accent: true }, { text: m[2], accent: false }] : [{ text: token, accent: false }];
+  }),
+}));
+---
+
+<section class="manifesto" id="manifesto" aria-label={t.manifesto.label}>
+  <div class="kinetic" data-kinetic style={`--lines: ${lines.length}`}>
+    <div class="stage">
+      {
+        lines.map((line) => (
+          <p class="line" aria-label={line.plain} data-line>
+            {line.words.map((parts) => (
+              <span class="w" aria-hidden="true">
+                {parts.map((p) => [...p.text].map((ch) => <span class:list={['c', { accent: p.accent }]}>{ch}</span>))}
+              </span>
+            ))}
+          </p>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .kinetic {
+    padding: var(--section) calc(var(--frame) + var(--gutter)) 0;
+  }
+  .stage {
+    display: grid;
+    gap: 48px;
+    justify-items: center;
+  }
+  .line {
+    max-width: 16ch;
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 8.4vw, 8.5rem);
+    font-weight: 700;
+    line-height: 0.94;
+    letter-spacing: -0.03em;
+    text-align: center;
+    text-wrap: balance;
+    transform-style: preserve-3d;
+  }
+  .w {
+    display: inline-block;
+    white-space: nowrap;
+    transform-style: preserve-3d;
+  }
+  .w + .w {
+    margin-left: 0.24em;
+  }
+  .c {
+    display: inline-block;
+  }
+  .accent {
+    color: var(--signal);
+  }
+  .kinetic:global(.is-live) {
+    height: calc(var(--lines) * 120svh + 100svh);
+    padding: 0;
+  }
+  .kinetic:global(.is-live) .stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    overflow: hidden;
+    perspective: 1000px;
+    place-items: center;
+  }
+  .kinetic:global(.is-live) .line {
+    grid-area: 1 / 1;
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const kinetic = document.querySelector<HTMLElement>('[data-kinetic]')!;
+  const lines = [...kinetic.querySelectorAll<HTMLElement>('[data-line]')];
+
+  gsap.matchMedia().add('(prefers-reduced-motion: no-preference)', () => {
+    kinetic.classList.add('is-live');
+    const rand = gsap.utils.random;
+    const tl = gsap.timeline({
+      scrollTrigger: { trigger: kinetic, start: 'top top', end: 'bottom bottom', scrub: 0.9 },
+    });
+    // Each line flies in from deep space as loose glyphs, holds, then blows past the camera.
+    lines.forEach((line, k) => {
+      const chars = [...line.querySelectorAll<HTMLElement>('.c')];
+      const at = k * 4.4;
+      tl.fromTo(
+        chars,
+        {
+          x: () => rand(-0.6, 0.6) * innerWidth,
+          y: () => rand(-0.5, 0.5) * innerHeight,
+          z: () => rand(-2600, -900),
+          rotationX: () => rand(-140, 140),
+          rotationY: () => rand(-140, 140),
+          opacity: 0,
+          color: '#b56cff',
+        },
+        {
+          x: 0,
+          y: 0,
+          z: 0,
+          rotationX: 0,
+          rotationY: 0,
+          opacity: 1,
+          color: (_i: number, el: HTMLElement) => (el.classList.contains('accent') ? '#f3e600' : '#f0efea'),
+          duration: 1.2,
+          ease: 'power3.out',
+          stagger: { each: 0.02, from: 'random' },
+        },
+        at,
+      );
+      tl.to(
+        chars,
+        {
+          x: () => rand(-0.9, 0.9) * innerWidth,
+          y: () => rand(-0.7, 0.7) * innerHeight,
+          z: () => rand(400, 950),
+          rotationX: () => rand(-90, 90),
+          rotationY: () => rand(-90, 90),
+          opacity: 0,
+          duration: 1,
+          ease: 'power2.in',
+          stagger: { each: 0.012, from: 'random' },
+        },
+        at + 3,
+      );
+    });
+    return () => kinetic.classList.remove('is-live');
+  });
+</script>
