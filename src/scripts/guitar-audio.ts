@@ -101,8 +101,9 @@ export function createGuitarAudio(): GuitarAudio {
   // One voice per note, like a string: plucking it again chokes the old one.
   const ringing = new Map<number, { src: AudioBufferSourceNode; amp: GainNode }>();
 
-  // The Volume knob tops out where 6 used to be: loud enough, and 11 still means the maximum.
-  const level = () => (on ? Math.pow((volume * 6) / 11, 2) * 0.9 : 0);
+  // The Volume knob tops out where 6 used to be, and the whole range sits low: a web page shouldn't
+  // blast anyone's speakers. 11 still means the maximum.
+  const level = () => (on ? Math.pow((volume * 6) / 11, 2) * 0.3 : 0);
   const notes = () => {
     const c = CHORDS[Math.max(0, chord)];
     return [...c, c[c.length - 2] + 12, c[c.length - 1] + 12];

@@ -868,11 +868,10 @@ export function mountSurfGame(stage: HTMLElement, sea: Sea, copy: GameCopy) {
     // Further right is faster, further left slower and deeper in the tube.
     const ahead = clamp((rx - curl) / (W * 0.45), -0.5, 1);
     speed += (pace() * (0.85 + 0.75 * ahead) + Math.max(0, vx) * 0.25 - speed) * Math.min(1, dt * 2.2);
-    // Once the tube has formed it peels along the wave: hang back and it comes for you, taking more of
-    // the picture, faster the further back you are; ride far enough right and it falls behind. Sit
-    // in it and it closes on you, the faster the deeper you are.
-    const closing = pace() * (2 * (0.7 - rx / W) + 1.2 * Math.max(0, depth(rx)));
-    curl = clamp(curl + closing * dt * step(0.35, 0.8, breaking), W * 0.35, W + reach);
+    // Once the tube has formed it peels along the wave: hang back and it slowly comes for you, taking
+    // more of the picture, faster the further back you are; ride far enough right and it falls behind,
+    // so there is always a way out. Sit in it long enough and it closes on you.
+    curl = clamp(curl + pace() * (0.7 - rx / W) * dt * step(0.35, 0.8, breaking), W * 0.35, W + reach);
 
     if (air) {
       air.t += dt;
