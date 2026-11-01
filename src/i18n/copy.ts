@@ -104,8 +104,8 @@ export const copy = {
         hintTouch: 'Tocca l’onda per aprire il gioco.',
         tutorial: [
           ['Clic sinistro', 'Take off: parti sull’onda', 'Tocco'],
-          ['Destra', 'Accelera'],
-          ['Sinistra', 'Rallenta e ti infili nel tubo'],
+          ['Destra', 'Vai più avanti sull’onda'],
+          ['Sinistra', 'Ti infili nel tubo'],
           ['Su e giù', 'Ti muovi sulla parete'],
           ['Clic sulla parete', 'Cutback', 'Tocco sulla parete'],
           ['Clic nel tubo', 'Mani in aria, o ti accovacci se sei in fondo', 'Tocco nel tubo'],
@@ -272,8 +272,8 @@ export const copy = {
         hintTouch: 'Tap the wave to open the game.',
         tutorial: [
           ['Left click', 'Take off: catch the wave', 'Tap'],
-          ['Right', 'Speed up'],
-          ['Left', 'Slow down and pull into the tube'],
+          ['Right', 'Further out along the wave'],
+          ['Left', 'Pull into the tube'],
           ['Up and down', 'Move on the face'],
           ['Click on the face', 'Cutback', 'Tap on the face'],
           ['Click in the tube', 'Hands up, or tuck in when you’re deep', 'Tap in the tube'],

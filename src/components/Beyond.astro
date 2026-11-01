@@ -561,10 +561,15 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
       margin-bottom: 32px;
     }
   }
-  /* On a phone the board would only push the text in. */
+  /* On a phone the board would only push the text in, and the sea stands upright, the shape the game
+     takes when it fills the screen. */
   @media (max-width: 600px) {
     .surf .side {
       grid-template-columns: 1fr;
+    }
+    .surf .shell:not(.full) .stage {
+      height: calc(100svh - 96px);
+      aspect-ratio: auto;
     }
     .board {
       display: none;
@@ -603,7 +608,7 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
     void count.offsetWidth;
     count.classList.add('bump');
   });
-  lazy(sea, '/data/surf.json', async (data) => {
+  lazy(sea, matchMedia('(max-width: 600px)').matches ? '/data/surf-tall.json' : '/data/surf.json', async (data) => {
     const field = await mountLineField(sea, sea.querySelector('canvas')!, sea.querySelector('[data-spray]')!, data);
     if (field) mountSurfGame(sea, document.querySelector<HTMLElement>('[data-shell]')!, field, JSON.parse(sea.dataset.game!) as GameCopy);
   });

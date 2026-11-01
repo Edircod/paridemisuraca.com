@@ -2,9 +2,9 @@
 // takes on the colours of the sea, its lines get finer, then they re-form into a swell seen from the
 // beach at sunset. You paddle into it, towards the beach, as it rises and comes at you; click to take
 // off: you pop up, drop straight down the face and bottom turn along it, while the wave breaks at the
-// peak and then starts to barrel, peeling a little way and then holding. The surfer goes wherever the
-// cursor is: further right is faster; back left takes you into the tube, until the falling lip hides
-// you, and further still it lands on you. Shells are worth points. Surfers and rocks wipe you out; dodge
+// peak and then starts to barrel, peeling a little way and then holding. The wave always runs at the
+// same speed; the surfer goes wherever the cursor is along it: further right out on the shoulder; back
+// left into the tube, until the falling lip hides you, and further still it lands on you. Shells are worth points. Surfers and rocks wipe you out; dodge
 // them by moving up and down the face. Click on the face for a cutback; in the tube, for hands in the
 // air, or a tuck when deep in. Shoot up past the lip to fly: keep going up for a frontside
 // 360, pull down for a backside one, hold the button to grab the rail. Every air lands. The wave is
@@ -656,12 +656,13 @@ export function mountSurfGame(stage: HTMLElement, shell: HTMLElement, sea: Sea, 
     // A long tube, but always ending on screen, where going too deep can still get you.
     reach = Math.min((trough - lip) * 1.5, W * 0.6);
   };
-  // Same wave as the shader: the crest rises as the swell builds; a rounded peak easing down into the
-  // shoulders, and once it breaks, left of the curl, the lip getting lower along the tube.
+  // Same wave as the shader: the crest rises as the swell builds; a broad, rounded peak easing down into
+  // the shoulders, as wide on a screen held upright as on a wider one, and once it breaks, left of the
+  // curl, the lip getting lower along the tube.
   const crest = () => trough - (trough - lip) * (0.45 + 0.55 * smooth(swell));
   const lipAt = (px: number) => {
-    const d = (px - curl) / W;
-    let h = 0.92 * Math.exp((-d * d) / (d > 0 ? 0.9 : 0.5)) + 0.08 * Math.exp((-d * d) / 0.01);
+    const d = (px - curl) / Math.max(W, 0.6 * H);
+    let h = Math.exp((-d * d) / (d > 0 ? 0.9 : 0.5));
     const tube = 1 - 0.4 * step(0, 1.3, (curl - px) / reach);
     if (d < 0) h = tube + (h - tube) * (1 - step(0, 0.5, breaking));
     return trough - (trough - crest()) * (0.28 + 0.72 * h);
@@ -689,8 +690,7 @@ export function mountSurfGame(stage: HTMLElement, shell: HTMLElement, sea: Sea, 
     return c + (trough - c) * formed() * (1 - Math.sqrt(1 - s * s)) + 10 * k;
   };
   const gravity = () => 1400 * k;
-  // The wave runs a little faster the longer you stay on it.
-  const pace = () => Math.min(430, 250 + travelled / (250 * k)) * k;
+  const pace = () => 300 * k;
 
   // While you paddle in, the water is drawn zoomed in towards the horizon above the middle; the game
   // works in the wave's frame, so the pointer comes in and the sea's foam and spray go out through
@@ -879,9 +879,7 @@ export function mountSurfGame(stage: HTMLElement, shell: HTMLElement, sea: Sea, 
     const wantX = cut >= 0 ? (cut < CUT * 0.55 ? back : 260 * k) : clamp((clamp(ax, 10 * k, W * 0.92) - rx) * 9, -1300 * k, 1300 * k);
     vx += (wantX - vx) * Math.min(1, dt * 12 * grip);
     rx = Math.max(10 * k, rx + vx * dt);
-    // Further right is faster, further left slower and deeper in the tube.
-    const ahead = clamp((rx - curl) / (W * 0.3), -0.5, 1);
-    speed += (pace() * (0.8 + ahead) + Math.max(0, vx) * 0.3 - speed) * Math.min(1, dt * 2.2);
+    speed += (pace() - speed) * Math.min(1, dt * 2.2);
 
     if (air) {
       air.t += dt;
@@ -914,8 +912,8 @@ export function mountSurfGame(stage: HTMLElement, shell: HTMLElement, sea: Sea, 
       const next = y + vy * dt;
       if (next < top) {
         if (cut < 0 && rx > curl && vy < -260 * k && speed > 200 * k) {
-          // The faster you hit the lip, the higher you fly.
-          const lift = (220 + (speed / k) * 0.7) * k;
+          // The harder you hit the lip, the higher you fly.
+          const lift = (250 - (vy / k) * 0.45) * k;
           air = { vy: -lift, t: 0, from: ay, peak: top, spin: 0, spinFrom: 0, spinDur: 1, grab: 0, grabbing: false };
         } else {
           vy = 0;

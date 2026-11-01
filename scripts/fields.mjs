@@ -30,6 +30,15 @@ const presets = {
     mix: [0.18, 0.7, 0.35],
     mask: 'key',
   },
+  // The same shot cut tall for phones: the whole height of the photo, from the hand to the board.
+  'surf-tall': {
+    file: 'assets-src/photos/surf.png',
+    crop: { left: 353, top: 0, width: 550, height: 940 },
+    grid: [220, 376],
+    work: 2,
+    mix: [0.18, 0.7, 0.35],
+    mask: 'key',
+  },
   guitar: {
     file: 'assets-src/photos/guitar.jpg',
     crop: { left: 270, top: 205, width: 520, height: 826 },
@@ -129,7 +138,7 @@ for (const [name, p] of Object.entries(presets)) {
     const gx = x > 0 && x < w - 1 ? sl[i + 1] - sl[i - 1] : 0;
     const gy = y > 0 && y < h - 1 ? sl[i + w] - sl[i - w] : 0;
     const edge = Math.min(1, Math.hypot(gx, gy) * 7);
-    const tone = name === 'surf' ? 0.4 + 0.6 * (1 - rank(lum[i])) : rank(lum[i]);
+    const tone = name.startsWith('surf') ? 0.4 + 0.6 * (1 - rank(lum[i])) : rank(lum[i]);
     field[i] = mask[i] * Math.min(1, p.mix[0] + p.mix[1] * tone + p.mix[2] * edge);
   }
 

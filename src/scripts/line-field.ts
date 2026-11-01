@@ -32,6 +32,7 @@ uniform float uCount;
 uniform vec2 uPointer;
 uniform float uEnergy;
 uniform sampler2D uVal;
+uniform vec4 uFit;
 uniform sampler2D uFoam;
 uniform float uTint;
 uniform float uMorph;
@@ -76,12 +77,14 @@ vec3 sea(float t) {
   return t < 0.35 ? mix(deep, teal, t / 0.35) : t < 0.72 ? mix(teal, lit, (t - 0.35) / 0.37) : mix(lit, foam, clamp((t - 0.72) / 0.28, 0.0, 1.0));
 }
 
-// The crest of the game's wave: a rounded peak, easing down into a long shoulder on the right and,
-// until the wave starts to break, a shorter one on the left. Once it breaks, the wave left of the curl
-// is the lip and the whitewater: as tall as the peak at the curl, lower and lower along the tube.
+// The crest of the game's wave: a broad, rounded peak, easing down into a long shoulder on the right
+// and, until the wave starts to break, a shorter one on the left; on a screen held upright it keeps
+// the width it would have on a wider one, or it turns into a pyramid. Once it breaks, the wave left of
+// the curl is the lip and the whitewater: as tall as the peak at the curl, lower and lower along the
+// tube.
 float crest(float x) {
-  float d = (x - uWave.z) / uView.x;
-  float h = 0.92 * exp(-d * d / (d > 0.0 ? 0.9 : 0.5)) + 0.08 * exp(-d * d / 0.01);
+  float d = (x - uWave.z) / max(uView.x, 0.6 * uView.y);
+  float h = exp(-d * d / (d > 0.0 ? 0.9 : 0.5));
   float tube = 1.0 - 0.4 * smoothstep(0.0, 1.3, (uWave.z - x) / uWave.w);
   if (d < 0.0) h = mix(tube, h, 1.0 - smoothstep(0.0, 0.5, uBreak));
   return uWave.y - (uWave.y - uWave.x) * (0.28 + 0.72 * h);
@@ -297,7 +300,10 @@ void main() {
     if (j < 0.0 || j >= uCount) continue;
     float v = (j + 0.5) / uCount;
     float y0 = v * uView.y;
-    float val = texture(uVal, vec2(b, v)).r;
+    // The portrait keeps its proportions whatever the shape of the stage: as wide as it fits, standing
+    // on the bottom edge; around it the lines are empty.
+    vec2 uv = vec2(b, v) * uFit.xy + uFit.zw;
+    float val = uv == clamp(uv, 0.0, 1.0) ? texture(uVal, uv).r : 0.0;
     float f = texture(uFoam, vec2(b, v)).r;
     // While the game charges up, the portrait takes on the colours of the sea.
     vec3 c = mix(PAPER, sea(0.08 + val * 0.9), uTint);
@@ -378,7 +384,7 @@ export async function mountLineField(stage: HTMLElement, canvas: HTMLCanvasEleme
   for (const s of shaders) if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s) ?? 'shader compile failed');
   if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog) ?? 'program link failed');
   const u: Record<string, WebGLUniformLocation | null> = {};
-  for (const name of ['uView', 'uDpr', 'uTime', 'uCount', 'uPointer', 'uEnergy', 'uVal', 'uFoam', 'uTint', 'uMorph', 'uOrigin', 'uWave', 'uScroll', 'uBreak', 'uZoom']) u[name] = gl.getUniformLocation(prog, name);
+  for (const name of ['uView', 'uDpr', 'uTime', 'uCount', 'uPointer', 'uEnergy', 'uVal', 'uFit', 'uFoam', 'uTint', 'uMorph', 'uOrigin', 'uWave', 'uScroll', 'uBreak', 'uZoom']) u[name] = gl.getUniformLocation(prog, name);
   gl.useProgram(prog);
   gl.uniform1i(u.uVal, 0);
   gl.uniform1i(u.uFoam, 1);
@@ -441,6 +447,10 @@ export async function mountLineField(stage: HTMLElement, canvas: HTMLCanvasEleme
     canvas.width = sprayCanvas.width = Math.round(W * dpr);
     canvas.height = sprayCanvas.height = Math.round(H * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const scale = Math.min(W / data.w, H / data.h);
+    const iw = data.w * scale;
+    const ih = data.h * scale;
+    gl.uniform4f(u.uFit, W / iw, H / ih, -(W - iw) / 2 / iw, -(H - ih) / ih);
     fw = Math.ceil(W / FOAM_CELL);
     fh = Math.ceil(H / FOAM_CELL);
     foam = new Float32Array(fw * fh);
