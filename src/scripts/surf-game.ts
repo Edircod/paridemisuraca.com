@@ -52,9 +52,9 @@ const POSE = 1.2;
 const FAR = 0.72;
 const PAPER = '#f0efea';
 const MUTE = '#a2a19c';
-const SIGNAL = '#f3e600';
-const MONO = '"Share Tech Mono", monospace';
-const DISPLAY = '"Chakra Petch", sans-serif';
+const SIGNAL = '#76efe0';
+const MONO = '"DM Mono", monospace';
+const DISPLAY = '"Schibsted Grotesk", sans-serif';
 // The sun is low behind the wave: people are dark shapes with a warm rim of light.
 const SUIT = '#0e1115';
 const RIM = '#ffb27a';
@@ -66,7 +66,7 @@ const BOARDS: Board[] = [
   ['#e3aabb', '#9a6273'],
   ['#dcc4ff', '#8a74ad'],
 ];
-const OWN: Board = [SIGNAL, '#8a8200'];
+const OWN: Board = [SIGNAL, '#2f8f84'];
 
 type Kind = 'sitter' | 'paddler' | 'rider' | 'rock' | 'gull' | 'shell';
 interface Thing {
@@ -1287,17 +1287,17 @@ export function mountSurfGame(stage: HTMLElement, shell: HTMLElement, sea: Sea, 
         ctx.translate(x, baseY - (1 - fall) * H * 0.35 + Math.sin(clock * 3 + i * 0.7) * 2 * k * u);
         ctx.transform(1, 0, -0.16, 1, 0, 0);
         ctx.lineWidth = 6 * k;
-        ctx.strokeStyle = '#140a24';
+        ctx.strokeStyle = '#06161b';
         ctx.strokeText(ch, extrude * 0.6, extrude);
         for (let d = extrude; d >= 1; d--) {
-          ctx.fillStyle = d > extrude / 2 ? '#2c1450' : '#6a32b8';
+          ctx.fillStyle = d > extrude / 2 ? '#0c3440' : '#1d6f86';
           ctx.fillText(ch, d * 0.6, d);
         }
         ctx.strokeText(ch, 0, 0);
         const g = ctx.createLinearGradient(0, -size * 0.75, 0, 0);
-        g.addColorStop(0, '#fffbd0');
+        g.addColorStop(0, '#72cffa');
         g.addColorStop(0.5, SIGNAL);
-        g.addColorStop(1, '#f09a00');
+        g.addColorStop(1, '#9dfb9d');
         ctx.fillStyle = g;
         ctx.fillText(ch, 0, 0);
         ctx.restore();
@@ -1340,7 +1340,7 @@ export function mountSurfGame(stage: HTMLElement, shell: HTMLElement, sea: Sea, 
     let ty = py + ph + 28 * k;
     if (record) {
       ctx.globalAlpha = base * p * (0.6 + 0.4 * Math.sin(clock * 7));
-      text(ctx, copy.newBest.toUpperCase(), W / 2, ty, `700 ${Math.round(16 * k)}px ${DISPLAY}`, '#b98cff', 'center');
+      text(ctx, copy.newBest.toUpperCase(), W / 2, ty, `700 ${Math.round(16 * k)}px ${DISPLAY}`, '#72cffa', 'center');
       ty += 24 * k;
     }
     ctx.globalAlpha = base * p * (0.6 + 0.4 * Math.sin(clock * 4));

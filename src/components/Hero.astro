@@ -52,7 +52,7 @@ const t = copy[lang];
     grid-template-rows: 1fr auto;
     column-gap: 24px;
     min-height: 100svh;
-    padding: 44px calc(var(--frame) + var(--gutter)) 34px;
+    padding: var(--bar) calc(var(--frame) + var(--gutter)) var(--foot);
     overflow: hidden;
     cursor: crosshair;
   }
@@ -98,7 +98,7 @@ const t = copy[lang];
     margin: 0;
   }
   .slot {
-    height: min(calc(100svh - 78px - var(--scroller-h) - 48px), 640px);
+    height: min(calc(100svh - var(--bar) - var(--foot) - var(--scroller-h) - 48px), 640px);
     aspect-ratio: 360 / 499;
   }
 
@@ -145,8 +145,8 @@ const t = copy[lang];
   if (field) {
     const load = (url: string) => fetch(url).then((r) => r.json() as Promise<ContourData>);
     Promise.all([load('/data/seabed.json'), load('/data/portrait-pro.json')]).then(([seabed, portrait]) => {
-      field.addLayer(seabed, { seabed: true, colorLow: '#1a1a1c', colorHigh: '#2a2a2d', colorWave: '#b56cff' });
-      field.addLayer(portrait, { slot, relief: 70, colorLow: '#5d5c58', colorHigh: '#e4e2dc', colorOutline: '#f0efea', colorWave: '#b56cff' });
+      field.addLayer(seabed, { seabed: true, colorLow: '#1a1a1c', colorHigh: '#2a2a2d', colorWave: '#72cffa' });
+      field.addLayer(portrait, { slot, relief: 70, colorLow: '#5d5c58', colorHigh: '#e4e2dc', colorOutline: '#f0efea', colorWave: '#72cffa' });
     });
 
     hero.addEventListener('pointermove', (e) => field.setPointer(e.clientX, e.clientY, e.pointerType === 'mouse'));
@@ -154,6 +154,12 @@ const t = copy[lang];
     hero.addEventListener('click', (e) => {
       if (!(e.target as Element).closest('a, button')) field.ping(e.clientX, e.clientY);
     });
+
+    // Scrolling down, the portrait melts into the seabed, fully once its middle reaches the top of the
+    // screen; back up, it comes together again.
+    let melted = 1;
+    new ResizeObserver(() => (melted = Math.max(1, slot.getBoundingClientRect().top + scrollY + slot.offsetHeight * 0.5))).observe(hero);
+    addEventListener('scroll', () => field.setMelt(Math.min(1, scrollY / melted)), { passive: true });
 
     // One sonar ping once the portrait has surfaced, so the interaction announces itself.
     setTimeout(() => {

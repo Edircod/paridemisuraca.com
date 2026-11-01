@@ -64,7 +64,7 @@ const setup = { copy: t.console, lang, email: links.email, stack, commands, fold
     margin: 32px auto 0;
     border: 1px solid color-mix(in srgb, var(--paper) 28%, transparent);
     background: var(--ink-raised);
-    box-shadow: 0 0 0 1px var(--ink), 0 30px 80px -30px color-mix(in srgb, var(--violet) 45%, transparent);
+    box-shadow: 0 0 0 1px var(--ink), 0 30px 80px -30px color-mix(in srgb, var(--sky) 45%, transparent);
   }
   .bar {
     display: flex;
@@ -109,7 +109,7 @@ const setup = { copy: t.console, lang, email: links.email, stack, commands, fold
     color: var(--signal);
   }
   .out :global(.err) {
-    color: var(--violet);
+    color: var(--sky);
   }
   .out :global(a) {
     color: var(--signal);
@@ -187,7 +187,7 @@ const setup = { copy: t.console, lang, email: links.email, stack, commands, fold
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(100deg, transparent 30%, color-mix(in srgb, var(--violet) 30%, transparent) 50%, transparent 70%);
+    background: linear-gradient(100deg, transparent 30%, color-mix(in srgb, var(--sky) 30%, transparent) 50%, transparent 70%);
     background-size: 300% 100%;
     pointer-events: none;
     animation: sweep 1.2s var(--ease-in-out) forwards;
@@ -195,11 +195,11 @@ const setup = { copy: t.console, lang, email: links.email, stack, commands, fold
   @keyframes loud {
     0% {
       transform: translate(-3px, 1px);
-      box-shadow: -4px 0 0 var(--violet), 4px 0 0 var(--signal);
+      box-shadow: -4px 0 0 var(--sky), 4px 0 0 var(--signal);
     }
     100% {
       transform: translate(3px, -1px);
-      box-shadow: 4px 0 0 var(--violet), -4px 0 0 var(--signal);
+      box-shadow: 4px 0 0 var(--sky), -4px 0 0 var(--signal);
     }
   }
   @keyframes sweep {

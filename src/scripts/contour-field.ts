@@ -44,6 +44,7 @@ uniform vec3 uPings[4];
 uniform float uRelief;
 uniform float uSeabed;
 uniform float uMotion;
+uniform float uMelt;
 out float vLevel;
 out float vAlong;
 out float vDelay;
@@ -52,9 +53,17 @@ out float vKind;
 out float vFade;
 out float vNear;
 out float vHover;
+out float vMelt;
 void main() {
   vec2 center = uRect.xy + uRect.zw * 0.5;
   vec2 local = (aPos - 0.5) * uRect.zw;
+  // Melting, a portrait comes apart into swell, as if seen through moving water: it spreads out
+  // sideways and every level of its contours rides a long, slow wave of its own, while it fades to
+  // the seabed's faint lines; melting back, the face gathers again.
+  float melt = uMelt * uMelt * (3.0 - 2.0 * uMelt);
+  vec2 flow = vec2(sin(local.y * 0.011 + aLevel * 4.0 + uTime * 0.6), sin(local.x * 0.008 + aLevel * 5.0 - uTime * 0.7));
+  local *= 1.0 + vec2(0.9, 0.15) * melt;
+  local += melt * flow * vec2(40.0, 55.0);
   vec2 world = center + local;
   // Hover only nudges the lines: a soft lens around the cursor plus a faint shiver.
   float d = distance(world, uPointer);
@@ -63,7 +72,7 @@ void main() {
   local += away * near * 12.0;
   local += uHover * uMotion * 1.6 * vec2(sin(world.y * 0.045 + uTime * 3.1), cos(world.x * 0.04 + uTime * 2.7));
   world = center + local;
-  float z = aLevel * uRelief;
+  float z = aLevel * uRelief * (1.0 - melt);
   z += uMotion * 5.0 * sin(world.x * 0.011 + world.y * 0.017 - uTime * 1.1);
   float wave = 0.0;
   for (int i = 0; i < 4; i++) {
@@ -84,6 +93,7 @@ void main() {
   vKind = aKind;
   vNear = near;
   vHover = uHover;
+  vMelt = melt;
   // Portraits dissolve towards their lower edge, as if surfacing from the deep.
   vFade = uSeabed > 0.5 ? 1.0 : smoothstep(1.0, 0.74, aPos.y);
 }`;
@@ -98,6 +108,7 @@ in float vKind;
 in float vFade;
 in float vNear;
 in float vHover;
+in float vMelt;
 uniform float uReveal;
 uniform vec3 uColLow;
 uniform vec3 uColHigh;
@@ -113,7 +124,7 @@ void main() {
   c = mix(c, hot, vHover);
   c = mix(c, uColWave, w * 0.9);
   float a = uAlpha * (vKind > 0.5 ? 0.95 : 0.62 + 0.38 * vLevel);
-  a = max(max(a, w * 0.95), vNear * 0.9) * vFade;
+  a = max(max(a, w * 0.95), vNear * 0.9) * vFade * (1.0 - 0.75 * vMelt);
   outColor = vec4(c * a, a);
 }`;
 
@@ -141,6 +152,8 @@ export class ContourField {
   private reveal = 0;
   private revealFrom = 0;
   private revealDuration = 2600;
+  private melt = 0;
+  private meltTo = 0;
   private running = false;
   private visible = false;
   private raf = 0;
@@ -153,7 +166,7 @@ export class ContourField {
   ) {
     this.gl = gl;
     this.prog = this.program();
-    for (const name of ['uRect', 'uView', 'uTime', 'uPointer', 'uHover', 'uPings', 'uRelief', 'uSeabed', 'uMotion', 'uReveal', 'uColLow', 'uColHigh', 'uColOutline', 'uColWave', 'uAlpha']) {
+    for (const name of ['uRect', 'uView', 'uTime', 'uPointer', 'uHover', 'uPings', 'uRelief', 'uSeabed', 'uMotion', 'uMelt', 'uReveal', 'uColLow', 'uColHigh', 'uColOutline', 'uColWave', 'uAlpha']) {
       this.u[name] = gl.getUniformLocation(this.prog, name);
     }
     gl.enable(gl.BLEND);
@@ -251,6 +264,11 @@ export class ContourField {
     this.play();
   }
 
+  /** 0 shows the portraits, 1 melts them into the seabed. */
+  setMelt(v: number) {
+    this.meltTo = v;
+  }
+
   private time() {
     return (performance.now() - this.start) / 1000;
   }
@@ -304,6 +322,7 @@ export class ContourField {
     if (!this.reducedMotion) {
       const p = Math.min((now - this.revealFrom) / this.revealDuration, 1);
       this.reveal = (1 - Math.pow(1 - p, 3)) * 1.3;
+      this.melt += (this.meltTo - this.melt) * Math.min(dt * 8, 1);
     }
 
     gl.viewport(0, 0, this.canvas.width, this.canvas.height);
@@ -328,6 +347,7 @@ export class ContourField {
       gl.uniform1f(this.u.uRelief, l.opts.relief);
       gl.uniform1f(this.u.uHover, l.hover);
       gl.uniform1f(this.u.uSeabed, l.opts.seabed ? 1 : 0);
+      gl.uniform1f(this.u.uMelt, l.opts.seabed ? 0 : this.melt);
       gl.uniform3fv(this.u.uColLow, hex(l.opts.colorLow));
       gl.uniform3fv(this.u.uColHigh, hex(l.opts.colorHigh));
       gl.uniform3fv(this.u.uColOutline, hex(l.opts.colorOutline));

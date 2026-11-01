@@ -1,50 +1,36 @@
 @font-face {
-  font-family: 'Bai Jamjuree';
-  src: url('/fonts/bai-jamjuree-400.woff2') format('woff2');
-  font-weight: 400;
+  font-family: 'Host Grotesk';
+  src: url('/fonts/host-grotesk.woff2') format('woff2');
+  font-weight: 400 600;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Bai Jamjuree';
-  src: url('/fonts/bai-jamjuree-500.woff2') format('woff2');
-  font-weight: 500;
+  font-family: 'Schibsted Grotesk';
+  src: url('/fonts/schibsted-grotesk.woff2') format('woff2');
+  font-weight: 600 700;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Bai Jamjuree';
-  src: url('/fonts/bai-jamjuree-600.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Share Tech Mono';
-  src: url('/fonts/share-tech-mono.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Chakra Petch';
-  src: url('/fonts/chakra-petch-600.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Chakra Petch';
-  src: url('/fonts/chakra-petch-700.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Chakra Petch';
-  src: url('/fonts/chakra-petch-700-italic.woff2') format('woff2');
+  font-family: 'Schibsted Grotesk';
+  src: url('/fonts/schibsted-grotesk-700-italic.woff2') format('woff2');
   font-weight: 700;
   font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'DM Mono';
+  src: url('/fonts/dm-mono-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'DM Mono';
+  src: url('/fonts/dm-mono-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
   font-display: swap;
 }
 
@@ -54,14 +40,17 @@
   --rule: #2b2b2d;
   --paper: #f0efea;
   --mute: #a2a19c;
-  --signal: #f3e600;
-  --violet: #b56cff;
+  --signal: #76efe0;
+  --sky: #72cffa;
 
-  --font-sans: 'Bai Jamjuree', system-ui, sans-serif;
-  --font-display: 'Chakra Petch', 'Bai Jamjuree', sans-serif;
-  --font-mono: 'Share Tech Mono', ui-monospace, monospace;
+  --font-sans: 'Host Grotesk', system-ui, sans-serif;
+  --font-display: 'Schibsted Grotesk', 'Host Grotesk', sans-serif;
+  --font-mono: 'DM Mono', ui-monospace, monospace;
 
   --frame: 14px;
+  /* The fixed bars above and below the chart frame. */
+  --bar: 68px;
+  --foot: 34px;
   --gutter: clamp(20px, 4vw, 64px);
   --section: clamp(112px, 16vh, 176px);
 
@@ -74,6 +63,7 @@
 @media (max-width: 720px) {
   :root {
     --frame: 8px;
+    --bar: 56px;
     --section: 96px;
   }
 }
@@ -239,7 +229,7 @@ a {
 }
 @media (hover: hover) and (pointer: fine) {
   .btn-signal:hover {
-    background: #fff36b;
+    background: #b0f7ee;
   }
   .btn-signal:hover svg {
     transform: translateX(4px);

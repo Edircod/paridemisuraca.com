@@ -2,8 +2,8 @@
 // `stack` command bursts it open; afterwards it spins on its own and can be dragged.
 
 const PAPER = '240,239,234';
-const VIOLET = '#b56cff';
-const SIGNAL = '#f3e600';
+const SKY = '#72cffa';
+const SIGNAL = '#76efe0';
 
 export function mountStackCloud(host: HTMLElement, canvas: HTMLCanvasElement, names: string[]) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -61,9 +61,9 @@ export function mountStackCloud(host: HTMLElement, canvas: HTMLCanvasElement, na
     projected.sort((a, b) => a.z - b.z);
     for (const p of projected) {
       const depth = (p.z + 1) / 2;
-      ctx.font = `${Math.round(12 + depth * 12)}px "Share Tech Mono", monospace`;
+      ctx.font = `${Math.round(12 + depth * 12)}px "DM Mono", monospace`;
       if (p.i === flare.index && now < flare.until) {
-        ctx.fillStyle = VIOLET;
+        ctx.fillStyle = SKY;
       } else if (depth > 0.86) {
         ctx.fillStyle = SIGNAL;
       } else {

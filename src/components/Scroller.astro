@@ -29,7 +29,7 @@ const { text, speed = 70 } = Astro.props;
     overflow: visible;
   }
   .glyphs {
-    fill: var(--signal);
+    fill: var(--paper);
     font-family: var(--font-display);
     font-style: italic;
     font-weight: 700;
@@ -38,7 +38,7 @@ const { text, speed = 70 } = Astro.props;
     text-transform: uppercase;
   }
   .scroller.glitch svg {
-    filter: drop-shadow(-3px 0 0 var(--violet)) drop-shadow(3px 0 0 var(--paper));
+    filter: drop-shadow(-3px 0 0 var(--sky)) drop-shadow(3px 0 0 var(--signal));
     animation: jitter 140ms steps(3) 1;
   }
   @keyframes jitter {
@@ -111,7 +111,7 @@ const { text, speed = 70 } = Astro.props;
       cancelAnimationFrame(raf);
     };
 
-    document.fonts.load('italic 700 40px "Chakra Petch"').then(() => {
+    document.fonts.load('italic 700 40px "Schibsted Grotesk"').then(() => {
       layout();
       new ResizeObserver(layout).observe(root);
       new IntersectionObserver(([e]) => (e.isIntersecting ? play() : pause())).observe(root);

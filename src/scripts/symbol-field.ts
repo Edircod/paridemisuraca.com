@@ -5,8 +5,8 @@ import type { FieldData } from './glyph-portrait';
 
 const SPRITE = 64;
 const PAPER = '#f0efea';
-const VIOLET = '#b56cff';
-const SIGNAL = '#f3e600';
+const SKY = '#72cffa';
+const SIGNAL = '#76efe0';
 // Below this a symbol looks the same as its resting copy on the base layer.
 const AWAKE = 0.05;
 
@@ -99,7 +99,7 @@ export function mountSymbolField(stage: HTMLElement, canvas: HTMLCanvasElement, 
   const base = document.createElement('canvas');
   const bctx = base.getContext('2d')!;
   const paper = sprites(PAPER);
-  const violet = sprites(VIOLET);
+  const sky = sprites(SKY);
   const signal = sprites(SIGNAL);
 
   let W = 0;
@@ -203,7 +203,7 @@ export function mountSymbolField(stage: HTMLElement, canvas: HTMLCanvasElement, 
       const e = energy[i];
       if (e < AWAKE) continue;
       const s = size[i] * (1 + e * (0.8 + gain * 1.2));
-      const set = e > 0.75 ? signal : e > 0.25 ? violet : paper;
+      const set = e > 0.75 ? signal : e > 0.25 ? sky : paper;
       put(ctx, spin[i] + Math.sin(t * 22 + i) * e * (0.3 + gain * 0.7), xs[i] + shake, ys[i] - e * 7);
       ctx.globalAlpha = Math.min(1, alpha[i] + e);
       ctx.drawImage(set[kind[i]], -s / 2, -s / 2, s, s);

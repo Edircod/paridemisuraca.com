@@ -49,6 +49,7 @@ export const copy = {
       menu: 'Menu',
       close: 'Chiudi',
       lang: 'Lingua',
+      home: 'Paride Misuraca, torna all’inizio',
       skip: 'Vai al contenuto',
     },
     hero: {
@@ -63,7 +64,7 @@ export const copy = {
       body: [
         'Clienti in Italia e all’estero, progetti seguiti da remoto in qualsiasi lingua. Software stabile e veloce; se qualcosa si blocca sono reperibile, e il debug parte subito.',
       ],
-      portraitLabel: 'Ritratto di Paride composto da caratteri di codice. Passando il cursore cade una pioggia di codice viola.',
+      portraitLabel: 'Ritratto di Paride composto da caratteri di codice. Passando il cursore cade una pioggia di codice blu.',
       globe: 'Mappamondo: trascinalo per girarlo.',
       active: 'Attivo',
       where: 'Worldwide',
@@ -217,6 +218,7 @@ export const copy = {
       menu: 'Menu',
       close: 'Close',
       lang: 'Language',
+      home: 'Paride Misuraca, back to the top',
       skip: 'Skip to content',
     },
     hero: {
@@ -231,7 +233,7 @@ export const copy = {
       body: [
         'Clients in Italy and abroad, projects run remotely in any language. Stable, fast software; if something breaks I’m on call, and debugging starts right away.',
       ],
-      portraitLabel: 'Portrait of Paride made of code characters. Hovering sets off a violet rain of code.',
+      portraitLabel: 'Portrait of Paride made of code characters. Hovering sets off a blue rain of code.',
       globe: 'Globe: drag it to spin.',
       active: 'Active',
       where: 'Worldwide',

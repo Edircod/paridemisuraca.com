@@ -107,7 +107,7 @@ const pad = (i: number) => String(i).padStart(2, '0');
     border-color: var(--signal);
     box-shadow:
       0 0 0 1px var(--signal),
-      0 0 70px color-mix(in srgb, var(--violet) 45%, transparent);
+      0 0 70px color-mix(in srgb, var(--sky) 45%, transparent);
   }
   .plate.on .label {
     color: var(--signal);
@@ -127,13 +127,13 @@ const pad = (i: number) => String(i).padStart(2, '0');
     left: 50%;
     top: 50%;
     width: 2px;
-    background: color-mix(in srgb, var(--violet) 25%, transparent);
+    background: color-mix(in srgb, var(--sky) 25%, transparent);
   }
   .beam span {
     position: absolute;
     inset: 0;
-    background: var(--violet);
-    box-shadow: 0 0 12px var(--violet);
+    background: var(--sky);
+    box-shadow: 0 0 12px var(--sky);
     transform: scaleY(0);
     transform-origin: bottom;
   }
@@ -184,7 +184,7 @@ const pad = (i: number) => String(i).padStart(2, '0');
       display: block;
     }
     .stage {
-      top: 44px;
+      top: var(--bar);
       z-index: 2;
       height: 290px;
       margin: 0 calc(-1 * var(--gutter));
@@ -199,7 +199,7 @@ const pad = (i: number) => String(i).padStart(2, '0');
     .step {
       min-height: 46svh;
       /* Centred in what the sticky tower leaves free. */
-      scroll-margin-top: calc(44px + 290px);
+      scroll-margin-top: calc(var(--bar) + 290px);
     }
   }
   /* On touch screens a fling stops at each step. */

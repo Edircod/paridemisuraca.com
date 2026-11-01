@@ -1,5 +1,5 @@
 // Canvas 2D portrait printed with code: brightness comes from a coarse intensity grid,
-// the characters from a running snippet. The cursor sets off a violet rain of glyphs.
+// the characters from a running snippet. The cursor sets off a blue rain of glyphs.
 // Only cells whose glyph or colour changed are redrawn.
 
 export interface FieldData {
@@ -12,9 +12,9 @@ const CODE =
   "const paride = { role: 'software architect', active: 'worldwide', stack: ['TypeScript', 'Python', 'PHP', 'React', 'Node', 'SQL', 'Shopify', 'n8n', 'LangChain'], builds: ['erp', 'crm', 'sites', 'shops', 'apps', 'agents', 'integrations', 'mods'], offline: ['surf', 'guitar', 'vocals', 'luthiery'] }; export async function build(idea) { const plan = await analyse(idea); for (const step of plan) await ship(step); return support(plan); } ";
 const NOISE = '01<>/\\{}[]#*+=;:_-$%&';
 const PAPER = '240,239,234';
-const VIOLET = '181,108,255';
-const SIGNAL = '#f3e600';
-const DROP_HEAD = '#f1e6ff';
+const SKY = '114,207,250';
+const SIGNAL = '#76efe0';
+const DROP_HEAD = '#e8f7ff';
 const MAX_DROPS = 360;
 
 const noise = () => NOISE[(Math.random() * NOISE.length) | 0];
@@ -45,7 +45,7 @@ export function mountGlyphPortrait(stage: HTMLElement, canvas: HTMLCanvasElement
   const palette = [
     '',
     ...Array.from({ length: 10 }, (_, l) => `rgba(${PAPER},${(0.16 + 0.84 * Math.pow(l / 9, 0.9)).toFixed(3)})`),
-    ...Array.from({ length: 10 }, (_, k) => `rgba(${VIOLET},${(0.4 + 0.6 * (k / 9)).toFixed(3)})`),
+    ...Array.from({ length: 10 }, (_, k) => `rgba(${SKY},${(0.4 + 0.6 * (k / 9)).toFixed(3)})`),
     `rgba(${PAPER},0.32)`,
     // The rest of the page of code stays barely lit, so the figure reads as brightness, not as a cut-out.
     `rgba(${PAPER},0.06)`,
@@ -76,7 +76,7 @@ export function mountGlyphPortrait(stage: HTMLElement, canvas: HTMLCanvasElement
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     cw = r.width / cols;
     chh = r.height / rows;
-    ctx.font = `${chh.toFixed(2)}px "Share Tech Mono", monospace`;
+    ctx.font = `${chh.toFixed(2)}px "DM Mono", monospace`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     drawnColor.fill(-1);
@@ -195,5 +195,5 @@ export function mountGlyphPortrait(stage: HTMLElement, canvas: HTMLCanvasElement
   }).observe(stage);
   document.addEventListener('visibilitychange', () => (document.hidden ? pause() : play()));
 
-  document.fonts.load('12px "Share Tech Mono"').then(resize);
+  document.fonts.load('12px "DM Mono"').then(resize);
 }

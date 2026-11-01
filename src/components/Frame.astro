@@ -31,7 +31,9 @@ const items = [
 </div>
 
 <header class="margin-top">
-  <p class="coords mono" data-coords>38°07′N · 13°21′E</p>
+  <a class="brand" href={lang === 'it' ? '/' : '/en/'} aria-label={t.nav.home} data-home>
+    <img src="/logo-mark.png" alt="" width="117" height="108" />
+  </a>
   <div class="end">
     <nav class="nav" aria-label={t.nav.label}>
       <ul>
@@ -39,9 +41,10 @@ const items = [
       </ul>
     </nav>
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-panel" data-menu-toggle>
+      <span class="burger" aria-hidden="true"></span>
       <span data-open>{t.nav.menu}</span><span data-close hidden>{t.nav.close}</span>
     </button>
-    <p class="lang mono" role="group" aria-label={t.nav.lang}>
+    <p class="lang" role="group" aria-label={t.nav.lang}>
       <a href="/" aria-current={lang === 'it' ? 'true' : undefined} lang="it">IT</a>
       <a href="/en/" aria-current={lang === 'en' ? 'true' : undefined} lang="en">EN</a>
     </p>
@@ -67,8 +70,8 @@ const items = [
 
 <style>
   .chart {
-    --top: 44px;
-    --bottom: 34px;
+    --top: var(--bar);
+    --bottom: var(--foot);
     position: fixed;
     inset: 0;
     z-index: 40;
@@ -122,22 +125,32 @@ const items = [
     justify-content: space-between;
     gap: 24px;
   }
-  .margin-top { top: 0; height: 44px; }
-  .margin-bottom { bottom: 0; height: 34px; justify-content: flex-end; color: var(--mute); }
-  .coords { color: var(--paper); }
+  .margin-top { top: 0; height: var(--bar); }
+  .margin-bottom { bottom: 0; height: var(--foot); justify-content: flex-end; color: var(--mute); }
+  .brand {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding-inline: 4px;
+  }
+  .brand img {
+    display: block;
+    width: auto;
+    height: 38px;
+  }
   .base {
     display: flex;
     align-items: center;
     gap: 10px;
   }
-  /* Online lamp: a green globe breathing slowly. */
+  /* Online lamp: a mint globe breathing slowly. */
   .globe {
     width: 16px;
     height: 16px;
     fill: none;
-    stroke: #3ee07f;
+    stroke: #9dfb9d;
     stroke-width: 1.2;
-    filter: drop-shadow(0 0 4px #3ee07f);
+    filter: drop-shadow(0 0 4px #9dfb9d);
     animation: online 3.2s ease-in-out infinite;
   }
   @keyframes online {
@@ -149,67 +162,88 @@ const items = [
   .end {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: clamp(20px, 2.4vw, 36px);
   }
 
-  /* Boxed controls: the bar has to read at a glance over any section. */
-  .nav ul,
-  .lang,
-  .menu-toggle {
+  /* Plain links, the current section underlined in the accent. */
+  .nav ul {
     display: flex;
-    height: 30px;
+    gap: clamp(16px, 2vw, 32px);
     margin: 0;
     padding: 0;
-    border: 1px solid color-mix(in srgb, var(--paper) 22%, transparent);
-    background: var(--ink-raised);
+    list-style: none;
   }
-  .nav ul { list-style: none; }
   .nav a,
   .lang a {
-    display: flex;
-    align-items: center;
-    height: 100%;
     text-decoration: none;
-    color: var(--paper);
-    transition:
-      color 160ms ease,
-      background-color 160ms ease;
+    color: var(--mute);
+    transition: color 160ms ease;
   }
   .nav a {
-    padding: 0 clamp(8px, 1vw, 14px);
-    font-size: 0.8125rem;
+    position: relative;
+    display: block;
+    padding: 10px 0;
+    font-size: 0.9375rem;
     font-weight: 500;
-    letter-spacing: 0.01em;
     white-space: nowrap;
   }
-  .nav a[aria-current='location'] {
+  .nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 4px;
+    height: 2px;
     background: var(--signal);
-    color: var(--ink);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 260ms var(--ease-out);
+  }
+  .nav a[aria-current='location'] {
+    color: var(--paper);
+  }
+  .nav a[aria-current='location']::after {
+    transform: scaleX(1);
+  }
+  .lang {
+    display: flex;
+    align-items: center;
+    padding-left: clamp(20px, 2.4vw, 36px);
+    border-left: 1px solid var(--rule);
+    font-size: 0.8125rem;
+    font-weight: 500;
   }
   .lang a {
-    padding: 0 10px;
-    font-size: 0.75rem;
+    padding: 8px 6px;
   }
   .lang a[aria-current='true'] {
-    background: var(--paper);
-    color: var(--ink);
+    color: var(--paper);
   }
   @media (hover: hover) and (pointer: fine) {
-    .nav a:not([aria-current]):hover,
-    .lang a:not([aria-current]):hover { color: var(--signal); }
+    .nav a:hover,
+    .lang a:hover { color: var(--paper); }
   }
 
   .menu-toggle {
     display: none;
     align-items: center;
-    padding: 0 14px;
+    gap: 10px;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    background: none;
     color: var(--paper);
-    font: 500 0.8125rem var(--font-sans);
+    font: 500 0.9375rem var(--font-sans);
     cursor: pointer;
+  }
+  .burger {
+    width: 18px;
+    height: 8px;
+    border-block: 1.5px solid currentColor;
   }
   .menu-panel {
     position: fixed;
-    inset: 44px var(--frame) 34px;
+    inset: var(--bar) var(--frame) var(--foot);
     z-index: 45;
     display: grid;
     align-content: center;
@@ -233,14 +267,10 @@ const items = [
     text-decoration: none;
   }
 
-  /* Between tablet and desktop the full menu needs the room the coordinates take. */
-  @media (min-width: 861px) and (max-width: 1080px) {
-    .coords { display: none; }
-    .margin-top { justify-content: flex-end; }
-  }
   @media (max-width: 860px) {
     .nav { display: none; }
     .menu-toggle { display: flex; }
+    .brand img { height: 32px; }
   }
   /* Fingers need more than the boxes show: the hit areas take the full height of the bar. */
   @media (pointer: coarse) {
@@ -256,29 +286,7 @@ const items = [
 </style>
 
 <script>
-  const coords = document.querySelector<HTMLElement>('[data-coords]');
   const navLinks = [...document.querySelectorAll<HTMLAnchorElement>('[data-nav]')];
-
-  // The readout drifts west as the visitor "sails" down the page.
-  const fmt = (deg: number, pos: string, neg: string) => {
-    const a = Math.abs(deg);
-    const d = Math.floor(a);
-    const m = Math.floor((a - d) * 60);
-    return `${d}°${String(m).padStart(2, '0')}′${deg >= 0 ? pos : neg}`;
-  };
-  let queued = false;
-  const update = () => {
-    queued = false;
-    const max = document.documentElement.scrollHeight - innerHeight;
-    const p = max > 0 ? scrollY / max : 0;
-    if (coords) coords.textContent = `${fmt(38.1157 - p * 0.42, 'N', 'S')} · ${fmt(13.3615 - p * 1.9, 'E', 'W')}`;
-  };
-  addEventListener('scroll', () => {
-    if (!queued) {
-      queued = true;
-      requestAnimationFrame(update);
-    }
-  }, { passive: true });
 
   // Every section is observed, so one without a nav entry clears the highlight.
   const sections = document.querySelectorAll('main > section');
@@ -302,6 +310,13 @@ const items = [
     toggle.querySelector<HTMLElement>('[data-close]')!.hidden = !open;
   };
   toggle.addEventListener('click', () => setOpen(panel.hidden));
+  // The logo leads home; on the home page itself it just glides back to the top.
+  document.querySelector<HTMLAnchorElement>('[data-home]')!.addEventListener('click', (e) => {
+    if (location.pathname !== new URL((e.currentTarget as HTMLAnchorElement).href).pathname) return;
+    e.preventDefault();
+    setOpen(false);
+    scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+  });
   panel.addEventListener('click', (e) => {
     if ((e.target as HTMLElement).closest('a')) setOpen(false);
   });

@@ -1,9 +1,9 @@
 // Dotted globe on Canvas 2D: spins by itself, can be dragged with inertia, and fires
-// violet links from Palermo to cities around the world.
+// blue links from Palermo to cities around the world.
 
 const PAPER = '240,239,234';
-const VIOLET = '181,108,255';
-const SIGNAL = '#f3e600';
+const SKY = '114,207,250';
+const SIGNAL = '#76efe0';
 const HOME: [number, number] = [38.12, 13.36];
 const CITIES: [number, number][] = [
   [40.71, -74.0], [51.51, -0.13], [-31.95, 115.86], [25.2, 55.27], [35.68, 139.69], [-23.55, -46.63],
@@ -110,7 +110,7 @@ export function mountGlobe(stage: HTMLElement, canvas: HTMLCanvasElement, dots: 
       const age = (now - l.born) / 1000;
       const head = Math.min(1, age / 1.1);
       const tail = Math.max(0, (age - 0.7) / 1.1);
-      ctx.strokeStyle = `rgba(${VIOLET},0.9)`;
+      ctx.strokeStyle = `rgba(${SKY},0.9)`;
       ctx.lineWidth = 1.4;
       ctx.beginPath();
       let pen = false;
@@ -129,7 +129,7 @@ export function mountGlobe(stage: HTMLElement, canvas: HTMLCanvasElement, dots: 
         const [x, y, z] = project(l.to);
         if (z > 0) {
           const ring = ((age - 1.1) / 0.8) * 10;
-          ctx.strokeStyle = `rgba(${VIOLET},${Math.max(0, 1 - ring / 10).toFixed(3)})`;
+          ctx.strokeStyle = `rgba(${SKY},${Math.max(0, 1 - ring / 10).toFixed(3)})`;
           ctx.beginPath();
           ctx.arc(x, y, 2 + ring, 0, Math.PI * 2);
           ctx.stroke();
@@ -140,7 +140,7 @@ export function mountGlobe(stage: HTMLElement, canvas: HTMLCanvasElement, dots: 
     const [hx, hy, hz] = project(home);
     if (hz > 0) {
       const ping = reduced ? 0 : ((now / 2400) % 1) * 14;
-      ctx.strokeStyle = `rgba(${VIOLET},${(1 - ping / 14).toFixed(3)})`;
+      ctx.strokeStyle = `rgba(${SKY},${(1 - ping / 14).toFixed(3)})`;
       ctx.beginPath();
       ctx.arc(hx, hy, 3 + ping, 0, Math.PI * 2);
       ctx.stroke();

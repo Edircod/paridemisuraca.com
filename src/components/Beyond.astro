@@ -224,7 +224,7 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
   }
   .hint {
     font-size: 0.875rem;
-    color: var(--violet);
+    color: var(--sky);
   }
   .copy .hint {
     margin-top: 20px;
@@ -280,7 +280,7 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
     stroke-width: 1.5;
   }
   .leash {
-    stroke: var(--violet);
+    stroke: var(--sky);
     stroke-width: 1.5;
   }
   .counter {
@@ -352,16 +352,16 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
       box-shadow 200ms ease;
   }
   .amp:global(.on) .jewel {
-    background: radial-gradient(circle at 35% 30%, #fffbd0, var(--signal) 55%, #8a8300);
+    background: radial-gradient(circle at 35% 30%, #effffc, var(--signal) 55%, #1e7d72);
     box-shadow:
-      inset 0 0 0 1px #8a8300,
+      inset 0 0 0 1px #1e7d72,
       0 0 14px var(--signal);
   }
   .amp:global(.on.eleven) .jewel {
-    background: radial-gradient(circle at 35% 30%, #f1e6ff, var(--violet) 55%, #5a2d8a);
+    background: radial-gradient(circle at 35% 30%, #e8f7ff, var(--sky) 55%, #1f5e85);
     box-shadow:
-      inset 0 0 0 1px #5a2d8a,
-      0 0 16px var(--violet);
+      inset 0 0 0 1px #1f5e85,
+      0 0 16px var(--sky);
   }
   .toggle {
     position: relative;
@@ -442,7 +442,7 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
     color: var(--paper);
   }
   .amp:global(.eleven) .control .value {
-    color: var(--violet);
+    color: var(--sky);
   }
   .knob {
     width: 64px;
@@ -490,7 +490,7 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
     background: var(--signal);
   }
   .meter span:global(.lit):nth-child(n + 13) {
-    background: var(--violet);
+    background: var(--sky);
   }
 
   @keyframes bob {
@@ -568,7 +568,7 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
       grid-template-columns: 1fr;
     }
     .surf .shell:not(.full) .stage {
-      height: calc(100svh - 96px);
+      height: calc(100svh - var(--bar) - var(--foot) - 18px);
       aspect-ratio: auto;
     }
     .board {

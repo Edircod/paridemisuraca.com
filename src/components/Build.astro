@@ -113,7 +113,7 @@ const pad = (i: number) => String(i).padStart(2, '0');
     top: 0;
     height: 100svh;
     overflow: hidden;
-    background: radial-gradient(ellipse 34% 30% at 50% 50%, color-mix(in srgb, var(--violet) 16%, transparent), transparent);
+    background: radial-gradient(ellipse 34% 30% at 50% 50%, color-mix(in srgb, var(--sky) 16%, transparent), transparent);
   }
   .portal .layer {
     position: absolute;
@@ -176,12 +176,12 @@ const pad = (i: number) => String(i).padStart(2, '0');
   .portal .enter {
     display: block;
     margin-top: 24px;
-    color: var(--violet);
+    color: var(--sky);
   }
   .portal .hud {
     position: absolute;
     left: calc(var(--frame) + var(--gutter));
-    bottom: calc(34px + 20px);
+    bottom: calc(var(--foot) + 20px);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -270,7 +270,7 @@ const pad = (i: number) => String(i).padStart(2, '0');
   // One ring every half station, running a little past the last panel so the tunnel never ends in view.
   const RINGS = 2 * n + 5;
   const PAPER = '240,239,234';
-  const SIGNAL = '#f3e600';
+  const SIGNAL = '#76efe0';
   const drawn = new Set<HTMLElement>();
   let w = 0;
   let h = 0;
