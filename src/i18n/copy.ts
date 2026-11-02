@@ -149,7 +149,7 @@ export const copy = {
     },
     manifesto: {
       label: 'Manifesto',
-      lines: ['Software semplice, codice *solido*.', '*Automatizzo* i tuoi processi.', 'Meno riunioni, più *efficienza*.'],
+      lines: ['Software *intuitivo* e facile da usare.', 'Processi *automatizzati*, zero copia-incolla.', 'Meno riunioni, più *efficienza*.'],
     },
     console: {
       title: 'Console',
@@ -318,7 +318,7 @@ export const copy = {
     },
     manifesto: {
       label: 'Manifesto',
-      lines: ['Simple software, *solid* code.', 'I *automate* your processes.', 'Fewer meetings, more *efficiency*.'],
+      lines: ['*Intuitive*, easy-to-use software.', '*Automated* processes, no more copy-paste.', 'Fewer meetings, more *efficiency*.'],
     },
     console: {
       title: 'Console',
