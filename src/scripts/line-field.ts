@@ -590,7 +590,6 @@ export async function mountLineField(stage: HTMLElement, canvas: HTMLCanvasEleme
       pointer.travel = 0;
       crash(x, y, 1);
       lastSet = performance.now();
-      stage.dispatchEvent(new CustomEvent('wavebreak'));
     }
   });
   stage.addEventListener('pointerleave', () => {

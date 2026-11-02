@@ -1,6 +1,7 @@
-// A small surf game hidden in the sea portrait. Keep the cursor on the picture for two seconds: it
-// takes on the colours of the sea, its lines get finer, then they re-form into a swell seen from the
-// beach at sunset. You paddle into it, towards the beach, as it rises and comes at you; click to take
+// A small surf game behind the surf photo. Press play: the photo gives way to the lines lying over it,
+// which take on the colours of the sea, get finer and re-form into a swell seen from the beach at
+// sunset; on larger screens the stage widens across the section meanwhile, and the cross puts it all
+// back. You paddle into it, towards the beach, as it rises and comes at you; click to take
 // off: you pop up, drop straight down the face and bottom turn along it, while the wave breaks at the
 // peak and then starts to barrel, peeling a little way and then holding. The wave always runs at the
 // same speed; the surfer goes wherever the cursor is along it: further right out on the shoulder; back
@@ -9,7 +10,8 @@
 // air, or a tuck when deep in. Shoot up past the lip to fly: keep going up for a frontside
 // 360, pull down for a backside one, hold the button to grab the rail. Every air lands. The wave is
 // drawn by the sea shader (line-field.ts); people, rocks, birds, shells and the score go on its 2D
-// layer. On touch screens the game takes the whole screen and the finger steers like a trackpad.
+// layer. On touch screens the game takes the whole screen and the finger steers like a trackpad. The
+// best score stays in the browser.
 import type { Sea } from './line-field';
 
 export interface GameCopy {
@@ -32,10 +34,7 @@ export interface GameCopy {
   exit: string;
 }
 
-// Seconds of hovering before the picture turns into the game; ms it may then be left alone while
-// paddling or after a wipeout (never during a ride).
-const CHARGE = 2;
-const LEAVE = 2500;
+// Seconds for the picture to turn into the game and back.
 const MORPH_IN = 1.4;
 const MORPH_OUT = 0.9;
 // Seconds for the swell to rise, to pop up on the board, to drop down the face (pop-up included), for
@@ -592,16 +591,25 @@ function drawGull(ctx: CanvasRenderingContext2D, t: Thing, k: number) {
   ctx.stroke();
 }
 
-// shell holds the stage and the button that leaves the full-screen game.
+// Where storage is off (private modes, blocked site data) the best score lasts the visit.
+const BEST = 'surf-best';
+const storage = (() => {
+  try {
+    return localStorage;
+  } catch {
+    return null;
+  }
+})();
+export const savedBest = () => Number(storage?.getItem(BEST)) || 0;
+
+// shell holds the stage and the button that leaves the game.
 export function mountSurfGame(stage: HTMLElement, shell: HTMLElement, sea: Sea, copy: GameCopy) {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   let mode: 'idle' | 'in' | 'paddle' | 'play' | 'over' | 'out' = 'idle';
-  let charge = 0;
   let morph = 0;
   const origin = { x: 0, y: 0 };
-  const pointer = { x: 0, y: 0, inside: false };
-  let awayFrom = -1;
+  const pointer = { x: 0, y: 0 };
   let touch = false;
 
   // Geometry and ride state, in the wave's own frame (CSS px) and seconds; k scales sizes and speeds
@@ -626,7 +634,7 @@ export function mountSurfGame(stage: HTMLElement, shell: HTMLElement, sea: Sea, 
   let speed = 0;
   let travelled = 0;
   let score = 0;
-  let best = 0;
+  let best = savedBest();
   let record = false;
   let collected = 0;
   let inTube = 0;
@@ -792,19 +800,25 @@ export function mountSurfGame(stage: HTMLElement, shell: HTMLElement, sea: Sea, 
     }
   };
 
+  // A ride's score becomes the best when it beats it, at the wipeout or when leaving mid-ride.
+  const keep = () => {
+    if (Math.round(score) <= best) return false;
+    best = Math.round(score);
+    storage?.setItem(BEST, String(best));
+    stage.dispatchEvent(new CustomEvent('best', { detail: best }));
+    return true;
+  };
+
   const wipe = () => {
     mode = 'over';
     overAt = clock;
-    record = Math.round(score) > best;
-    best = Math.max(best, Math.round(score));
+    record = keep();
     air = null;
     inTube = 0;
     cut = -1;
     pose = -1;
     const [sx, sy] = toScreen(rx, y);
     sea.crash(sx, sy, 0.7);
-    // Left the picture during the ride: the wipeout screen waits only so long.
-    if (awayFrom > 0) awayFrom = performance.now();
   };
 
   const spawn = (kind: Kind, x = W + 30 * k, at?: number) => {
@@ -1036,54 +1050,72 @@ export function mountSurfGame(stage: HTMLElement, shell: HTMLElement, sea: Sea, 
     if (!on && document.fullscreenElement === shell) void document.exitFullscreen();
     if (!on) restore();
   };
+  // Elsewhere the stage widens across the section, over the text beside it and at the same height,
+  // and narrows back when you leave.
+  const scene = shell.parentElement!;
+  let resizing: Animation | null = null;
+  const wide = (on: boolean) => {
+    if (on === scene.classList.contains('wide')) return;
+    const from = shell.offsetWidth;
+    if (on) {
+      stage.style.height = `${stage.offsetHeight}px`;
+      stage.style.aspectRatio = 'auto';
+    }
+    scene.classList.toggle('wide', on);
+    resizing?.cancel();
+    resizing = shell.animate({ width: [`${from}px`, `${shell.offsetWidth}px`] }, { duration: 760, easing: 'cubic-bezier(0.77, 0, 0.175, 1)' });
+    if (!on) {
+      resizing.onfinish = () => {
+        stage.style.height = '';
+        stage.style.aspectRatio = '';
+      };
+    }
+  };
   const begin = () => {
     reset();
     origin.x = pointer.x;
     origin.y = pointer.y;
     mode = 'in';
-    awayFrom = -1;
     sea.setGame(true);
+    stage.classList.add('playing');
     stage.style.touchAction = 'none';
     if (touch) full(true);
+    else wide(true);
   };
   const end = () => {
     mode = 'out';
-    awayFrom = -1;
+    stage.classList.remove('playing');
     stage.style.touchAction = '';
   };
   const drop = () => {
+    if (mode === 'play') keep();
     mode = 'idle';
-    charge = 0;
     morph = 0;
-    awayFrom = -1;
     sea.setGame(false);
     sea.setCharge(0);
     sea.setMorph(0, 0, 0);
+    stage.classList.remove('playing');
     stage.style.touchAction = '';
     full(false);
+    wide(false);
   };
   const quit = () => {
+    if (mode === 'play') keep();
     full(false);
+    wide(false);
     end();
   };
 
-  sea.onFrame((dt, now) => {
+  sea.onFrame((dt) => {
     measure();
-    if (mode === 'idle') {
-      charge = !touch && pointer.inside ? Math.min(1, charge + dt / CHARGE) : Math.max(0, charge - dt * 0.8);
-      sea.setCharge(smooth(charge));
-      if (charge < 1) return;
-      begin();
-    }
-    if (mode !== 'play' && mode !== 'out' && awayFrom > 0 && now - awayFrom > LEAVE) end();
+    if (mode === 'idle') return;
     if (mode === 'in') {
       morph = Math.min(1, morph + dt / MORPH_IN);
-      // A tap skips the hover, so the colour and the finer lines arrive with the morph instead.
-      sea.setCharge(smooth(Math.max(charge, Math.min(1, morph * 2))));
+      // The colour and the finer lines arrive in the first half of the morph.
+      sea.setCharge(smooth(Math.min(1, morph * 2)));
       if (morph === 1) mode = 'paddle';
     } else if (mode === 'out') {
       morph = Math.max(0, morph - dt / MORPH_OUT);
-      charge = morph;
       sea.setCharge(smooth(morph));
       if (morph === 0) {
         mode = 'idle';
@@ -1348,14 +1380,7 @@ export function mountSurfGame(stage: HTMLElement, shell: HTMLElement, sea: Sea, 
   };
 
   sea.onDraw((ctx) => {
-    if (mode === 'idle') {
-      // The charge bar along the bottom edge.
-      if (charge > 0.02) {
-        ctx.fillStyle = SIGNAL;
-        ctx.fillRect(0, H - 2, W * charge, 2);
-      }
-      return;
-    }
+    if (mode === 'idle') return;
     const a = clamp((morph - 0.55) / 0.45, 0, 1);
     if (a <= 0) return;
     const over = mode === 'over' ? clock - overAt : -1;
@@ -1437,15 +1462,7 @@ export function mountSurfGame(stage: HTMLElement, shell: HTMLElement, sea: Sea, 
     pointer.x = clamp(finger.px + (finger.x - finger.x0) * 1.6, 0, r.width);
     pointer.y = clamp(finger.py + (finger.y - finger.y0) * 1.6, 0, r.height);
   };
-  stage.addEventListener('pointermove', (e) => {
-    locate(e);
-    pointer.inside = true;
-    awayFrom = -1;
-  });
-  stage.addEventListener('pointerleave', (e) => {
-    pointer.inside = false;
-    if (e.pointerType === 'mouse' && mode !== 'idle' && mode !== 'out') awayFrom = performance.now();
-  });
+  stage.addEventListener('pointermove', locate);
   stage.addEventListener('pointerdown', (e) => {
     touch = e.pointerType !== 'mouse';
     locate(e);
@@ -1458,10 +1475,10 @@ export function mountSurfGame(stage: HTMLElement, shell: HTMLElement, sea: Sea, 
   stage.addEventListener('pointerup', () => {
     if (air) air.grabbing = false;
   });
-  // A tap starts the game on touch screens, where there is no hovering; a click or tap restarts it
-  // from the paddle out.
+  // Play, or a click or tap anywhere on the photo, starts the game; a click or tap restarts it from the
+  // paddle out.
   stage.addEventListener('click', () => {
-    if (mode === 'idle' && touch) begin();
+    if (mode === 'idle') begin();
     else if (mode === 'over' && clock - overAt > 0.9) {
       reset();
       mode = 'paddle';
@@ -1479,4 +1496,5 @@ export function mountSurfGame(stage: HTMLElement, shell: HTMLElement, sea: Sea, 
   new IntersectionObserver(([e]) => {
     if (!e.isIntersecting && mode !== 'idle') drop();
   }).observe(stage);
+  shell.classList.add('ready');
 }

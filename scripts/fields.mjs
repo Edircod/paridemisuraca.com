@@ -1,8 +1,9 @@
-// Reduces the personal photos to intensity grids (levels 0-9, one character per cell).
-// Lines and glyphs are drawn from these grids at runtime; the photos themselves never ship.
+// Reduces the personal photos to intensity grids (levels 0-9, one character per cell), drawn at
+// runtime as lines and glyphs. Presets marked photo also ship their crop as a colour picture, which
+// the lines and glyphs lie over, so both come from the same cut.
 // Usage: node scripts/fields.mjs [previewDir]
 import sharp from 'sharp';
-import { writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 
 const previewDir = process.argv[2];
 
@@ -26,15 +27,18 @@ const presets = {
     file: 'assets-src/photos/surf.png',
     crop: { left: 290, top: 215, width: 720, height: 670 },
     grid: [288, 268],
+    photo: true,
     work: 2,
     mix: [0.18, 0.7, 0.35],
     mask: 'key',
   },
-  // The same shot cut tall for phones: the whole height of the photo, from the hand to the board.
+  // The same shot cut tall for phones: from the sky down to the board, stopping above the screenshot's
+  // page dots.
   'surf-tall': {
     file: 'assets-src/photos/surf.png',
-    crop: { left: 353, top: 0, width: 550, height: 940 },
-    grid: [220, 376],
+    crop: { left: 353, top: 0, width: 550, height: 890 },
+    grid: [220, 356],
+    photo: true,
     work: 2,
     mix: [0.18, 0.7, 0.35],
     mask: 'key',
@@ -43,6 +47,7 @@ const presets = {
     file: 'assets-src/photos/guitar.jpg',
     crop: { left: 270, top: 205, width: 520, height: 826 },
     grid: [208, 330],
+    photo: true,
     work: 2,
     mix: [0.12, 0.8, 0.3],
     mask: 'poly',
@@ -154,6 +159,10 @@ for (const [name, p] of Object.entries(presets)) {
       preview[gy * gw + gx] = v * 28;
     }
     rows.push(row);
+  }
+  if (p.photo) {
+    mkdirSync('public/photos', { recursive: true });
+    await sharp(p.file).extract(p.crop).removeAlpha().webp({ quality: 84 }).toFile(`public/photos/${name}.webp`);
   }
   const out = { w: gw, h: gh, rows };
   writeFileSync(`public/data/${name}.json`, JSON.stringify(out));

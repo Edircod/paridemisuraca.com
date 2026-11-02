@@ -19,9 +19,17 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
 
   <article class="scene surf" id="surf">
     <div class="shell" data-shell>
-      <div class="stage" data-sea data-game={JSON.stringify(t.surf.game)} role="img" aria-label={t.surf.label}>
+      <div class="stage" data-sea data-game={JSON.stringify(t.surf.game)}>
+        <picture>
+          <source media="(max-width: 600px)" srcset="/photos/surf-tall.webp" width="550" height="890" />
+          <img class="photo" src="/photos/surf.webp" width="720" height="670" alt={t.surf.label} loading="lazy" decoding="async" />
+        </picture>
         <canvas aria-hidden="true"></canvas>
         <canvas aria-hidden="true" data-spray></canvas>
+        <button class="btn btn-signal play" type="button" data-play>
+          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5v11l9.5-5.5Z" fill="currentColor"></path></svg>
+          {t.surf.play}
+        </button>
       </div>
       <button class="exit" type="button" aria-label={t.surf.game.exit} data-exit>
         <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"></path></svg>
@@ -41,8 +49,7 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
           <span class="mono">{t.surf.counter}</span>
           <span class="count grad-text" data-count>000</span>
         </p>
-        <p class="hint">{t.surf.hint}</p>
-        <p class="hint touch">{t.surf.hintTouch}</p>
+        <p class="how">{t.surf.howTo}</p>
         <dl class="tutorial">
           {
             t.surf.tutorial.map(([key, action, touchKey]) => (
@@ -121,7 +128,8 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
       </div>
       <p class="hint">{t.music.hint}</p>
     </div>
-    <div class="stage" data-symbols role="img" aria-label={t.music.label}>
+    <div class="stage" data-symbols>
+      <img class="photo" src="/photos/guitar.webp" width="520" height="826" alt={t.music.label} loading="lazy" decoding="async" />
       <canvas aria-hidden="true"></canvas>
     </div>
   </article>
@@ -146,15 +154,72 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
     cursor: crosshair;
     touch-action: pan-y;
   }
+  /* The stage and the text share a row: while the game runs the stage widens over the text, which
+     fades out, and the row keeps its height. */
   .surf .shell {
+    position: relative;
+    z-index: 1;
+    grid-row: 1;
     grid-column: 1 / span 8;
     width: min(100%, calc(84svh * 720 / 670));
+  }
+  .surf.wide .shell {
+    grid-column: 1 / -1;
+    width: 100%;
   }
   .surf .stage {
     aspect-ratio: 720 / 670;
   }
+  .photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transition: opacity 600ms ease;
+  }
+  /* Where the lines stand: as wide as fits, on the bottom edge. */
+  .surf .photo {
+    object-fit: contain;
+    object-position: 50% 100%;
+  }
+  /* Out at once when the game starts; back once the stage has nearly narrowed again. */
+  .surf .photo {
+    transition-delay: 450ms;
+  }
+  .playing .photo {
+    opacity: 0;
+    transition-delay: 0s;
+  }
+  /* Over the photo the lines are a light swell; in the game they are the sea. */
+  .surf .stage canvas:not([data-spray]) {
+    transition: opacity 600ms ease;
+  }
+  .surf .stage:not(.playing) canvas:not([data-spray]) {
+    opacity: 0.35;
+  }
+  .play {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    translate: -50% -50%;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      transform 160ms var(--ease-out),
+      filter 200ms ease,
+      opacity 300ms ease,
+      visibility 0s 300ms;
+  }
+  .ready .stage:not(.playing) .play {
+    opacity: 1;
+    visibility: visible;
+    transition:
+      transform 160ms var(--ease-out),
+      filter 200ms ease,
+      opacity 300ms ease 450ms;
+  }
   /* On touch screens the game takes the whole screen while it runs. */
-  .shell.full {
+  .surf .shell.full {
     position: fixed;
     inset: 0;
     z-index: 1000;
@@ -166,12 +231,10 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
     aspect-ratio: auto;
   }
   .exit {
-    display: none;
-  }
-  .full .exit {
     position: absolute;
     right: 12px;
     bottom: calc(12px + env(safe-area-inset-bottom));
+    z-index: 1;
     display: grid;
     place-items: center;
     width: 44px;
@@ -179,6 +242,30 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
     border: 1px solid color-mix(in srgb, var(--paper) 40%, transparent);
     background: color-mix(in srgb, var(--ink) 70%, transparent);
     color: var(--paper);
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    scale: 0.9;
+    transition:
+      opacity 200ms ease,
+      scale 200ms var(--ease-out),
+      border-color 200ms ease,
+      visibility 0s 200ms;
+  }
+  .full .exit,
+  .wide .exit {
+    opacity: 1;
+    visibility: visible;
+    scale: 1;
+    transition:
+      opacity 300ms ease 400ms,
+      scale 300ms var(--ease-out) 400ms,
+      border-color 200ms ease;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .exit:hover {
+      border-color: var(--paper);
+    }
   }
   .exit svg {
     width: 16px;
@@ -193,6 +280,11 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
     width: min(100%, calc(86svh * 520 / 826));
     aspect-ratio: 520 / 826;
   }
+  /* The live shot fades into the page at its edges, so the crowd in the corner drops away. */
+  .music .photo {
+    object-fit: cover;
+    mask-image: radial-gradient(ellipse 70% 62% at 50% 42%, #000 58%, transparent 100%);
+  }
   canvas {
     position: absolute;
     inset: 0;
@@ -204,9 +296,20 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
     gap: 32px;
   }
   .surf .side {
+    grid-row: 1;
     grid-column: 9 / span 4;
     grid-template-columns: 72px 1fr;
     align-items: center;
+    transition:
+      opacity 400ms ease 450ms,
+      visibility 0s 450ms;
+  }
+  .surf.wide .side {
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 200ms ease,
+      visibility 0s 200ms;
   }
   .music .side {
     grid-column: 1 / span 5;
@@ -226,11 +329,10 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
     font-size: 0.875rem;
     color: var(--sky);
   }
-  .copy .hint {
+  .how {
     margin-top: 20px;
-  }
-  .hint.touch {
-    display: none;
+    font-size: 0.875rem;
+    font-weight: 600;
   }
   .tutorial {
     display: grid;
@@ -522,9 +624,6 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
     .key-mouse {
       display: none;
     }
-    .hint.touch {
-      display: block;
-    }
     .key-touch {
       display: inline;
     }
@@ -541,6 +640,10 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
     .music .stage,
     .music .side {
       grid-column: 1 / -1;
+    }
+    .surf .shell,
+    .surf .side {
+      grid-row: auto;
     }
     .surf .side {
       margin-top: 32px;
@@ -560,15 +663,13 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
       margin-bottom: 32px;
     }
   }
-  /* On a phone the board would only push the text in, and the sea stands upright, the shape the game
-     takes when it fills the screen. */
+  /* On a phone the board would only push the text in, and the photo is cut tall. */
   @media (max-width: 600px) {
     .surf .side {
       grid-template-columns: 1fr;
     }
     .surf .shell:not(.full) .stage {
-      height: calc(100svh - var(--bar) - var(--foot) - 18px);
-      aspect-ratio: auto;
+      aspect-ratio: 550 / 890;
     }
     .board {
       display: none;
@@ -578,7 +679,7 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
 
 <script>
   import { mountLineField } from '../scripts/line-field';
-  import { mountSurfGame, type GameCopy } from '../scripts/surf-game';
+  import { mountSurfGame, savedBest, type GameCopy } from '../scripts/surf-game';
   import { mountSymbolField } from '../scripts/symbol-field';
   import { createGuitarAudio } from '../scripts/guitar-audio';
   import type { FieldData } from '../scripts/glyph-portrait';
@@ -600,9 +701,10 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
 
   const sea = document.querySelector<HTMLElement>('[data-sea]')!;
   const count = document.querySelector<HTMLElement>('[data-count]')!;
-  let broken = 0;
-  sea.addEventListener('wavebreak', () => {
-    count.textContent = String(++broken).padStart(3, '0');
+  const showBest = (v: number) => (count.textContent = String(v).padStart(3, '0'));
+  showBest(savedBest());
+  sea.addEventListener('best', (e) => {
+    showBest((e as CustomEvent<number>).detail);
     count.classList.remove('bump');
     void count.offsetWidth;
     count.classList.add('bump');
