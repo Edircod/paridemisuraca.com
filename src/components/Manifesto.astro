@@ -99,7 +99,7 @@ const lines = t.manifesto.lines.map((line) => ({
   /* Full width: browsers skip a snap area that doesn't cross the screen. */
   .kinetic:global(.is-live) .stop {
     position: absolute;
-    top: calc(var(--p) * 100% - 100svh);
+    top: calc(var(--p) * (100% - 100svh));
     left: 0;
     right: 0;
     display: block;
@@ -149,7 +149,7 @@ const lines = t.manifesto.lines.map((line) => ({
     kinetic.classList.add('is-live');
     const rand = gsap.utils.random;
     const tl = gsap.timeline({
-      scrollTrigger: { trigger: kinetic, start: 'top bottom', end: 'bottom bottom', scrub: 0.9 },
+      scrollTrigger: { trigger: kinetic, start: 'top top', end: 'bottom bottom', scrub: 0.9 },
     });
     // Each line flies in from deep space as loose glyphs, holds, then blows past the camera.
     lines.forEach((line, k) => {
@@ -197,14 +197,9 @@ const lines = t.manifesto.lines.map((line) => ({
         at + 3,
       );
     });
-    // A line is all in by about 1.8s after it starts and holds until 3s. The stage rises a whole screen
-    // before it settles, and the first line flies in on the way up, so it is whole as it settles and no
-    // empty screen opens after the section above.
-    const rise = 100 / (lines.length * 120 + 100);
-    const lead = (tl.duration() * rise - 1.8) / (1 - rise);
-    tl.shiftChildren(lead);
+    // A line is all in by about 1.8s after it starts and holds until 3s.
     kinetic.querySelectorAll<HTMLElement>('[data-stop]').forEach((stop, k) => {
-      stop.style.setProperty('--p', String((lead + k * 4.4 + 2.4) / tl.duration()));
+      stop.style.setProperty('--p', String((k * 4.4 + 2.4) / tl.duration()));
     });
     return () => kinetic.classList.remove('is-live');
   });
