@@ -195,6 +195,7 @@ export const copy = {
       copy: 'Copia',
       copied: 'Copiata',
       subject: 'Nuovo messaggio da paridemisuraca.com',
+      vat: 'P.IVA 03158020846',
     },
     scrollerEnd: 'Parliamone / Let’s talk / ',
     chart: {
@@ -364,6 +365,7 @@ export const copy = {
       copy: 'Copy',
       copied: 'Copied',
       subject: 'New message from paridemisuraca.com',
+      vat: 'VAT IT03158020846',
     },
     scrollerEnd: 'Let’s talk / Parliamone / ',
     chart: {
