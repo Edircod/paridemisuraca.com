@@ -60,9 +60,9 @@ export const copy = {
     },
     scroller: 'ERP / CRM / Siti web / E-commerce / Web app / Mobile app / Agenti AI / Integrazioni / Consulenza IT / Codice · Software · Debug / ',
     about: {
-      title: 'La distanza non conta.',
+      title: 'Il mondo è piccolo.',
       body: [
-        'Clienti in Italia e all’estero, progetti seguiti da remoto in qualsiasi lingua. Software stabile e veloce; se qualcosa si blocca sono reperibile, e il debug parte subito.',
+        'Che tu sia in Italia o dall’altra parte del mondo, il tuo progetto verrà preso in carico, seguito e consegnato allo stesso modo, con il supporto necessario anche dopo il lancio.',
       ],
       portraitLabel: 'Ritratto di Paride composto da caratteri di codice. Passando il cursore cade una pioggia di codice blu.',
       globe: 'Mappamondo: trascinalo per girarlo.',
@@ -229,9 +229,9 @@ export const copy = {
     },
     scroller: 'ERP / CRM / Websites / E-commerce / Web apps / Mobile apps / AI agents / Integrations / IT consulting / Code · Software · Debug / ',
     about: {
-      title: 'Distance doesn’t matter.',
+      title: 'It’s a small world.',
       body: [
-        'Clients in Italy and abroad, projects run remotely in any language. Stable, fast software; if something breaks I’m on call, and debugging starts right away.',
+        'Whether you’re in Italy or on the other side of the world, your project is taken on, followed and delivered the same way, with the support you need after launch too.',
       ],
       portraitLabel: 'Portrait of Paride made of code characters. Hovering sets off a blue rain of code.',
       globe: 'Globe: drag it to spin.',
