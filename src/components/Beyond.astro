@@ -128,8 +128,7 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
       </div>
       <p class="hint">{t.music.hint}</p>
     </div>
-    <div class="stage" data-symbols>
-      <img class="photo" src="/photos/guitar.webp" width="520" height="826" alt={t.music.label} loading="lazy" decoding="async" />
+    <div class="stage" data-symbols role="img" aria-label={t.music.label}>
       <canvas aria-hidden="true"></canvas>
     </div>
   </article>
@@ -279,11 +278,6 @@ const swell = 'M0 20Q25 4 50 20T100 20T150 20T200 20T250 20T300 20T350 20T400 20
     justify-self: center;
     width: min(100%, calc(86svh * 520 / 826));
     aspect-ratio: 520 / 826;
-  }
-  /* The live shot fades into the page at its edges, so the crowd in the corner drops away. */
-  .music .photo {
-    object-fit: cover;
-    mask-image: radial-gradient(ellipse 70% 62% at 50% 42%, #000 58%, transparent 100%);
   }
   canvas {
     position: absolute;

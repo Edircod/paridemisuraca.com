@@ -1,5 +1,4 @@
-// Rock symbols (bolts, picks, flames, notes, speakers, vinyls…) laid over the music photo in the shape
-// of the figure: faint at rest, so the photo shows, lit up where the cursor or the strum wakes them.
+// Canvas 2D silhouette built from rock symbols (bolts, picks, flames, notes, speakers, vinyls…).
 // Each symbol is pre-rendered once per colour and the resting figure is cached on a base layer:
 // a frame copies the base and redraws only the symbols the cursor or the strum woke up.
 import type { FieldData } from './glyph-portrait';
@@ -10,8 +9,6 @@ const SKY = '#72cffa';
 const SIGNAL = '#76efe0';
 // Below this a symbol looks the same as its resting copy on the base layer.
 const AWAKE = 0.05;
-// How much of the resting figure shows over the photo.
-const REST = 0.16;
 
 type Draw = (c: CanvasRenderingContext2D) => void;
 
@@ -191,9 +188,7 @@ export function mountSymbolField(stage: HTMLElement, canvas: HTMLCanvasElement, 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     // At full gain the whole figure headbangs.
     const shake = gain > 0.95 && !reduced ? Math.sin(t * 17) * 2.5 : 0;
-    ctx.globalAlpha = REST;
     ctx.drawImage(base, shake * dpr, 0);
-    ctx.globalAlpha = 1;
     // Cut the resting copy of every awake symbol out of the base in one fill, then draw it moving on top.
     const holes = new Path2D();
     for (let i = 0; i < xs.length; i++) {

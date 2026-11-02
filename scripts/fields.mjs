@@ -43,19 +43,27 @@ const presets = {
     mix: [0.18, 0.7, 0.35],
     mask: 'key',
   },
+  // A gazebo winch stands in front of the guitar neck: the retouch paints the shirt over it and the neck
+  // through it, up to the headstock, and hides the rope; the outline leaves out the gazebo leg.
   guitar: {
     file: 'assets-src/photos/guitar.jpg',
+    retouch: `<svg width="864" height="1031" xmlns="http://www.w3.org/2000/svg">
+      <path d="M552 600 570 589H612L622 560 640 528 668 518V712L600 716 560 692 548 650Z" fill="#141214"/>
+      <path d="M519 641 679 513 701 541 541 669Z" fill="#2a1d16"/>
+      <path d="M519 641 679 513M541 669 701 541" stroke="#8a7a62" stroke-width="2"/>
+      <path d="M531 631 553 659M547 619 569 647M564 605 586 633M583 590 605 618M603 574 625 602M625 556 647 584M649 537 671 565" stroke="#b9b1a2" stroke-width="2"/>
+      <path d="M745 400 690 545" stroke="#15100f" stroke-width="6"/>
+    </svg>`,
     crop: { left: 270, top: 205, width: 520, height: 826 },
     grid: [208, 330],
-    photo: true,
     work: 2,
     mix: [0.12, 0.8, 0.3],
     mask: 'poly',
     poly: [
       [440, 226], [505, 232], [535, 265], [540, 305], [528, 350], [522, 398], [580, 415], [640, 445], [658, 500],
-      [652, 540], [700, 520], [735, 470], [762, 488], [745, 530], [655, 610], [628, 660], [622, 800], [626, 1031],
-      [360, 1031], [360, 955], [318, 945], [302, 880], [300, 790], [298, 700], [310, 600], [325, 520], [332, 460],
-      [380, 425], [418, 395], [402, 345], [392, 290], [395, 255],
+      [662, 526], [690, 506], [735, 470], [762, 488], [745, 530], [702, 543], [646, 586], [640, 620], [628, 660],
+      [622, 800], [626, 1031], [360, 1031], [360, 955], [318, 945], [302, 880], [300, 790], [298, 700], [310, 600],
+      [325, 520], [332, 460], [380, 425], [418, 395], [402, 345], [392, 290], [395, 255],
     ],
   },
 };
@@ -97,7 +105,8 @@ for (const [name, p] of Object.entries(presets)) {
   const [gw, gh] = p.grid;
   const WORK = p.work;
   const w = gw * WORK, h = gh * WORK, N = w * h;
-  const { data, info } = await sharp(p.file).extract(p.crop).removeAlpha().resize(w, h, { fit: 'fill' }).raw().toBuffer({ resolveWithObject: true });
+  const src = p.retouch ? await sharp(p.file).composite([{ input: Buffer.from(p.retouch) }]).toBuffer() : p.file;
+  const { data, info } = await sharp(src).extract(p.crop).removeAlpha().resize(w, h, { fit: 'fill' }).raw().toBuffer({ resolveWithObject: true });
   const c = info.channels;
   const lum = new Float32Array(N), sat = new Float32Array(N), hue = new Float32Array(N);
   for (let i = 0; i < N; i++) {

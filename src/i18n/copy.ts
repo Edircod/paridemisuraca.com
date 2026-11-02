@@ -144,7 +144,7 @@ export const copy = {
         power: 'Accensione ampli',
         gain: 'Gain',
         volume: 'Volume',
-        label: 'Paride canta e suona la chitarra elettrica dal vivo; simboli rock (fulmini, plettri, fiamme e note) si accendono sulla foto.',
+        label: 'Sagoma di Paride che canta e suona la chitarra, composta da simboli rock: fulmini, plettri, fiamme e note.',
       },
     },
     manifesto: {
@@ -314,7 +314,7 @@ export const copy = {
         power: 'Amp power',
         gain: 'Gain',
         volume: 'Volume',
-        label: 'Paride singing and playing electric guitar live; rock symbols (lightning bolts, picks, flames and notes) light up over the photo.',
+        label: 'Silhouette of Paride singing and playing guitar, made of rock symbols: lightning bolts, picks, flames and notes.',
       },
     },
     manifesto: {
