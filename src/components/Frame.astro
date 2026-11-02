@@ -17,18 +17,7 @@ const items = [
 ];
 ---
 
-<div class="chart" aria-hidden="true">
-  <div class="band band-top"></div>
-  <div class="band band-bottom"></div>
-  <div class="band band-left"></div>
-  <div class="band band-right"></div>
-  <div class="neatline">
-    <div class="grad grad-top"></div>
-    <div class="grad grad-bottom"></div>
-    <div class="grad grad-left"></div>
-    <div class="grad grad-right"></div>
-  </div>
-</div>
+<div class="band" aria-hidden="true"></div>
 
 <header class="margin-top">
   <a class="brand" href={lang === 'it' ? '/' : '/en/'} aria-label={t.nav.home} data-home>
@@ -69,50 +58,15 @@ const items = [
 </footer>
 
 <style>
-  .chart {
-    --top: var(--bar);
-    --bottom: var(--foot);
+  /* The top bar's ground, so the page scrolls away under it. */
+  .band {
     position: fixed;
-    inset: 0;
+    inset: 0 0 auto 0;
     z-index: 40;
+    height: var(--bar);
+    background: var(--ink);
     pointer-events: none;
   }
-  .band {
-    position: absolute;
-    background: var(--ink);
-  }
-  .band-top { inset: 0 0 auto 0; height: var(--top); }
-  .band-bottom { inset: auto 0 0 0; height: var(--bottom); }
-  .band-left { inset: 0 auto 0 0; width: var(--frame); }
-  .band-right { inset: 0 0 0 auto; width: var(--frame); }
-
-  .neatline {
-    position: absolute;
-    inset: var(--top) var(--frame) var(--bottom);
-    border: 1px solid color-mix(in srgb, var(--paper) 55%, transparent);
-  }
-  .grad {
-    position: absolute;
-    --tick: color-mix(in srgb, var(--paper) 40%, transparent);
-  }
-  .grad-top,
-  .grad-bottom {
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: repeating-linear-gradient(90deg, var(--tick) 0 60px, transparent 60px 120px);
-  }
-  .grad-top { top: 0; }
-  .grad-bottom { bottom: 0; }
-  .grad-left,
-  .grad-right {
-    top: 0;
-    bottom: 0;
-    width: 4px;
-    background: repeating-linear-gradient(180deg, var(--tick) 0 60px, transparent 60px 120px);
-  }
-  .grad-left { left: 0; }
-  .grad-right { right: 0; }
 
   .margin-top,
   .margin-bottom {
@@ -148,9 +102,9 @@ const items = [
     width: 16px;
     height: 16px;
     fill: none;
-    stroke: #9dfb9d;
+    stroke: var(--mint);
     stroke-width: 1.2;
-    filter: drop-shadow(0 0 4px #9dfb9d);
+    filter: drop-shadow(0 0 4px var(--mint));
     animation: online 3.2s ease-in-out infinite;
   }
   @keyframes online {
@@ -194,7 +148,7 @@ const items = [
     right: 0;
     bottom: 4px;
     height: 2px;
-    background: var(--signal);
+    background: var(--grad);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 260ms var(--ease-out);

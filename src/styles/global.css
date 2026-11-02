@@ -42,13 +42,16 @@
   --mute: #a2a19c;
   --signal: #76efe0;
   --sky: #72cffa;
+  --mint: #9dfb9d;
+  /* The logo's fade, blue into green, for the accents. */
+  --grad: linear-gradient(110deg, var(--sky), var(--signal) 50%, var(--mint));
 
   --font-sans: 'Host Grotesk', system-ui, sans-serif;
   --font-display: 'Schibsted Grotesk', 'Host Grotesk', sans-serif;
   --font-mono: 'DM Mono', ui-monospace, monospace;
 
   --frame: 14px;
-  /* The fixed bars above and below the chart frame. */
+  /* The fixed top bar and the status line at the foot. */
   --bar: 68px;
   --foot: 34px;
   --gutter: clamp(20px, 4vw, 64px);
@@ -210,7 +213,8 @@ a {
   transition:
     transform 160ms var(--ease-out),
     background-color 200ms ease,
-    border-color 200ms ease;
+    border-color 200ms ease,
+    filter 200ms ease;
 }
 .btn svg {
   transition: transform 240ms var(--ease-out);
@@ -219,9 +223,15 @@ a {
   transform: scale(0.97);
 }
 .btn-signal {
-  background: var(--signal);
+  background: var(--grad);
   color: var(--ink);
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+}
+.grad-text {
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 .btn-line {
   border: 1px solid color-mix(in srgb, var(--paper) 40%, transparent);
@@ -229,7 +239,7 @@ a {
 }
 @media (hover: hover) and (pointer: fine) {
   .btn-signal:hover {
-    background: #b0f7ee;
+    filter: brightness(1.12);
   }
   .btn-signal:hover svg {
     transform: translateX(4px);

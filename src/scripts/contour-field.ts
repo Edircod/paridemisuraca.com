@@ -55,15 +55,14 @@ out float vNear;
 out float vHover;
 out float vMelt;
 void main() {
-  vec2 center = uRect.xy + uRect.zw * 0.5;
-  vec2 local = (aPos - 0.5) * uRect.zw;
-  // Melting, a portrait comes apart into swell, as if seen through moving water: it spreads out
-  // sideways and every level of its contours rides a long, slow wave of its own, while it fades to
-  // the seabed's faint lines; melting back, the face gathers again.
+  // Melting, a portrait comes apart into swell, as if seen through moving water: it spreads out over
+  // nearly the whole canvas and every level of its contours rides a long, slow wave of its own, while
+  // it fades to the seabed's faint lines; melting back, the face gathers again.
   float melt = uMelt * uMelt * (3.0 - 2.0 * uMelt);
-  vec2 flow = vec2(sin(local.y * 0.011 + aLevel * 4.0 + uTime * 0.6), sin(local.x * 0.008 + aLevel * 5.0 - uTime * 0.7));
-  local *= 1.0 + vec2(0.9, 0.15) * melt;
-  local += melt * flow * vec2(40.0, 55.0);
+  vec2 center = mix(uRect.xy + uRect.zw * 0.5, uView * 0.5, melt);
+  vec2 local = (aPos - 0.5) * mix(uRect.zw, uView * vec2(0.96, 0.9), melt);
+  vec2 flow = vec2(sin(local.y * 0.011 + aLevel * 4.0 + uTime * 0.6), sin(local.x * 0.004 + aLevel * 5.0 - uTime * 0.7));
+  local += melt * flow * vec2(50.0, 70.0);
   vec2 world = center + local;
   // Hover only nudges the lines: a soft lens around the cursor plus a faint shiver.
   float d = distance(world, uPointer);

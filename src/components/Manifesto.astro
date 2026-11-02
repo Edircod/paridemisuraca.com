@@ -67,8 +67,12 @@ const lines = t.manifesto.lines.map((line) => ({
   .c {
     display: inline-block;
   }
+  /* Each letter shows its own stretch of the word's fade, measured by the script. */
   .accent {
-    color: var(--signal);
+    background: var(--grad) var(--x, 0) 0 / var(--w, 100%) 100% no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
   .kinetic:global(.is-live) {
     height: calc(var(--lines) * 120svh + 100svh);
@@ -124,6 +128,23 @@ const lines = t.manifesto.lines.map((line) => ({
   const kinetic = document.querySelector<HTMLElement>('[data-kinetic]')!;
   const lines = [...kinetic.querySelectorAll<HTMLElement>('[data-line]')];
 
+  // Letters move one by one, so the fade is laid across each accent word letter by letter.
+  const spread = () => {
+    for (const w of kinetic.querySelectorAll<HTMLElement>('.w')) {
+      const chars = [...w.querySelectorAll<HTMLElement>('.accent')];
+      if (!chars.length) continue;
+      const first = chars[0].offsetLeft;
+      const last = chars[chars.length - 1];
+      const width = last.offsetLeft + last.offsetWidth - first;
+      for (const c of chars) {
+        c.style.setProperty('--w', `${width}px`);
+        c.style.setProperty('--x', `${first - c.offsetLeft}px`);
+      }
+    }
+  };
+  document.fonts.ready.then(spread);
+  new ResizeObserver(spread).observe(kinetic);
+
   gsap.matchMedia().add('(prefers-reduced-motion: no-preference)', () => {
     kinetic.classList.add('is-live');
     const rand = gsap.utils.random;
@@ -152,7 +173,8 @@ const lines = t.manifesto.lines.map((line) => ({
           rotationX: 0,
           rotationY: 0,
           opacity: 1,
-          color: (_i: number, el: HTMLElement) => (el.classList.contains('accent') ? '#76efe0' : '#f0efea'),
+          // Accent letters end see-through, letting their fade show.
+          color: (_i: number, el: HTMLElement) => (el.classList.contains('accent') ? 'rgba(114,207,250,0)' : '#f0efea'),
           duration: 1.2,
           ease: 'power3.out',
           stagger: { each: 0.02, from: 'random' },
